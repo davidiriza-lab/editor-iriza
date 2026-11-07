@@ -1,0 +1,1050 @@
+{
+ "handle": "@tu_usuario",
+ "fps": "24000/1001",
+ "cola": 0.5,
+ "voz": "corte/cam.mov",
+ "salida": "<tu carpeta de contenido>/Replica viral/Herramientas gratis/Video editado - Herramientas gratis.mp4",
+ "persona": {
+  "cuadros": "cuadros_pro",
+  "mascaras": "mascaras",
+  "crudos": "cuadros",
+  "n": 712,
+  "fondo": "real",
+  "bajar": 0,
+  "zoomAlt": 1.05
+ },
+ "cortes": [],
+ "musica": {
+  "archivo": "../../estilo-cine/sfx/musica_dox.mp3",
+  "desde": 0.0,
+  "vol": 0.26,
+  "vol_drop": 0.26,
+  "drop": 999,
+  "ducking": {
+   "threshold": 0.05,
+   "ratio": 3
+  }
+ },
+ "marcas": {
+  "impacto": -9,
+  "tap": -9
+ },
+ "sfx_auto": true,
+ "logos": {
+  "chatgpt": "logos/chatgpt.png",
+  "claude": "logos/claude.png",
+  "gemini": "logos/gemini.png",
+  "perplexity": "logos/perplexity.png",
+  "notebooklm": "logos/notebooklm.png",
+  "ahrefs": "logos/ahrefs.png",
+  "hubspot": "logos/hubspot.png",
+  "answerthepublic": "logos/answerthepublic.png",
+  "googletrends": "logos/googletrends.png",
+  "tiktok": "logos/tiktok.png",
+  "heygen": "logos/heygen.png",
+  "captions": "logos/captions.png",
+  "higgsfield": "logos/higgsfield.png",
+  "hedra": "logos/hedra.png",
+  "did": "logos/did.png",
+  "akool": "logos/akool.png",
+  "vidnoz": "logos/vidnoz.png",
+  "jogg": "logos/jogg.png",
+  "capcut": "logos/capcut.png",
+  "descript": "logos/descript.png",
+  "opusclip": "logos/opusclip.png",
+  "veed": "logos/veed.png",
+  "canva": "logos/canva.png",
+  "adobeexpress": "logos/adobeexpress.png",
+  "wisecut": "logos/wisecut.png",
+  "klap": "logos/klap.png",
+  "submagic": "logos/submagic.png",
+  "gamma": "logos/gamma.png",
+  "aicarousels": "logos/aicarousels.png",
+  "predis": "logos/predis.png",
+  "simplified": "logos/simplified.png",
+  "piktochart": "logos/piktochart.png",
+  "visme": "logos/visme.png",
+  "venngage": "logos/venngage.png",
+  "slidesgo": "logos/slidesgo.png",
+  "meta": "logos/meta.png",
+  "googleads": "logos/googleads.png",
+  "microsoftads": "logos/microsoftads.png",
+  "adcreative": "logos/adcreative.png",
+  "creatopy": "logos/creatopy.png",
+  "pencil": "logos/pencil.png",
+  "wix": "logos/wix.png",
+  "framer": "logos/framer.png",
+  "lovable": "logos/lovable.png",
+  "bolt": "logos/bolt.png",
+  "replit": "logos/replit.png",
+  "v0": "logos/v0.png",
+  "jimdo": "logos/jimdo.png",
+  "openclaw": "logos/openclaw.png",
+  "n8n": "logos/n8n.png",
+  "dify": "logos/dify.png",
+  "flowise": "logos/flowise.png",
+  "langflow": "logos/langflow.png",
+  "relevance": "logos/relevance.png",
+  "gumloop": "logos/gumloop.png",
+  "lindy": "logos/lindy.png",
+  "crewai": "logos/crewai.png",
+  "autogen": "logos/autogen.png"
+ },
+ "escenas": [
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "flash",
+   "lista": {
+    "titulo": "Ideas de contenido",
+    "en": 0.05,
+    "fin": 2.58,
+    "items": [
+     [
+      "ChatGPT",
+      "chatgpt"
+     ],
+     [
+      "Claude",
+      "claude"
+     ],
+     [
+      "Gemini",
+      "gemini"
+     ],
+     [
+      "Perplexity",
+      "perplexity"
+     ],
+     [
+      "NotebookLM",
+      "notebooklm"
+     ],
+     [
+      "Ahrefs AI",
+      "ahrefs"
+     ],
+     [
+      "HubSpot",
+      "hubspot"
+     ],
+     [
+      "AnswerThePublic",
+      "answerthepublic"
+     ],
+     [
+      "Google Trends",
+      "googletrends"
+     ],
+     [
+      "TikTok Creative",
+      "tiktok"
+     ]
+    ],
+    "paso": 0.11,
+    "lado": "izq"
+   },
+   "grupos": [
+    {
+     "y": 0.79,
+     "lineas": [
+      "-Para ideas de",
+      "contenido"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-utiliza estas herramientas",
+      "*gratis."
+     ]
+    }
+   ],
+   "textoTema": "oscuro"
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "whip",
+   "lista": {
+    "titulo": "Clon IA",
+    "en": 2.81,
+    "fin": 6.84,
+    "items": [
+     [
+      "HeyGen",
+      "heygen"
+     ],
+     [
+      "Captions AI",
+      "captions"
+     ],
+     [
+      "Higgsfield",
+      "higgsfield"
+     ],
+     [
+      "Hedra",
+      "hedra"
+     ],
+     [
+      "D-ID",
+      "did"
+     ],
+     [
+      "AKOOL",
+      "akool"
+     ],
+     [
+      "Vidnoz AI",
+      "vidnoz"
+     ],
+     [
+      "JoggAI",
+      "jogg"
+     ],
+     [
+      "LivePortrait",
+      "liveportrait"
+     ],
+     [
+      "SadTalker",
+      "sadtalker"
+     ]
+    ],
+    "paso": 0.11,
+    "lado": "izq"
+   },
+   "grupos": [
+    {
+     "y": 0.79,
+     "lineas": [
+      "-Para clonarse con",
+      "inteligencia artificial"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-y hacer",
+      "videos"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-utiliza estas herramientas",
+      "*gratis."
+     ]
+    }
+   ],
+   "textoTema": "oscuro"
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "whip",
+   "lista": {
+    "titulo": "Edición con IA",
+    "en": 7.07,
+    "fin": 10.34,
+    "items": [
+     [
+      "CapCut",
+      "capcut"
+     ],
+     [
+      "Descript",
+      "descript"
+     ],
+     [
+      "Captions",
+      "captions"
+     ],
+     [
+      "OpusClip",
+      "opusclip"
+     ],
+     [
+      "VEED",
+      "veed"
+     ],
+     [
+      "Canva Video",
+      "canva"
+     ],
+     [
+      "Adobe Express",
+      "adobeexpress"
+     ],
+     [
+      "Wisecut",
+      "wisecut"
+     ],
+     [
+      "Klap",
+      "klap"
+     ],
+     [
+      "Submagic",
+      "submagic"
+     ]
+    ],
+    "paso": 0.11,
+    "lado": "izq"
+   },
+   "grupos": [
+    {
+     "y": 0.79,
+     "lineas": [
+      "-Para editar",
+      "videos"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-con",
+      "inteligencia artificial"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-utiliza estas herramientas",
+      "*gratis."
+     ]
+    }
+   ],
+   "textoTema": "oscuro"
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "whip",
+   "lista": {
+    "titulo": "Carruseles IA",
+    "en": 10.57,
+    "fin": 14.28,
+    "items": [
+     [
+      "Canva",
+      "canva"
+     ],
+     [
+      "Gamma",
+      "gamma"
+     ],
+     [
+      "aiCarousels",
+      "aicarousels"
+     ],
+     [
+      "Predis.ai",
+      "predis"
+     ],
+     [
+      "Adobe Express",
+      "adobeexpress"
+     ],
+     [
+      "Simplified",
+      "simplified"
+     ],
+     [
+      "Piktochart AI",
+      "piktochart"
+     ],
+     [
+      "Visme",
+      "visme"
+     ],
+     [
+      "Venngage AI",
+      "venngage"
+     ],
+     [
+      "Slidesgo AI",
+      "slidesgo"
+     ]
+    ],
+    "paso": 0.11,
+    "lado": "izq"
+   },
+   "grupos": [
+    {
+     "y": 0.79,
+     "lineas": [
+      "-Para crear",
+      "carruseles"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-con",
+      "inteligencia artificial"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-utiliza estas herramientas",
+      "*gratis."
+     ]
+    }
+   ],
+   "textoTema": "oscuro"
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "whip",
+   "lista": {
+    "titulo": "Páginas Web IA",
+    "en": 14.51,
+    "fin": 18.3,
+    "items": [
+     [
+      "Wix AI",
+      "wix"
+     ],
+     [
+      "Framer AI",
+      "framer"
+     ],
+     [
+      "Lovable",
+      "lovable"
+     ],
+     [
+      "Bolt.new",
+      "bolt"
+     ],
+     [
+      "Replit Agent",
+      "replit"
+     ],
+     [
+      "v0 by Vercel",
+      "v0"
+     ],
+     [
+      "Gamma Sites",
+      "gamma"
+     ],
+     [
+      "Canva Websites",
+      "canva"
+     ],
+     [
+      "HubSpot AI",
+      "hubspot"
+     ],
+     [
+      "Jimdo Dolphin",
+      "jimdo"
+     ]
+    ],
+    "paso": 0.11,
+    "lado": "izq"
+   },
+   "grupos": [
+    {
+     "y": 0.79,
+     "lineas": [
+      "-Para crear",
+      "páginas web"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-en",
+      "segundos",
+      "-con IA"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-utiliza estas herramientas",
+      "*gratis."
+     ]
+    }
+   ],
+   "textoTema": "oscuro"
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "whip",
+   "lista": {
+    "titulo": "Agentes IA",
+    "en": 18.53,
+    "fin": 21.72,
+    "items": [
+     [
+      "OpenClaw",
+      "openclaw"
+     ],
+     [
+      "n8n",
+      "n8n"
+     ],
+     [
+      "Dify",
+      "dify"
+     ],
+     [
+      "Flowise",
+      "flowise"
+     ],
+     [
+      "Langflow",
+      "langflow"
+     ],
+     [
+      "Relevance AI",
+      "relevance"
+     ],
+     [
+      "Gumloop",
+      "gumloop"
+     ],
+     [
+      "Lindy",
+      "lindy"
+     ],
+     [
+      "CrewAI",
+      "crewai"
+     ],
+     [
+      "Microsoft AutoGen",
+      "autogen"
+     ]
+    ],
+    "paso": 0.11,
+    "lado": "izq"
+   },
+   "grupos": [
+    {
+     "y": 0.79,
+     "lineas": [
+      "-Para",
+      "agentes"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-de",
+      "inteligencia artificial"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-utiliza estas herramientas",
+      "*gratis."
+     ]
+    }
+   ],
+   "textoTema": "oscuro"
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "whip",
+   "lluvia": {
+    "en": 22.0,
+    "fin": 26.56,
+    "logos": [
+     "adcreative",
+     "adobeexpress",
+     "ahrefs",
+     "aicarousels",
+     "akool",
+     "answerthepublic",
+     "autogen",
+     "bolt",
+     "canva",
+     "capcut",
+     "captions",
+     "chatgpt",
+     "claude",
+     "creatopy",
+     "crewai",
+     "descript",
+     "did",
+     "dify",
+     "flowise",
+     "framer",
+     "gamma",
+     "gemini",
+     "googleads",
+     "googletrends",
+     "gumloop",
+     "hedra",
+     "heygen",
+     "higgsfield",
+     "hubspot",
+     "jimdo",
+     "jogg",
+     "klap",
+     "langflow",
+     "lindy",
+     "liveportrait",
+     "lovable",
+     "meta",
+     "microsoftads",
+     "n8n",
+     "notebooklm",
+     "openclaw",
+     "opusclip",
+     "pencil",
+     "perplexity",
+     "piktochart",
+     "predis",
+     "relevance",
+     "replit",
+     "sadtalker",
+     "simplified",
+     "slidesgo",
+     "submagic",
+     "tiktok",
+     "v0",
+     "veed",
+     "venngage",
+     "vidnoz",
+     "visme",
+     "wisecut",
+     "wix"
+    ]
+   },
+   "grupos": [
+    {
+     "y": 0.79,
+     "lineas": [
+      "-Y si quieres toda la",
+      "lista completa"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-de herramientas para",
+      "automatizar"
+     ]
+    },
+    {
+     "y": 0.79,
+     "lineas": [
+      "-tu contenido o tu",
+      "negocio,"
+     ]
+    }
+   ],
+   "textoTema": "oscuro"
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "whip",
+   "cta": {
+    "en": 27.62,
+    "texto": "LISTA"
+   },
+   "dm": {
+    "en": 28.96,
+    "texto": "📩 Aquí está tu lista completa 🧰"
+   },
+   "grupos": [
+    {
+     "y": 0.6,
+     "lineas": [
+      "-escribe la palabra",
+      "lista|LISTA"
+     ]
+    },
+    {
+     "y": 0.6,
+     "lineas": [
+      "-y te envío toda la",
+      "lista completa"
+     ]
+    }
+   ],
+   "textoTema": "oscuro"
+  }
+ ],
+ "sfx": [
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 0.25,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 0.36,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 0.47,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 0.58,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 0.69,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 0.8,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 0.91,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 1.02,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 1.13,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 1.24,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.01,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.12,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.23,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.34,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.45,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.56,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.67,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.78,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 3.89,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 4.0,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 7.27,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 7.38,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 7.49,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 7.6,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 7.71,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 7.82,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 7.93,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 8.04,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 8.15,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 8.26,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 10.77,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 10.88,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 10.99,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 11.1,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 11.21,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 11.32,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 11.43,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 11.54,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 11.65,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 11.76,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 14.71,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 14.82,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 14.93,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 15.04,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 15.15,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 15.26,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 15.37,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 15.48,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 15.59,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 15.7,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 18.73,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 18.84,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 18.95,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 19.06,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 19.17,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 19.28,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 19.39,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 19.5,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 19.61,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/tic.mp3",
+   "en": 19.72,
+   "pico": 0.01,
+   "vol": 0.2
+  },
+  {
+   "f": "../../estilo-cine/sfx/listo.mp3",
+   "en": 28.96,
+   "pico": 0.05,
+   "vol": 0.4
+  }
+ ]
+}

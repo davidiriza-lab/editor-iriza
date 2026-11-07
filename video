@@ -1,0 +1,24 @@
+#!/bin/zsh
+# Comando principal del proyecto.
+#   ./video nuevo <nombre>          crea proyectos/<nombre> con un guion de ejemplo
+#   ./video <nombre>                genera la voz y el video completo
+#   ./video voz <nombre>            solo la voz (ElevenLabs)
+#   ./video render <nombre> [...]   solo el video (--stills 1.5,4 | --hasta 8)
+#   ./video transcribir <archivo|link>
+#   ./video logo chatgpt claude …   baja logos en PNG (--url <link> <nombre> para cualquier imagen)
+#   ./video clave [--ver|--borrar]  guarda la API key en el Llavero
+cd "$(dirname "$0")"
+set -e
+case "$1" in
+  nuevo)       [[ -z "$2" ]] && { echo "Uso: ./video nuevo <nombre>"; exit 1; }
+               d="proyectos/$2"; [[ -e "$d" ]] && { echo "Ya existe $d"; exit 1; }
+               mkdir -p "$d/capturas" "$d/iconos" && cp motor/guion_ejemplo.json "$d/guion.json"
+               echo "Listo: $d (edita guion.json y pon tus capturas en $d/capturas)" ;;
+  voz)         python3 motor/voz.py "proyectos/$2" ;;
+  render)      n="$2"; shift 2; node motor/render.mjs "proyectos/$n" "$@" ;;
+  transcribir) shift; python3 motor/transcribir.py "$@" ;;
+  logo)        shift; node motor/logos.mjs "$@" ;;
+  clave)       shift; ./motor/clave.sh "$@" ;;
+  ""|-h|ayuda) sed -n '2,9p' "$0" ;;
+  *)           python3 motor/voz.py "proyectos/$1" && node motor/render.mjs "proyectos/$1" ;;
+esac

@@ -1,0 +1,1188 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Editor Anuncios — capa de gráficos</title>
+<style>
+  @font-face { font-family: "Bebas Neue"; src: url("../fonts/bebas-neue.woff2"); }
+  @font-face { font-family: "League Gothic"; src: url("../fonts/league-gothic.woff2"); }
+  @font-face { font-family: "Oswald"; src: url("../fonts/oswald.woff2"); }
+  @font-face { font-family: "Instrument Serif"; font-style: italic; src: url("../fonts/instrument-serif-italic.woff2"); }
+  @font-face { font-family: "Instrument Serif"; font-style: normal; src: url("../fonts/instrument-serif.woff2"); }
+  @font-face { font-family: "Playfair Display"; font-style: italic; src: url("../fonts/playfair-italic.woff2"); }
+  @font-face { font-family: "Anton"; src: url("../fonts/anton.woff2"); }
+  @font-face { font-family: "DM Serif Display"; src: url("../fonts/dm-serif-display.woff2"); }
+  @font-face { font-family: "Inter"; src: url("../fonts/inter.woff2"); }
+  @font-face { font-family: "Montserrat"; src: url("../fonts/montserrat.woff2"); }
+  @font-face { font-family: "Space Grotesk"; src: url("../fonts/space-grotesk.woff2"); }
+  @font-face { font-family: "Poppins"; font-weight: 500; src: url("../fonts/Poppins-Medium.ttf"); }
+  @font-face { font-family: "Poppins"; font-weight: 600; src: url("../fonts/Poppins-SemiBold.ttf"); }
+  @font-face { font-family: "Poppins"; font-weight: 700; src: url("../fonts/Poppins-Bold.ttf"); }
+  @font-face { font-family: "Poppins"; font-weight: 800; src: url("../fonts/Poppins-ExtraBold.ttf"); }
+  :root { --navy: #274760; --sky: #BAD2DF; --white: #F4FBFC; --line: #2B4356; --paper: #F5F8FA; --ink: #0B1A26; }
+  html, body { margin: 0; background: transparent; }
+  #stage { position: relative; overflow: hidden; font-family: Poppins, sans-serif;
+           clip-path: polygon(2px 0, 100% 0, 100% 100%, 0 100%, 0 2px); /* esquina transparente: todos los PNG salen con alfa */ }
+  #stage > * { position: absolute; will-change: transform, opacity; }
+  .hide { display: none !important; }
+
+  .card { box-sizing: border-box; background: var(--navy); color: var(--white); box-shadow: 0 24px 60px rgba(10, 30, 45, .35); }
+  .kicker { font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--sky); }
+  .title { font-weight: 700; line-height: 1.1; overflow-wrap: anywhere; }
+  .sub { font-weight: 500; line-height: 1.28; color: var(--sky); }
+  .dash { height: 0; border-top: 3px dashed var(--sky); transform-origin: left; opacity: .7; }
+  .item { display: flex; align-items: center; font-weight: 600; line-height: 1.2; }
+  .ico { flex: none; border-radius: 50%; background: var(--sky); color: var(--navy); display: grid; place-items: center; }
+  .ico.x { background: #E9EEF2; color: #B4483E; }
+  .opt { border: 2px solid rgba(186,210,223,.35); font-weight: 600; line-height: 1.2; }
+  .opt.pick { background: var(--sky); color: var(--navy); border-color: var(--sky); }
+  .stamp { box-sizing: border-box; color: var(--navy); background: rgba(245,248,250,.95); font-weight: 800; line-height: 1.05;
+           text-transform: uppercase; text-align: center; box-shadow: 0 18px 40px rgba(10,30,45,.28); }
+  .stamp small { display: block; font-weight: 600; letter-spacing: .16em; color: var(--line); }
+  .chips { display: flex; flex-wrap: wrap; }
+  .chip { border-radius: 999px; background: var(--sky); color: var(--navy); font-weight: 700; display: flex; align-items: center; }
+  .name { box-sizing: border-box; background: #fff; color: var(--navy); box-shadow: 0 20px 50px rgba(10,30,45,.28); }
+  .name b { display: block; font-weight: 800; line-height: 1.1; }
+  .name span { display: block; font-weight: 500; color: var(--line); }
+  .bars { display: flex; align-items: flex-end; border-bottom: 3px solid rgba(186,210,223,.5); }
+  .bar { flex: 1; background: var(--sky); border-radius: 8px 8px 0 0; transform-origin: bottom; }
+  .axis { display: flex; justify-content: space-between; font-weight: 500; color: var(--sky); }
+  .big { font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+  .big small { font-weight: 700; color: var(--sky); letter-spacing: 0; }
+
+  .full { left: 0; top: 0; background: var(--paper); color: var(--navy); }
+  .full svg.deco { position: absolute; inset: 0; }
+  .h1 { font-weight: 800; line-height: 1.08; letter-spacing: -.01em; }
+  .hl { display: inline-block; background: var(--navy); color: var(--sky); }
+  .w { display: inline-block; }
+  .lbl { position: absolute; font-weight: 700; color: var(--navy); }
+  .lbl span { display: block; font-weight: 500; color: var(--line); }
+  .node { position: absolute; border-radius: 50%; background: var(--navy); color: var(--sky); display: grid; place-items: center;
+          font-weight: 800; box-shadow: 0 16px 40px rgba(10,30,45,.25); }
+  .block { position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
+           font-weight: 700; line-height: 1.12; box-sizing: border-box; }
+  .block span { font-weight: 500; }
+  .solid { background: var(--navy); color: var(--white); } .solid span { color: var(--sky); }
+  .ghost { border: 5px dashed var(--line); color: var(--navy); background: rgba(186,210,223,.25); }
+  .slab { position: absolute; background: var(--sky); color: var(--navy); font-weight: 800; display: grid; place-items: center;
+          box-shadow: 0 16px 40px rgba(10,30,45,.2); text-align: center; }
+  .row { position: absolute; display: flex; align-items: center; box-sizing: border-box; font-weight: 700; transform-origin: left; white-space: nowrap; }
+  .rowlbl { position: absolute; font-weight: 700; color: var(--navy); }
+  .note { position: absolute; font-weight: 500; color: var(--line); }
+
+  /* subtítulos */
+  #subs { left: 0; width: 100%; text-align: center; pointer-events: none; z-index: 5; }
+  #subs .line { display: inline-block; max-width: 88%; }
+  #subs .sw { display: inline-block; font-weight: 800; color: #fff; paint-order: stroke fill; margin: 0 .12em; padding: .02em .16em .06em;
+              border-radius: .22em; text-shadow: 0 .08em .3em rgba(0,0,0,.35); }
+  #subs .sw.key { color: var(--sky); }
+  #subs .sw.on { background: var(--navy); color: #fff; -webkit-text-stroke: 0 !important; text-shadow: none; }
+  #flash { left: 0; top: 0; background: #fff; z-index: 6; }
+  .full.dark { background: #0D1A24; color: #F4FBFC; }
+  .full.dark .h1, .full.dark .lbl, .full.dark .rowlbl { color: #F4FBFC; }
+  .full.dark .lbl span, .full.dark .note { color: #BAD2DF; }
+  .full.dark .node { background: #16324a; border: 4px solid #BAD2DF; }
+</style>
+</head>
+<body>
+<div id="stage"></div>
+<script src="personajes.js"></script>
+<script>
+// ---------- datos del proyecto ----------
+const qs = new URLSearchParams(location.search);
+const PROJ = qs.get("proj");
+function load(src) { return new Promise((ok, err) => { const s = document.createElement("script"); s.src = src; s.onload = ok; s.onerror = err; document.head.appendChild(s); }); }
+
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, a, b) => clamp((t - a) / (b - a));
+const eOut = x => 1 - Math.pow(1 - x, 3);
+const eInOut = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+const back = x => { const c1 = 1.7, c3 = c1 + 1; return x <= 0 ? 0 : 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const lerp = (a, b, x) => a + (b - a) * x;
+const css = (el, o) => Object.assign(el.style, o);
+
+const ICONS = {
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>', x: '<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+  house: '<path d="M3.5 11L12 4l8.5 7"/><path d="M5.5 9.5V20h13V9.5"/><path d="M10 20v-5h4v5"/>',
+  kids: '<circle cx="8" cy="7.5" r="3"/><circle cx="16.5" cy="10" r="2.3"/><path d="M3 20v-1.5a5 5 0 0 1 10 0V20"/><path d="M13 20v-1a3.6 3.6 0 0 1 7.2 0v1"/>',
+  company: '<path d="M4 20.5V4.5h10v16"/><path d="M14 9.5h6v11"/><path d="M2.5 20.5h19"/><path d="M7.5 8h3M7.5 12h3M7.5 16h3M17 13.5v.01M17 17v.01"/>',
+  target: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r=".8"/>',
+  trend: '<path d="M3 17l6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+  trophy: '<path d="M8 4h8v5a4 4 0 0 1-8 0z"/><path d="M8 6H5a3 3 0 0 0 3.2 4M16 6h3a3 3 0 0 1-3.2 4"/><path d="M12 13v4M8.5 20.5h7M9.5 17h5v3.5h-5z"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+  person: '<circle cx="12" cy="7.5" r="3.5"/><path d="M5 20.5v-1a7 7 0 0 1 14 0v1"/>',
+  heart: '<path d="M12 20s-7.5-4.6-7.5-10.2A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.5C19.5 15.4 12 20 12 20z"/><path d="M7 12.5h3l1.5-2.5 2 4 1.5-1.5h2"/>',
+  clock: '<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  cash: '<rect x="3" y="6.5" width="18" height="11" rx="2"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v.01M17.5 14.5v.01"/>',
+  doc: '<path d="M6 3.5h8l4 4v13H6z"/><path d="M14 3.5v4h4M9 12h6M9 15.5h6"/>',
+  box: '<path d="M3.5 8L12 3.5 20.5 8v8.5L12 21l-8.5-4.5z"/><path d="M3.5 8L12 12.5 20.5 8M12 12.5V21"/>',
+  car: '<path d="M4 16.5h16v-4l-2-4.5H6l-2 4.5z"/><circle cx="7.5" cy="16.5" r="1.8"/><circle cx="16.5" cy="16.5" r="1.8"/><path d="M4 12.5h16"/>',
+  plus: '<path d="M12 5v14M5 12h14"/>', bolt: '<path d="M13 3L5 13.5h6L10 21l8-10.5h-6z"/>',
+  calc: '<rect x="5" y="3" width="14" height="18" rx="2"/><path d="M8 7h8M8 11h2M12 11h2M16 11v.01M8 15h2M12 15h2M16 15v3"/>',
+  play: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5l5.5 3.5-5.5 3.5z"/>',
+  baby: '<circle cx="12" cy="8" r="4"/><path d="M6 20.5c0-3.6 2.7-6 6-6s6 2.4 6 6"/><path d="M10.5 8h.01M13.5 8h.01"/>',
+};
+const icon = (n, sw = 2) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" style="width:100%;height:100%">${ICONS[n] || ICONS.check}</svg>`;
+
+let W, H, V, U, F, stage, E, cues = [], chunks = [];
+
+// ---------- colocación ----------
+function place(el, c, w) {
+  w = w ?? (V ? 0.90 * W : 600 * U);
+  const x = V ? (W - w) / 2 : (c.side === "left" ? 56 * U : W - 56 * U - w);
+  const top = c.top ?? (V ? (c.zone === "mid" ? 0.48 * H : 0.045 * H) : 150 * U);
+  css(el, { left: x + "px", top: top + "px", width: w + "px", borderRadius: 28 * U * F + "px", padding: `${30 * U * F}px ${34 * U * F}px ${32 * U * F}px` });
+}
+const fs = px => px * U * F + "px";
+function sideIO(el, c, t) {
+  const a = eOut(prog(t, c.start, c.start + .4)), b = eInOut(prog(t, c.end - .32, c.end));
+  if (V) css(el, { opacity: a * (1 - b), filter: `blur(${((1 - a) + b) * 8 * U}px)`, transform: `translateY(${(1 - a) * -60 * U - b * 30 * U}px) scale(${lerp(.95, 1, a) * lerp(1, .98, b)})` });
+  else {
+    const dir = c.side === "left" ? -1 : 1;
+    css(el, { opacity: a * (1 - b), transform: `translate(${(1 - a) * 90 * U * dir}px, ${-b * 24 * U}px)` });
+  }
+}
+function fullIO(el, c, t) {
+  const inFx = c.inFx || "iris", outFx = c.hold ? "none" : (c.outFx || "slide");
+  const a = prog(t, c.start, c.start + (c.inDur || (inFx === "iris" ? .42 : .38))), b = prog(t, c.end - (c.outDur || .34), c.end);
+  const ox = (c.ox ?? .5) * W, oy = (c.oy ?? (V ? .30 : .31)) * H;
+  let clip = "none", tr = "", op = 1, bl = 0;
+  if (inFx === "iris" && a < 1) clip = `circle(${eInOut(a) * Math.hypot(W, H)}px at ${ox}px ${oy}px)`;
+  if (inFx === "slide" && a < 1) { const e = eInOut(a); tr = `translateY(${(1 - e) * 16}%) scale(${lerp(1.04, 1, e)})`; bl = (1 - e) * 16; op = clamp(e * 2); }
+  if (inFx === "fade" && a < 1) { op = eOut(a); bl = (1 - a) * 18; }
+  if (b > 0 && outFx === "slide") { const e = eInOut(b); tr = `translateY(${-e * 14}%) scale(${lerp(1, .98, e)})`; bl = Math.max(bl, e * 16); op = Math.min(op, 1 - e); }
+  if (b > 0 && outFx === "zoom") { const e = eInOut(b), zx = (c.zx ?? .5) * W, zy = (c.zy ?? .42) * H;
+    tr = `translate(${zx}px,${zy}px) scale(${lerp(1, 5, e * e)}) translate(${-zx}px,${-zy}px)`; op = 1 - clamp((e - .35) / .65); bl = e * 10; }
+  if (b > 0 && outFx === "fade") { op = 1 - b; bl = b * 16; }
+  css(el, { clipPath: clip, transform: tr, opacity: op, filter: bl > .3 ? `blur(${bl * U}px)` : "", transformOrigin: "0 0" });
+}
+// texto cinético palabra por palabra (desenfoque → nítido en 0.15 s), devuelve html + función para animarlo
+function kinetic(words, { size = 64, weight = 700, font = "Helvetica", color = "#fff", keyColor = "#BAD2DF", keyFont = "'Chamberi Headline'", align = "center" } = {}) {
+  return words.map(w => `<span class="w" data-at="${w.at}" style="font-family:${w.key ? keyFont : font};font-style:${w.key ? "italic" : "normal"};font-weight:${weight};
+    font-size:${size * U * (V ? 1 : .78) * (w.key ? 1.3 : 1)}px;color:${w.key ? keyColor : color};margin:0 ${size * .12 * U}px;display:inline-block">${w.t}</span>`).join("");
+}
+function animKinetic(root, t) { root.querySelectorAll("[data-at]").forEach(n => { const p = eOut(prog(t, +n.dataset.at - .05, +n.dataset.at + .25));
+  css(n, { opacity: p, filter: `blur(${(1 - p) * 7 * U}px)`, transform: `translateY(${(1 - p) * 14 * U}px) scale(${lerp(.92, 1, p)})` }); }); }
+// fondo vivo: anillos que respiran + partículas que derivan (para que nunca quede quieto)
+function liveBg(th, cx, cy, seed = 1) {
+  return `<rect width="${W}" height="${H}" fill="${th.bg}"/><g data-rings>${Array.from({ length: 9 }, (_, i) => `<circle cx="${cx}" cy="${cy}" r="${(1250 - i * 135) * U}" fill="#fff" fill-opacity="0.012"/>`).join("")}</g>
+    <g data-dust>${Array.from({ length: 26 }, (_, i) => `<circle r="${(1.5 + rnd(i * 7 + seed) * 2.5) * U}" fill="${th.acc}" opacity="${.15 + rnd(i * 3 + seed) * .35}" data-p="${i}"/>`).join("")}</g>`;
+}
+function animBg(el, t, seed = 1) {
+  const r = el.querySelector("[data-rings]"); if (r) r.setAttribute("transform", `translate(${W / 2} ${H * .45}) scale(${1 + .03 * Math.sin(t * .9)}) translate(${-W / 2} ${-H * .45})`);
+  el.querySelectorAll("[data-dust] circle").forEach(c => { const i = +c.dataset.p, sp = .02 + rnd(i + seed) * .03;
+    c.setAttribute("cx", ((rnd(i * 5 + seed) + t * sp * (rnd(i) > .5 ? 1 : -1)) % 1 + 1) % 1 * W); c.setAttribute("cy", ((rnd(i * 11 + seed) - t * sp * .6) % 1 + 1) % 1 * H); });
+}
+const pop = (el, t, at, { dy = 24, dx = 0, d = .45, sc = 0 } = {}) => {
+  const p = eOut(prog(t, at, at + d)), s = sc ? back(prog(t, at, at + d * 1.3)) : 1;
+  css(el, { opacity: p, transform: `translate(${(1 - p) * dx * U}px, ${(1 - p) * dy * U}px) scale(${sc ? lerp(sc, 1, s) : 1})` });
+};
+function dashedPath(d, { color = "var(--line)", w = 5, dash = "20 17" } = {}) {
+  const id = "m" + Math.random().toString(36).slice(2);
+  return {
+    html: `<svg class="deco" viewBox="0 0 ${W} ${H}"><defs><mask id="${id}" maskUnits="userSpaceOnUse" x="-200" y="-200" width="${W + 400}" height="${H + 400}">
+      <path d="${d}" fill="none" stroke="#fff" stroke-width="${30 * U}" stroke-linecap="round" data-mask/></mask></defs>
+      <path d="${d}" mask="url(#${id})" fill="none" stroke="${color}" stroke-width="${w * U}" stroke-linecap="round" stroke-dasharray="${dash.split(" ").map(x => x * U).join(" ")}" data-path/></svg>`,
+    bind(root) {
+      const m = root.querySelector("[data-mask]"), p = root.querySelector("[data-path]"), L = p.getTotalLength();
+      m.setAttribute("stroke-dasharray", `${L + 60} ${L + 60}`);
+      return { L, path: p, set: x => m.setAttribute("stroke-dashoffset", (L + 60) * (1 - x)) };
+    },
+  };
+}
+
+// ---------- componentes ----------
+const C = {};
+const head = c => `${c.kicker ? `<div class="kicker" style="font-size:${fs(21)};margin-bottom:${10 * U * F}px">${c.kicker}</div>` : ""}`;
+const items = (list, ic = "check") => list.map(i => `<div class="item" style="gap:${16 * U * F}px;margin-top:${18 * U * F}px;font-size:${fs(30)}">
+   <div class="ico ${i.icon === "x" ? "x" : ""}" style="width:${46 * U * F}px;height:${46 * U * F}px;padding:${10 * U * F}px;box-sizing:border-box">${icon(i.icon || ic, 2.6)}</div><div>${i.t}</div></div>`).join("");
+
+C.card = {
+  make(el, c) { el.className = "card"; place(el, c, c.w);
+    el.innerHTML = `${head(c)}<div class="title" style="font-size:${fs(c.size || 48)}">${c.title}</div>
+      <div class="dash" style="margin:${18 * U * F}px 0 ${4 * U}px"></div>${c.sub ? `<div class="sub" style="font-size:${fs(28)};margin-top:${12 * U * F}px">${c.sub}</div>` : ""}`; },
+  draw(el, c, t) { sideIO(el, c, t); el.querySelector(".dash").style.transform = `scaleX(${eOut(prog(t, c.start + .3, c.start + 1))})`;
+    const s = el.querySelector(".sub"); if (s) pop(s, t, c.subAt ?? c.start + .35); },
+};
+C.list = {
+  make(el, c) { el.className = "card"; place(el, c, c.w);
+    el.innerHTML = `${head(c)}${c.title ? `<div class="title" style="font-size:${fs(38)}">${c.title}</div>` : ""}${items(c.items)}`; },
+  draw(el, c, t) { sideIO(el, c, t); el.querySelectorAll(".item").forEach((n, k) => pop(n, t, c.items[k].at, { dx: V ? 0 : (c.side === "left" ? -30 : 30), dy: V ? 24 : 0 })); },
+};
+C.choice = {
+  make(el, c) { el.className = "card"; place(el, c, c.w);
+    el.innerHTML = `${head(c)}<div class="title" style="font-size:${fs(38)}">${c.question}</div>
+      ${c.options.map(o => `<div class="opt" style="margin-top:${16 * U * F}px;padding:${18 * U * F}px ${22 * U * F}px;border-radius:${18 * U * F}px;font-size:${fs(29)}">${o}</div>`).join("")}`; },
+  draw(el, c, t) { sideIO(el, c, t); const p = prog(t, c.pickAt ?? 1e9, (c.pickAt ?? 1e9) + .35);
+    el.querySelectorAll(".opt").forEach((n, k) => { pop(n, t, c.optAt[k]); n.classList.toggle("pick", k === c.pick && p > 0);
+      if (k === c.pick) n.style.transform += ` scale(${1 + .06 * Math.sin(p * Math.PI)})`; else if (p > 0) n.style.opacity = Math.min(+n.style.opacity, 1 - .55 * p); }); },
+};
+C.stamp = {
+  make(el, c) { el.className = "stamp"; const w = c.w ?? (V ? 0.72 * W : 420 * U); place(el, c, w);
+    css(el, { padding: `${18 * U * F}px ${30 * U * F}px`, border: `${6 * U * F}px solid var(--navy)`, borderRadius: 18 * U * F + "px", fontSize: fs(46) });
+    if (V && c.top == null) el.style.top = 0.07 * H + "px";
+    el.innerHTML = `${c.small ? `<small style="font-size:${fs(20)};margin-bottom:${6 * U}px">${c.small}</small>` : ""}${c.text}`; },
+  draw(el, c, t) { const p = prog(t, c.start, c.start + .28), b = prog(t, c.end - .3, c.end);
+    const s = lerp(2.4, 1, eOut(p)), sh = p >= 1 ? Math.sin((t - c.start) * 60) * 6 * U * Math.max(0, 1 - (t - c.start - .28) * 4) : 0;
+    css(el, { opacity: clamp(p * 3) * (1 - b), transform: `translate(${sh}px,0) rotate(${c.rot ?? -5}deg) scale(${s})` }); },
+};
+C.chips = {
+  make(el, c) { el.className = "card"; place(el, c, c.w);
+    el.innerHTML = `${head(c)}<div class="title" style="font-size:${fs(38)}">${c.title}</div>
+      <div class="chips" style="gap:${12 * U * F}px;margin-top:${18 * U * F}px">${c.chips.map(x => `<div class="chip" style="padding:${10 * U * F}px ${18 * U * F}px;font-size:${fs(28)}">${x.t}</div>`).join("")}</div>
+      ${c.sub ? `<div class="sub" style="font-size:${fs(28)};margin-top:${14 * U * F}px">${c.sub}</div>` : ""}`; },
+  draw(el, c, t) { sideIO(el, c, t); el.querySelectorAll(".chip").forEach((n, k) => pop(n, t, c.chips[k].at, { dy: 0, sc: .4 }));
+    const s = el.querySelector(".sub"); if (s) pop(s, t, c.subAt ?? c.start + .4); },
+};
+C.name = {
+  make(el, c) { el.className = "name"; const w = c.w ?? (V ? 0.74 * W : 520 * U); place(el, c, w);
+    css(el, { padding: `${22 * U * F}px ${30 * U * F}px ${24 * U * F}px ${34 * U * F}px`, borderRadius: 22 * U * F + "px", borderLeft: `${10 * U * F}px solid var(--navy)` });
+    el.innerHTML = `<b style="font-size:${fs(44)}">${c.title}</b><span style="font-size:${fs(24)};margin-top:${6 * U}px">${c.sub}</span>`; },
+  draw(el, c, t) { sideIO(el, c, t); pop(el.querySelector("span"), t, c.start + .35); },
+};
+C.bars = {
+  make(el, c) { el.className = "card"; place(el, c, c.w); const n = c.n || 8;
+    el.innerHTML = `${head(c)}<div class="title" style="font-size:${fs(36)}">${c.title}</div>
+      <div class="bars" style="gap:${12 * U * F}px;height:${170 * U * F}px;margin-top:${22 * U * F}px">${Array.from({ length: n }, (_, k) => `<div class="bar" style="height:${22 + k * (78 / (n - 1))}%"></div>`).join("")}</div>
+      <div class="axis" style="font-size:${fs(18)};margin-top:${8 * U}px"><span>${c.from || ""}</span><span>${c.to || ""}</span></div>${c.sub ? `<div class="sub" style="font-size:${fs(28)};margin-top:${12 * U * F}px">${c.sub}</div>` : ""}`; },
+  draw(el, c, t) { sideIO(el, c, t); el.querySelectorAll(".bar").forEach((n, k) => n.style.transform = `scaleY(${Math.max(0, back(prog(t, c.barsAt + k * .12, c.barsAt + k * .12 + .5)))})`);
+    const s = el.querySelector(".sub"); if (s) pop(s, t, c.subAt ?? c.barsAt + 1); },
+};
+C.stat = {
+  make(el, c) { el.className = "card"; place(el, c, c.w);
+    el.innerHTML = `${head(c)}<div class="big" style="font-size:${fs(120)}"><span>0</span><small style="font-size:${fs(42)};margin-left:${8 * U}px">${c.suffix || ""}</small></div>
+      <div class="dash" style="margin:${18 * U * F}px 0 ${4 * U}px"></div><div class="sub" style="font-size:${fs(28)};color:var(--white);font-weight:600;margin-top:${12 * U * F}px">${c.label}</div>`; },
+  draw(el, c, t) { sideIO(el, c, t); el.querySelector(".big span").textContent = Math.round(lerp(c.from || 0, c.value, eOut(prog(t, c.start + .15, c.start + 1.3))));
+    el.querySelector(".dash").style.transform = `scaleX(${eOut(prog(t, c.start + .4, c.start + 1.1))})`; pop(el.querySelector(".sub"), t, c.subAt ?? c.start + .5); },
+};
+C.headline = {
+  make(el, c) { el.className = "full"; css(el, { width: W + "px", height: H + "px" });
+    const yb = V ? 0.86 * H : 0.87 * H;
+    const deco = dashedPath(`M ${-0.03 * W} ${yb} C ${0.16 * W} ${yb - 0.06 * H}, ${0.22 * W} ${yb + 0.06 * H}, ${0.40 * W} ${yb} S ${0.73 * W} ${yb - 0.07 * H}, ${1.03 * W} ${yb + 0.02 * H}`);
+    const size = (c.size || (V ? 96 : 88)) * U;
+    el.innerHTML = deco.html + `<div style="position:absolute;left:${0.06 * W}px;right:${0.06 * W}px;top:${(c.top ?? (V ? 0.30 : 0.24)) * H}px;text-align:center">
+      ${c.lines.map(l => `<div class="h1" style="margin-bottom:${10 * U}px;font-size:${size}px">${l.hl ? `<span class="hl" style="padding:${4 * U}px ${26 * U}px ${10 * U}px;border-radius:${22 * U}px;margin-top:${14 * U}px">` : ""}${l.t.split(" ").map(w => `<span class="w">${w}</span>`).join(" ")}${l.hl ? "</span>" : ""}</div>`).join("")}</div>`;
+    el._deco = deco.bind(el); },
+  draw(el, c, t) { fullIO(el, c, t); el._deco.set(eInOut(prog(t, c.start + .2, c.end - .3))); el._deco.path.setAttribute("stroke-dashoffset", -(t - c.start) * 40 * U);
+    el.querySelectorAll(".h1").forEach((ln, k) => { const at = c.lines[k].at, hl = ln.querySelector(".hl");
+      ln.querySelectorAll(".w").forEach((w, j) => pop(w, t, at + j * .06, { dy: 40, d: .32 }));
+      if (hl) { const p = back(prog(t, at, at + .5)); css(hl, { transform: `scale(${lerp(.85, 1, Math.max(0, p))})`, opacity: clamp(p * 2) }); } }); },
+};
+// nodos sobre un camino punteado (pasos, línea de tiempo, íconos). En vertical los nodos van hacia abajo con etiqueta a un lado.
+C.path = {
+  make(el, c) { const dk = (E.theme === "marino"); el.className = "full" + (dk ? " dark" : ""); css(el, { width: W + "px", height: H + "px" });
+    const deco = dashedPath(c.d, { w: 6, color: dk ? "#BAD2DF" : "var(--line)" }); const ns = 136 * U * (V ? 1.15 : 1);
+    el.innerHTML = (dk ? `<svg class="deco" viewBox="0 0 ${W} ${H}">${liveBg(THEMES.marino, W / 2, H * .5, c.start)}</svg>` : "") + deco.html + (c.title ? `<div class="h1" style="position:absolute;left:${0.06 * W}px;right:${0.06 * W}px;top:${(c.titleTop ?? (V ? 0.08 * H : 150 * U))}px;text-align:center;font-size:${(c.titleSize || (V ? 76 : 68)) * U}px">${c.title}</div>` : "") +
+      c.nodes.map(n => `<div class="node" style="width:${ns}px;height:${ns}px;margin:${-ns / 2}px 0 0 ${-ns / 2}px;font-size:${46 * U}px">${n.icon ? `<div style="width:42%;height:42%">${icon(n.icon, 2)}</div>` : n.t}</div>
+        <div class="lbl" style="font-size:${(V ? 48 : 44) * U}px;width:${V ? 0.5 * W : 400 * U}px">${n.label}${n.sub ? `<span style="font-size:${(V ? 32 : 29) * U}px;margin-top:${4 * U}px">${n.sub}</span>` : ""}</div>`).join("") +
+      (c.note ? `<div class="note" style="left:0;right:0;text-align:center;top:${c.noteTop ?? 0.73 * H}px;font-size:${32 * U}px">${c.note}</div>` : "");
+    el._deco = deco.bind(el);
+    const P = el._deco.path, L = el._deco.L, pts = []; for (let l = 0; l <= L; l += 3) pts.push(P.getPointAtLength(l));
+    const near = (k, v) => pts.reduce((b, q) => Math.abs(q[k] - v) < Math.abs(b[k] - v) ? q : b);
+    const nodes = el.querySelectorAll(".node"), lbls = el.querySelectorAll(".lbl");
+    c.nodes.forEach((n, k) => { const q = n.y != null && n.x == null ? near("y", n.y) : near("x", n.x); const x = n.x ?? q.x, y = n.y ?? q.y;
+      css(nodes[k], { left: x + "px", top: y + "px" });
+      if (V) { const right = x < W / 2; css(lbls[k], { top: y - 34 * U + "px", left: right ? x + ns * .62 + "px" : "", right: right ? "" : (W - x + ns * .62) + "px", textAlign: right ? "left" : "right" }); }
+      else css(lbls[k], { top: y + ns * .62 + "px", left: x - 200 * U + "px", textAlign: "center" }); }); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); el._deco.set(eInOut(prog(t, c.drawFrom, c.drawTo))); el._deco.path.setAttribute("stroke-dashoffset", -(t - c.start) * 40 * U);
+    const nodes = el.querySelectorAll(".node"), lbls = el.querySelectorAll(".lbl");
+    c.nodes.forEach((n, k) => { pop(nodes[k], t, n.at, { dy: 0, sc: .2 }); pop(lbls[k], t, n.at + .15); });
+    const h = el.querySelector(".h1"); if (h) pop(h, t, c.start + .25, { dy: 40 }); const nt = el.querySelector(".note"); if (nt) pop(nt, t, c.noteAt); },
+};
+C.blocks = {
+  make(el, c) { el.className = "full"; css(el, { width: W + "px", height: H + "px" });
+    const L = V ? { title: 0.08 * H, a: [0.18 * W, 0.62 * H, 0.64 * W, 0.15 * H], b: [0.08 * W, 0.22 * H, 0.84 * W, 0.36 * H], f: [0.06 * W, 0.80 * H, 0.88 * W, 0.08 * H] }
+                : { title: 90 * U, a: [330 * U, (c.floor ? 470 : 520) * U, 500 * U, (c.floor ? 220 : 260) * U], b: [900 * U, (c.floor ? 250 : 260) * U, 690 * U, (c.floor ? 440 : 520) * U], f: [300 * U, 720 * U, 1320 * U, 110 * U] };
+    if (V && !c.floor) { L.a[1] = 0.66 * H; }
+    const box = r => `left:${r[0]}px;top:${r[1]}px;width:${r[2]}px;height:${r[3]}px`;
+    el.innerHTML = `${c.title ? `<div class="h1" style="position:absolute;left:${0.06 * W}px;right:${0.06 * W}px;top:${L.title}px;text-align:center;font-size:${(V ? 70 : 64) * U}px">${c.title}</div>` : ""}
+      <div class="block solid" data-a style="${box(L.a)};border-radius:${26 * U}px;padding:${20 * U}px;font-size:${(V ? 50 : 46) * U}px">${c.aText || "Patrimonio que ya existe"}<span style="font-size:${(V ? 30 : 28) * U}px;margin-top:${10 * U}px">${c.aSub || "Lo que hoy está en tus cuentas"}</span></div>
+      <div class="block ghost" data-b style="${box(L.b)};border-radius:${26 * U}px;padding:${20 * U}px;font-size:${(V ? 54 : 46) * U}px">${c.bText || "Patrimonio en proceso"}<span style="font-size:${(V ? 32 : 28) * U}px;margin-top:${10 * U}px">${c.bSub || "Depende de tus próximos años de trabajo"}</span></div>
+      ${c.floor ? `<div class="slab" data-f style="${box(L.f)};border-radius:${18 * U}px;font-size:${(V ? 46 : 40) * U}px">${c.floorText || "Piso patrimonial"}</div>` : ""}`; },
+  draw(el, c, t) { fullIO(el, c, t); const h = el.querySelector(".h1"); if (h) pop(h, t, c.start + .25, { dy: 40 });
+    pop(el.querySelector("[data-a]"), t, c.aAt, { dy: 60 }); pop(el.querySelector("[data-b]"), t, c.bAt, { dy: 60, sc: .7 });
+    const f = el.querySelector("[data-f]"); if (f) { const p = eOut(prog(t, c.floorAt, c.floorAt + .6)); css(f, { opacity: p, transform: `translateY(${(1 - p) * 120 * U}px) scaleX(${lerp(.6, 1, p)})` }); } },
+};
+C.plan = {
+  make(el, c) { el.className = "full"; css(el, { width: W + "px", height: H + "px" });
+    const X0 = V ? 0.08 * W : 330 * U, span = V ? 0.84 * W : 1430 * U, top0 = V ? 0.28 * H : 340 * U, step = V ? 0.13 * H : 112 * U, rh = (V ? 96 : 84) * U;
+    if (E.theme === "marino") el.classList.add("dark");
+    el.innerHTML = (E.theme === "marino" ? `<svg class="deco" viewBox="0 0 ${W} ${H}">${liveBg(THEMES.marino, W / 2, H * .5, c.start)}</svg>` : "") + `<div class="h1" style="position:absolute;left:${0.06 * W}px;right:${0.06 * W}px;top:${V ? 0.09 * H : 150 * U}px;text-align:center;font-size:${(V ? 72 : 68) * U}px">${c.title}</div>
+      ${c.rows.map((r, k) => `<div class="rowlbl" style="font-size:${(V ? 38 : 34) * U}px;${V ? `left:${X0}px;top:${top0 + k * step - 52 * U}px` : `left:${110 * U}px;width:${200 * U}px;top:${top0 + k * step + 20 * U}px`}">${r.label}</div>
+        <div class="row" data-row style="left:${X0}px;top:${top0 + k * step}px;height:${rh}px;width:${span * r.frac}px;border-radius:${16 * U}px;padding:0 ${26 * U}px;font-size:${(V ? 36 : 34) * U}px;background:${r.full ? "var(--navy)" : "var(--sky)"};color:${r.full ? "var(--sky)" : "var(--navy)"}">${r.t}</div>`).join("")}`; },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); pop(el.querySelector(".h1"), t, c.start + .25, { dy: 40 });
+    el.querySelectorAll("[data-row]").forEach((r, k) => { const p = eOut(prog(t, c.rows[k].at, c.rows[k].at + (c.rows[k].full ? 1.4 : .7))); css(r, { transform: `scaleX(${p})`, opacity: clamp(p * 4) }); });
+    el.querySelectorAll(".rowlbl").forEach((r, k) => pop(r, t, c.rows[k].at, { dx: -20, dy: 0 })); },
+};
+// camino punteado que llega al badge la marca del cliente (+ botón opcional)
+C.badge = {
+  make(el, c) { el.className = "full"; css(el, { width: W + "px", height: H + "px", background: "#fff" });
+    const bw = 870 * U, bh = 376 * U, cx = W / 2, cy = V ? 0.42 * H : 0.5 * H, bx = cx - bw / 2, by = cy - bh / 2, ax = cx + 145 * U;
+    const d1 = V ? `M ${-0.07 * W} ${0.95 * H} C ${0.25 * W} ${0.99 * H}, ${0.46 * W} ${0.88 * H}, ${0.36 * W} ${0.78 * H} C ${0.26 * W} ${0.68 * H}, ${0.05 * W} ${0.70 * H}, ${0.08 * W} ${0.56 * H} C ${0.11 * W} ${0.42 * H}, ${0.02 * W} ${0.24 * H}, ${0.24 * W} ${0.15 * H} C ${0.46 * W} ${0.06 * H}, ${0.86 * W} ${0.07 * H}, ${0.88 * W} ${0.17 * H} C ${0.90 * W} ${0.26 * H}, ${ax + 60 * U} ${0.24 * H}, ${ax} ${by}`
+                 : `M 90 940 C 180 1010, 420 930, 430 790 C 440 650, 250 640, 270 500 C 290 330, 520 250, 760 240 C 1010 230, 1260 70, 1500 110 C 1720 150, 1700 330, 1520 300 C 1330 270, 1120 250, ${ax} ${by}`;
+    const ex = cx - 200 * U, d2 = `M ${ex} ${by + bh} C ${ex - 8 * U} ${by + bh + 92 * U}, ${ex - 100 * U} ${by + bh + 152 * U}, ${ex - 150 * U} ${by + bh + 232 * U} C ${ex - 190 * U} ${by + bh + 300 * U}, ${ex - 220 * U} ${by + bh + 360 * U}, ${ex - 260 * U} ${by + bh + 440 * U}`;
+    const ctaY = by + bh + (V ? 150 : 72) * U, cw = (V ? 860 : 720) * U, ch = (V ? 130 : 100) * U, cf = (V ? 54 : 38) * U;
+    el._g = { bw, bh, cx, cy, bx, by, ax };
+    el.innerHTML = `<svg class="deco" viewBox="0 0 ${W} ${H}"><defs>
+      <mask id="bm1" maskUnits="userSpaceOnUse" x="-200" y="-200" width="${W + 400}" height="${H + 400}"><path data-m1 d="${d1}" fill="none" stroke="#fff" stroke-width="${24 * U}" stroke-linecap="round"/></mask>
+      <mask id="bm2" maskUnits="userSpaceOnUse" x="-200" y="-200" width="${W + 400}" height="${H + 400}"><path data-m2 d="${d2}" fill="none" stroke="#fff" stroke-width="${24 * U}" stroke-linecap="round"/></mask>
+      <clipPath id="bclip"><rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="${84 * U}"/></clipPath>
+      <radialGradient id="bhalo"><stop offset="0" stop-color="#274760" stop-opacity=".35"/><stop offset="1" stop-color="#274760" stop-opacity="0"/></radialGradient></defs>
+      <path data-p1 d="${d1}" mask="url(#bm1)" fill="none" stroke="#2B4356" stroke-width="${4 * U}" stroke-linecap="round" stroke-dasharray="${18 * U} ${16 * U}"/>
+      <path data-p2 d="${d2}" mask="url(#bm2)" ${c.cta ? 'visibility="hidden"' : ""} fill="none" stroke="#2B4356" stroke-width="${4 * U}" stroke-linecap="round" stroke-dasharray="${18 * U} ${16 * U}"/>
+      <circle data-r1 cx="${ax}" cy="${by}" r="0" fill="none" stroke="#274760" stroke-width="${3 * U}"/><circle data-r2 cx="${ax}" cy="${by}" r="0" fill="none" stroke="#274760" stroke-width="${2 * U}"/>
+      <g data-badge><rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="${84 * U}" fill="#274760"/>
+        <g clip-path="url(#bclip)"><text data-t1 x="${cx}" y="${cy + 17 * U}" text-anchor="middle" font-family="Poppins" font-weight="700" font-size="${140 * U}" fill="#BAD2DF">la marca del cliente</text>
+        <text data-t2 x="${cx}" y="${cy + 105 * U}" text-anchor="middle" font-family="Poppins" font-weight="600" font-size="${54 * U}" fill="#F4FBFC">Seguro de Vida</text></g></g>
+      ${c.cta ? `<g data-cta><rect x="${cx - cw / 2}" y="${ctaY}" width="${cw}" height="${ch}" rx="${ch / 2}" fill="#BAD2DF"/><text x="${cx}" y="${ctaY + ch / 2 + cf * 0.36}" text-anchor="middle" font-family="Poppins" font-weight="700" font-size="${cf}" fill="#274760">${c.cta} →</text></g>` : ""}
+      <g data-trav><circle r="${34 * U}" fill="url(#bhalo)"/><circle r="${12 * U}" fill="#274760"/><circle r="${5 * U}" fill="#BAD2DF"/></g></svg>`;
+    const q = s => el.querySelector(s); el._p1 = q("[data-p1]"); el._p2 = q("[data-p2]"); el._L1 = el._p1.getTotalLength(); el._L2 = el._p2.getTotalLength();
+    q("[data-m1]").setAttribute("stroke-dasharray", `${el._L1 + 40} ${el._L1 + 40}`); q("[data-m2]").setAttribute("stroke-dasharray", `${el._L2 + 40} ${el._L2 + 40}`); el._ctaY = ctaY; },
+  draw(el, c, t) { const q = s => el.querySelector(s), A = c.arrive, g = el._g, k = c.slow || 1; fullIO(el, c, t);
+    const pm = eInOut(prog(t, c.start + .05, A)); q("[data-m1]").setAttribute("stroke-dashoffset", (el._L1 + 40) * (1 - pm));
+    const pt = el._p1.getPointAtLength(el._L1 * pm), out = 1 - prog(t, A, A + .25);
+    q("[data-trav]").setAttribute("opacity", Math.min(prog(t, c.start, c.start + .2), out));
+    q("[data-trav]").setAttribute("transform", `translate(${pt.x} ${pt.y}) scale(${(1 + .08 * Math.sin(t * 14)) * (.6 + .4 * out)})`);
+    [["[data-r1]", 0], ["[data-r2]", .15 * k]].forEach(([s, d]) => { const r = prog(t, A + d, A + d + .9 * k); q(s).setAttribute("r", eOut(r) * 220 * U); q(s).setAttribute("opacity", r > 0 && r < 1 ? (1 - r) * .6 : 0); });
+    const pb = prog(t, A, A + .75 * k), s = pb === 0 ? 0 : (k > 1 ? eOut(pb) : back(pb));
+    q("[data-badge]").setAttribute("opacity", pb > 0 ? 1 : 0);
+    q("[data-badge]").setAttribute("transform", `translate(${lerp(g.ax, g.cx, eOut(pb))} ${lerp(g.by, g.cy, eOut(pb))}) scale(${s}) translate(${-g.cx} ${-g.cy})`);
+    const p1 = eOut(prog(t, A + .45 * k, A + 1.05 * k)), p2 = eOut(prog(t, A + .9 * k, A + 1.4 * k));
+    q("[data-t1]").setAttribute("transform", `translate(0 ${(1 - p1) * 170 * U})`); q("[data-t1]").setAttribute("letter-spacing", (1 - p1) * 30 * U);
+    q("[data-t2]").setAttribute("transform", `translate(0 ${(1 - p2) * 40 * U})`); q("[data-t2]").setAttribute("opacity", p2);
+    q("[data-m2]").setAttribute("stroke-dashoffset", c.cta ? el._L2 + 40 : (el._L2 + 40) * (1 - eInOut(prog(t, A + 1.2, A + 2.4))));
+    if (c.cta) { const p = (k > 1 ? eOut : back)(prog(t, c.ctaAt, c.ctaAt + .5 * k)), gg = q("[data-cta]"), my = el._ctaY + 60 * U; gg.setAttribute("opacity", clamp(p * 2));
+      gg.setAttribute("transform", `translate(${g.cx} ${my}) scale(${lerp(.6, 1, Math.max(0, p)) * (1 + .025 * Math.sin(Math.max(0, t - c.ctaAt - .5) * 5))}) translate(${-g.cx} ${-my})`); }
+    const march = -Math.max(0, t - A) * 40 * U; el._p1.setAttribute("stroke-dashoffset", march); el._p2.setAttribute("stroke-dashoffset", march); },
+};
+
+// ---------- escenas ilustradas (estilo referencias) ----------
+const THEMES = {
+  dark: { bg: "#161616", bg2: "#232323", acc: "#F0BE2C", accDark: "#5E4806", line: "#8C8C8C", text: "#F2F2F2", fig: "#BDBDBD" },
+  marino: { bg: "#0D1A24", bg2: "#173041", acc: "#BAD2DF", accDark: "#5E86A0", line: "#7F96A6", text: "#F4FBFC", fig: "#9FB3C2" },
+  palabras: { bg: "#171B19", bg2: "#1E2421", acc: "#AD7A50", accDark: "#6E4D33", line: "#8E958E", text: "#F4F0E8", fig: "#B5B9B2" },
+  carmin: { bg: "#140707", bg2: "#2B0B0C", acc: "#E3262B", accDark: "#7A1014", line: "#B98A8A", text: "#FFFFFF", fig: "#D9C6C6", ink: "#FFFFFF", card: "#1a0b0b", grad: ["#5a1214", "#140707"], brand: "TU MARCA" },
+};
+const rnd = k => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const ringsBg = (th, cx, cy) => `<rect width="${W}" height="${H}" fill="${th.bg}"/>` +
+  Array.from({ length: 9 }, (_, i) => `<circle cx="${cx}" cy="${cy}" r="${(1250 - i * 135) * U}" fill="#fff" fill-opacity="0.011"/>`).join("");
+
+// Batería que se llena con cables conectados (ref. 1)
+C.meter = {
+  make(el, c) {
+    el.className = "full"; css(el, { width: W + "px", height: H + "px" });
+    const th = THEMES[c.theme || E.theme || "dark"], cx = W / 2, cy = (c.cy || 0.46) * H, bw = 270 * U, bh = 445 * U;
+    const g = el._g = { th, cx, cy, bw, bh, x0: cx - bw / 2, y0: cy - bh / 2 };
+    const portY = [cy - bh / 2 + 0.50 * bh, cy - bh / 2 + 0.70 * bh];
+    el._cables = (c.cables || []).map((k, i) => {
+      const side = k.side, sameSide = c.cables.slice(0, i).filter(x => x.side === side).length;
+      const py = side === "bottom" ? cy + bh / 2 : portY[sameSide % 2];
+      const px = side === "left" ? g.x0 - 30 * U : side === "right" ? g.x0 + bw + 30 * U : cx;
+      return { ...k, px, py, i };
+    });
+    const grad = `<linearGradient id="mfill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${th.acc}"/><stop offset="1" stop-color="${th.accDark}"/></linearGradient>
+      <linearGradient id="mplug" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F5F5F5"/><stop offset=".5" stop-color="#C9C9C9"/><stop offset="1" stop-color="#8F8F8F"/></linearGradient>
+      <filter id="mglow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="${4 * U}" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      <clipPath id="minner"><rect x="${g.x0 + 9 * U}" y="${g.y0 + 9 * U}" width="${bw - 18 * U}" height="${bh - 18 * U}" rx="${28 * U}"/></clipPath>`;
+    el.innerHTML = `<svg class="deco" viewBox="0 0 ${W} ${H}"><defs>${grad}</defs>${ringsBg(th, cx, cy)}
+      <g data-wires></g><g data-pulses filter="url(#mglow)"></g>
+      ${el._cables.map(k => `<rect data-port${k.i} fill="#6E6E6E" rx="${4 * U}"/>`).join("")}
+      <g clip-path="url(#minner)"><path data-fill fill="url(#mfill)"/></g>
+      <rect x="${g.x0}" y="${g.y0}" width="${bw}" height="${bh}" rx="${38 * U}" fill="none" stroke="#8A8A8A" stroke-width="${7 * U}"/>
+      <rect x="${cx - 32 * U}" y="${g.y0 - 20 * U}" width="${64 * U}" height="${16 * U}" rx="${4 * U}" fill="url(#mplug)"/>
+      <text data-title x="${cx}" y="${g.y0 - 46 * U}" text-anchor="middle" font-family="Poppins" font-weight="700" font-size="${40 * U}" letter-spacing="${2 * U}">${c.title || "ÉXITO"}</text>
+      <text data-pct x="${cx}" y="${cy + 16 * U}" text-anchor="middle" font-family="Poppins" font-weight="700" font-size="${50 * U}" fill="#fff">0%</text>
+      <g data-plugs></g><g data-labels></g>
+      ${c.logo ? `<text x="${cx}" y="${0.80 * H}" text-anchor="middle" font-family="Poppins" font-weight="800" font-size="${40 * U}" fill="${th.acc}" opacity=".9">${c.logo}</text>` : ""}</svg>`;
+  },
+  draw(el, c, t) {
+    fullIO(el, c, t);
+    const g = el._g, th = g.th, q = s => el.querySelector(s);
+    let wires = "", plugs = "", labels = "", pulses = "";
+    const unplug = c.unplugAt ?? 1e9;
+    for (const k of el._cables) {
+      const fly = eOut(prog(t, k.at, k.at + .7)), back_ = eInOut(prog(t, unplug + k.i * .05, unplug + k.i * .05 + .8));
+      const slack = (1 - prog(t, k.at + .65, k.at + 1.35)) * (1 - fly * 0) + back_ * .8;   // flojo al volar, tenso al conectar
+      const dirX = k.side === "left" ? -1 : k.side === "right" ? 1 : 0, dirY = k.side === "bottom" ? 1 : 0;
+      const far = dirX ? (dirX < 0 ? -80 * U : W + 80 * U) : H + 80 * U;
+      // posición del enchufe: entra desde lejos hasta el puerto (y se retira al desconectar)
+      const off = (1 - fly + back_) * (dirX ? 520 * U : 600 * U);
+      const ex = k.px + dirX * (off + 26 * U), ey = k.py + dirY * (off + 26 * U);
+      // cable: de la orilla al enchufe, con ondulación que se apaga al tensarse
+      const N = 48; let d = "";
+      for (let i = 0; i <= N; i++) {
+        const u = i / N, env = Math.sin(Math.PI * u) * Math.pow(u, .3);
+        const amp = 46 * U * slack * env, wav = Math.sin(u * 9 + t * 7 + k.i * 1.7) + .5 * Math.sin(u * 17 - t * 5);
+        let x, y;
+        if (dirX) { x = lerp(far, ex + dirX * 24 * U, u); y = k.py + amp * wav; }
+        else { y = lerp(far, ey + 24 * U, u); x = k.px + amp * wav; }
+        d += (i ? "L" : "M") + x.toFixed(1) + " " + y.toFixed(1);
+      }
+      if (fly > 0) wires += `<path d="${d}" fill="none" stroke="${th.line}" stroke-width="${3 * U}" stroke-linecap="round"/>`;
+      // enchufe (cuerpo metálico + punta)
+      if (fly > 0) {
+        if (dirX) plugs += `<rect x="${dirX < 0 ? ex - 24 * U : ex - 26 * U}" y="${k.py - 12 * U}" width="${50 * U}" height="${24 * U}" rx="${5 * U}" fill="url(#mplug)"/>`;
+        else plugs += `<rect x="${k.px - 12 * U}" y="${ey - 26 * U}" width="${24 * U}" height="${50 * U}" rx="${5 * U}" fill="url(#mplug)"/>`;
+        const lo = clamp(fly * 1.4 - .3) * (1 - back_);
+        if (dirX < 0) labels += `<text x="${ex - 60 * U}" y="${k.py - 24 * U}" text-anchor="end" font-family="Poppins" font-weight="500" font-size="${30 * U}" fill="${th.text}" opacity="${lo}">${k.label}</text>`;
+        else if (dirX > 0) labels += `<text x="${ex + 60 * U}" y="${k.py - 24 * U}" text-anchor="start" font-family="Poppins" font-weight="500" font-size="${30 * U}" fill="${th.text}" opacity="${lo}">${k.label}</text>`;
+        else labels += `<text transform="translate(${k.px - 22 * U} ${ey + 70 * U}) rotate(-90)" text-anchor="end" font-family="Poppins" font-weight="500" font-size="${30 * U}" fill="${th.text}" opacity="${lo}">${k.label}</text>`;
+      }
+      // pulsos de energía hacia la batería
+      const p0 = k.at + 1.2;
+      if (t > p0 && t < unplug) {
+        const len = dirX ? Math.abs(far - (k.px + dirX * 50 * U)) : far - (k.py + 50 * U), sp = 640 * U;
+        for (let n = 0; n < 60; n++) {
+          const s0 = p0 + n * .34 + rnd(n + k.i * 31) * .22; if (s0 > t) break;
+          const dd = (t - s0) * sp; if (dd > len) continue;
+          const x = dirX ? far - dirX * dd : k.px, y = dirX ? k.py : far - dd;
+          pulses += dirX ? `<rect x="${x - 11 * U}" y="${y - 5 * U}" width="${22 * U}" height="${10 * U}" rx="${5 * U}" fill="${th.acc}"/>`
+                         : `<rect x="${x - 5 * U}" y="${y - 11 * U}" width="${10 * U}" height="${22 * U}" rx="${5 * U}" fill="${th.acc}"/>`;
+        }
+      }
+      const port = q(`[data-port${k.i}]`);
+      if (dirX) { port.setAttribute("x", dirX < 0 ? k.px - 4 * U : k.px - 26 * U); port.setAttribute("y", k.py - 15 * U); port.setAttribute("width", 30 * U); port.setAttribute("height", 30 * U); }
+      else { port.setAttribute("x", k.px - 15 * U); port.setAttribute("y", k.py - 4 * U); port.setAttribute("width", 30 * U); port.setAttribute("height", 30 * U); }
+    }
+    q("[data-wires]").innerHTML = wires; q("[data-plugs]").innerHTML = plugs; q("[data-labels]").innerHTML = labels; q("[data-pulses]").innerHTML = pulses;
+    // líquido con ola + porcentaje
+    const L = eInOut(prog(t, c.fillFrom, c.fillTo)), fade = 1 - prog(t, unplug + .3, unplug + 1.1);
+    const top = g.y0 + g.bh - L * g.bh, amp = (L > 0 && L < 1 ? 12 : 6) * U;
+    let f = `M ${g.x0} ${g.y0 + g.bh + 10 * U}`;
+    for (let i = 0; i <= 30; i++) { const x = g.x0 + g.bw * i / 30; f += ` L ${x} ${top + amp * Math.sin(i / 30 * 7 + t * 4) + amp * .5 * Math.sin(i / 30 * 13 - t * 3)}`; }
+    f += ` L ${g.x0 + g.bw} ${g.y0 + g.bh + 10 * U} Z`;
+    q("[data-fill]").setAttribute("d", L > 0 ? f : ""); q("[data-fill]").setAttribute("opacity", fade);
+    q("[data-pct]").textContent = Math.round(L * 100) + "%";
+    q("[data-title]").setAttribute("fill", L > .02 && fade > .5 ? th.acc : "#D0D0D0");
+  },
+};
+
+// Figura de palitos (cinemática simple). pose: run | walk | stand | cheer
+function stick(x, y, h, t, pose, ph = 0, col = "#F0BE2C", sw = 0.13) {
+  const f = pose === "walk" ? 1.6 : 2.3, p = (t * f + ph) * Math.PI * 2;
+  const bob = pose === "run" ? -Math.abs(Math.sin(p)) * .05 : pose === "walk" ? -Math.abs(Math.sin(p)) * .02 : pose === "cheer" ? -Math.abs(Math.sin(p * .5)) * .04 : 0;
+  const lean = pose === "run" ? .3 : pose === "walk" ? .06 : 0;
+  const hip = [0, -.46 + bob], sh = [Math.sin(lean) * .34, hip[1] - Math.cos(lean) * .34], head = [sh[0] + Math.sin(lean) * .17, sh[1] - .17];
+  const leg = (a, k) => { const kn = [hip[0] + Math.sin(a) * .23, hip[1] + Math.cos(a) * .23]; const ft = [kn[0] + Math.sin(a - k) * .24, kn[1] + Math.cos(a - k) * .24]; return `M${hip} L${kn} L${ft}`; };
+  const arm = (a, k) => { const el_ = [sh[0] + Math.sin(a) * .17, sh[1] + Math.cos(a) * .17]; const hd = [el_[0] + Math.sin(a + k) * .16, el_[1] + Math.cos(a + k) * .16]; return `M${sh} L${el_} L${hd}`; };
+  let legs, arms;
+  if (pose === "run") {
+    legs = leg(.95 * Math.sin(p) + .1, .2 + 1.35 * Math.max(0, Math.sin(p - 1.2))) + leg(.95 * Math.sin(p + Math.PI) + .1, .2 + 1.35 * Math.max(0, Math.sin(p + Math.PI - 1.2)));
+    arms = arm(-1.0 * Math.sin(p) + .15, 1.6) + arm(-1.0 * Math.sin(p + Math.PI) + .15, 1.6);
+  } else if (pose === "walk") {
+    legs = leg(.4 * Math.sin(p), .1 + .4 * Math.max(0, Math.sin(p - 1.2))) + leg(.4 * Math.sin(p + Math.PI), .1 + .4 * Math.max(0, Math.sin(p + Math.PI - 1.2)));
+    arms = arm(-.35 * Math.sin(p), .3) + arm(-.35 * Math.sin(p + Math.PI), .3);
+  } else if (pose === "cheer") {
+    legs = leg(.12, 0) + leg(-.12, 0); const w = .25 * Math.sin(p);
+    arms = arm(Math.PI - .55 + w, -.15) + arm(-Math.PI + .55 - w, .15);
+  } else { legs = leg(.1, 0) + leg(-.1, 0); arms = arm(.18, 0) + arm(-.18, 0); }
+  return `<g transform="translate(${x} ${y}) scale(${h})"><path d="${legs}${arms}M${sh} L${hip}" fill="none" stroke="${col}" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="${head[0]}" cy="${head[1]}" r=".115" fill="${col}"/></g>`;
+}
+
+// Silueta de persona en la multitud: cabeza + torso relleno + brazos (arriba celebrando o abajo)
+function fan(x, y, h, t, ph, armsUp) {
+  const p = (t * 1.6 + ph) * Math.PI * 2, bob = -Math.abs(Math.sin(p * .5)) * .035, w = armsUp ? .22 * Math.sin(p) : 0;
+  const sy = -.66 + bob, arm = (sg) => armsUp
+    ? `M${sg * .15} ${sy + .03} L${sg * (.24 + .05 * Math.sin(p + sg))} ${sy - .2 - w * sg * .3} L${sg * (.27 + .06 * Math.sin(p + sg))} ${sy - .42 - w * sg * .4}`
+    : `M${sg * .16} ${sy + .04} L${sg * .2} ${sy + .32}`;
+  return `<g transform="translate(${x} ${y}) scale(${h})">
+    <path d="M -.17 ${sy + .04} Q -.19 ${sy - .02} -.11 ${sy - .03} L .11 ${sy - .03} Q .19 ${sy - .02} .17 ${sy + .04} L .14 0 L -.14 0 Z" fill="url(#rgrey)"/>
+    <path d="${arm(-1)}${arm(1)}" fill="none" stroke="url(#rgrey)" stroke-width=".1" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="0" cy="${sy - .15}" r=".12" fill="#B5B5B5"/></g>`;
+}
+
+// Corredor + multitud que llega y se va (ref. 2)
+C.runner = {
+  make(el, c) {
+    el.className = "full"; css(el, { width: W + "px", height: H + "px" });
+    const th = THEMES[c.theme || E.theme || "dark"];
+    el._th = th;
+    // multitud en perspectiva: filas atrás (chicas, arriba) a adelante (grandes, abajo)
+    const crowd = []; const rows = c.rows || 9;
+    const rows_ = c.rows || 13;
+    for (let r = 0; r < rows_; r++) {
+      const v = r / (rows_ - 1), y = lerp(0.19, 0.47, v) * H, hgt = lerp(50, 104, v) * U, wd = lerp(110, 265, v) * U, n = Math.round(lerp(7, 13, v));
+      for (let i = 0; i < n; i++) crowd.push({ x: (i / (n - 1) - .5) * wd * 2 + (rnd(r * 13 + i) - .5) * 44 * U, y: y + (rnd(r * 7 + i) - .5) * 26 * U,
+        h: hgt * lerp(.88, 1.1, rnd(r * 17 + i * 3)), ph: rnd(r * 3 + i * 5), arms: rnd(r * 29 + i * 11) < .7 });
+    }
+    el._crowd = crowd;
+    el.innerHTML = `<svg class="deco" viewBox="0 0 ${W} ${H}"><defs>
+      <linearGradient id="rgold" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${th.acc}"/><stop offset="1" stop-color="${th.accDark}"/></linearGradient>
+      <linearGradient id="rgrey" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#C4C4C4"/><stop offset="1" stop-color="#555555"/></linearGradient>
+      <linearGradient id="rfade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset=".6" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <mask id="rmask" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}"><rect x="0" y="${(c.floor || .585) * H}" width="${W}" height="${0.2 * H}" fill="url(#rfade)"/></mask>
+      <filter id="rblur" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="${4.5 * U}"/></filter></defs>
+      <rect width="${W}" height="${H}" fill="${th.bg}"/>
+      <g data-crowd filter="url(#rblur)" opacity=".85"></g>
+      <text data-clbl text-anchor="middle" font-family="Poppins" font-weight="500" font-size="${44 * U}" fill="${th.acc}">${c.crowdLabel || ""}</text>
+      <text data-hlbl x="${W / 2}" text-anchor="middle" font-family="Poppins" font-weight="500" font-size="${34 * U}" fill="${th.acc}">${c.heroLabel || ""}</text>
+      <g data-hero></g><g data-refl mask="url(#rmask)"></g>
+      ${c.logo ? `<text x="${W / 2}" y="${0.83 * H}" text-anchor="middle" font-family="Poppins" font-weight="800" font-size="${40 * U}" fill="${th.acc}" opacity=".9">${c.logo}</text>` : ""}</svg>`;
+  },
+  draw(el, c, t) {
+    fullIO(el, c, t);
+    const q = s => el.querySelector(s), th = el._th, fy = (c.floor || .585) * H, hh = (c.heroSize || 175) * U, hx = W / 2 - 10 * U;
+    const hero = stick(hx, fy, hh, t, c.pose || "run", 0, "url(#rgold)", .17);
+    q("[data-hero]").innerHTML = hero;
+    q("[data-refl]").innerHTML = `<g transform="translate(0 ${2 * fy}) scale(1 -1)" opacity=".55">${hero}</g>`;
+    q("[data-hlbl]").setAttribute("y", fy - hh - 34 * U);
+    // la multitud entra desde la derecha y sale por la izquierda
+    const a = eOut(prog(t, c.crowdIn, c.crowdIn + 1.1)), b = eInOut(prog(t, c.crowdOut, c.crowdOut + 1.1));
+    const dx = (1 - a) * (W * .95) - b * (W * .95), cxw = W / 2 + 40 * U + dx;
+    const on = t >= c.crowdIn && t <= c.crowdOut + 1.1;
+    q("[data-crowd]").innerHTML = on ? el._crowd.map(p => fan(cxw + p.x, p.y + p.h, p.h, t, p.ph, p.arms)).join("") : "";
+    const lb = q("[data-clbl]"); lb.setAttribute("x", cxw); lb.setAttribute("y", 0.375 * H); lb.setAttribute("opacity", on ? 1 : 0);
+  },
+};
+
+// Escena con personajes (monitos de palito) y línea de tiempo por actor.
+// actor: { label, x (0..1), y (piso 0..1), h (px a 1080), facing, color: "acc"|"grey", kid, phase, keys: [{ at, pose, x }] }
+C.scene = {
+  make(el, c) {
+    el.className = "full"; css(el, { width: W + "px", height: H + "px" });
+    const th = el._th = THEMES[c.theme || E.theme || "dark"];
+    el.innerHTML = `<svg class="deco" viewBox="0 0 ${W} ${H}"><defs>
+      <linearGradient id="sfade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset=".55" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <filter id="pblur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${4 * U}"/></filter></defs>
+      ${c.bg === false ? "" : ringsBg(th, W / 2, (c.floor || .6) * H - 150 * U)}
+      <g data-refl></g><g data-actors></g><g data-texts></g></svg>`;
+    if (c.reflection !== false) {
+      const fy = (c.floor || .6) * H;
+      el.querySelector("defs").insertAdjacentHTML("beforeend", `<mask id="smask" maskUnits="userSpaceOnUse" x="0" y="0" width="${W}" height="${H}"><rect x="0" y="${fy}" width="${W}" height="${0.22 * H}" fill="url(#sfade)"/></mask>`);
+      el.querySelector("[data-refl]").setAttribute("mask", "url(#smask)");
+    }
+  },
+  draw(el, c, t) {
+    fullIO(el, c, t);
+    const th = el._th, PJ = window.PERSONAJES, lt = t - c.start;
+    let actors = "", texts = "";
+    for (const a of c.actors || []) {
+      const ks = a.keys || [{ at: 0, pose: a.pose || "stand" }];
+      let i = 0; while (i + 1 < ks.length && lt >= ks[i + 1].at) i++;
+      const k = ks[i], prev = ks[i - 1];
+      // posición: se mueve hacia la x de la siguiente clave a velocidad constante (con arranque/frenado suaves)
+      let xf = k.x ?? (prev && prev.x) ?? a.x ?? .5;
+      const nx = ks[i + 1];
+      if (nx && nx.x != null && k.x != null) { const q = clamp((lt - k.at) / (nx.at - k.at)); xf = lerp(k.x, nx.x, .55 * q + .45 * q * q * (3 - 2 * q)); }
+      if (lt < ks[0].at) continue;
+      const blendX = prev ? prog(lt, k.at, k.at + (k.blend ?? .3)) : 1;
+      const fy = (a.y ?? c.floor ?? .6) * H, h = (a.h || 300) * U;
+      const o = { x: xf * W, y: fy, h, t: lt, phase: a.phase || 0, facing: a.facing || 1, color: a.color || "acc", kid: a.kid, blur: a.blur, prop: k.prop || a.prop,
+                  pose: k.pose, blend: blendX < 1 ? { from: prev.pose, to: k.pose, x: blendX } : null, opacity: a.fadeIn ? prog(lt, ks[0].at, ks[0].at + .4) : 1 };
+      const fig = PJ.draw(o, th);
+      actors += fig;
+      if (c.reflection !== false && (a.y == null)) el._refl = (el._refl || "") + `<g transform="translate(0 ${2 * fy}) scale(1 -1)" opacity=".5">${fig}</g>`;
+      if (a.label) texts += `<text x="${xf * W}" y="${fy - h * (a.labelUp || 1.3)}" text-anchor="middle" font-family="Poppins" font-weight="500" font-size="${(a.labelSize || 34) * U}" fill="${a.color === "grey" ? "#BDBDBD" : th.acc}" opacity="${a.labelAt ? prog(lt, a.labelAt, a.labelAt + .4) : 1}">${a.label}</text>`;
+    }
+    for (const x of c.texts || []) {
+      const p = eOut(prog(lt, x.at, x.at + .5)), b = x.out ? prog(lt, x.out, x.out + .4) : 0;
+      texts += `<text x="${x.x * W}" y="${x.y * H + (1 - p) * 20 * U}" text-anchor="middle" font-family="Poppins" font-weight="${x.weight || 600}" font-size="${(x.size || 44) * U}" fill="${x.color || (x.acc ? th.acc : th.text)}" opacity="${p * (1 - b)}">${x.t}</text>`;
+    }
+    el.querySelector("[data-actors]").innerHTML = actors; el.querySelector("[data-texts]").innerHTML = texts;
+    el.querySelector("[data-refl]").innerHTML = el._refl || ""; el._refl = "";
+  },
+};
+
+// ================= Escenas del anuncio "A los 40" (reutilizables) =================
+const TH = c => THEMES[c.theme || E.theme || "marino"];
+const fullBase = (el, c, extra = "") => { el.className = "full"; css(el, { width: W + "px", height: H + "px" }); el._th = TH(c);
+  el.innerHTML = `<svg class="deco" viewBox="0 0 ${W} ${H}">${liveBg(el._th, W / 2, H * .45, c.start)}${extra}</svg>`; return el.querySelector("svg"); };
+const htmlLayer = (el, inner) => { const d = document.createElement("div"); css(d, { position: "absolute", inset: 0 }); d.innerHTML = inner; el.appendChild(d); return d; };
+
+// Contador con anillo (gancho): el anillo se llena mientras el número sube; palabras debajo al ritmo de la voz
+C.counter = {
+  make(el, c) { const th = TH(c), cx = W / 2, cy = (c.cy || .40) * H, R = (c.r || 230) * U;
+    fullBase(el, c, `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="#fff" stroke-opacity=".1" stroke-width="${18 * U}"/>
+      <circle data-arc cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${th.acc}" stroke-width="${18 * U}" stroke-linecap="round" transform="rotate(-90 ${cx} ${cy})" stroke-dasharray="0 9999" style="filter:drop-shadow(0 0 ${14 * U}px ${th.acc})"/>
+      <g data-orb>${Array.from({ length: 10 }, (_, i) => `<circle r="${4 * U}" fill="${th.acc}" opacity="${.3 + .07 * i}" data-o="${i}"/>`).join("")}</g>`);
+    el._g = { cx, cy, R };
+    htmlLayer(el, `<div data-num style="position:absolute;left:0;right:0;top:${cy - 130 * U}px;text-align:center;font:800 ${210 * U}px/1 Helvetica;color:#fff;letter-spacing:-.04em">0</div>
+      <div data-lbl style="position:absolute;left:0;right:0;top:${cy + 92 * U}px;text-align:center;font:700 ${40 * U}px Helvetica;letter-spacing:.32em;color:${th.acc}">${c.label || ""}</div>
+      <div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${cy + R + 90 * U}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 90, keyColor: th.acc })}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const g = el._g, q = s => el.querySelector(s);
+    const p = eInOut(prog(t, c.countFrom, c.countTo)), L = 2 * Math.PI * g.R;
+    q("[data-arc]").setAttribute("stroke-dasharray", `${p * L} ${L}`);
+    q("[data-num]").textContent = Math.round(p * c.value);
+    css(q("[data-num]"), { transform: `scale(${1 + .06 * Math.sin(prog(t, c.countTo - .05, c.countTo + .25) * Math.PI)})` });
+    pop(q("[data-lbl]"), t, c.labelAt, { dy: 20, d: .2 });
+    el.querySelectorAll("[data-o]").forEach(o => { const i = +o.dataset.o, ang = -Math.PI / 2 + p * 2 * Math.PI - i * .045;
+      o.setAttribute("cx", g.cx + Math.cos(ang) * g.R); o.setAttribute("cy", g.cy + Math.sin(ang) * g.R); o.setAttribute("opacity", p > 0 && p < 1 ? .2 + i * .08 : 0); });
+    animKinetic(el, t); },
+};
+
+// Píldoras que se transforman (estilo ref9) sobre la persona: una se tacha y la siguiente toma su lugar
+C.pills = {
+  make(el, c) { const th = THEMES[E.theme] || THEMES.marino; css(el, { left: 0, top: (c.y || .12) * H + "px", width: W + "px" });
+    el.innerHTML = c.items.map((it, i) => `<div data-pill="${i}" style="position:absolute;left:0;right:0;text-align:center">
+      <span style="display:inline-block;position:relative;padding:${22 * U}px ${44 * U}px;border-radius:999px;font:${it.fill ? 800 : 700} ${(it.size || 54) * U}px/1.15 Helvetica;letter-spacing:-.02em;max-width:${.86 * W}px;
+        ${it.fill ? `background:${th.acc};color:${th.ink || "#10202c"};box-shadow:0 ${18 * U}px ${50 * U}px rgba(0,0,0,.35)` : `background:rgba(10,22,32,.55);color:#fff;border:${4 * U}px solid rgba(255,255,255,.85);backdrop-filter:blur(6px)`}">${it.t}
+        ${it.strikeAt ? `<i data-strike style="position:absolute;left:6%;right:6%;top:50%;height:${8 * U}px;border-radius:9px;background:#FF4A3D;transform-origin:left;transform:scaleX(0)"></i>` : ""}</span></div>`).join(""); },
+  draw(el, c, t) { el.querySelectorAll("[data-pill]").forEach((n, i) => { const it = c.items[i], nx = c.items[i + 1], end = nx ? nx.at : c.end;
+      const a = prog(t, it.at, it.at + .38), b = prog(t, end - .05, end + .28), e = eOut(a);
+      css(n, { opacity: clamp(a * 2) * (1 - b), filter: `blur(${((1 - e) + b) * 9 * U}px)`, transform: `translateY(${(1 - e) * 30 * U - b * 24 * U}px) scale(${lerp(.85, 1, e) * lerp(1, .9, b)})` });
+      const st = n.querySelector("[data-strike]"); if (st) st.style.transform = `scaleX(${eOut(prog(t, it.strikeAt, it.strikeAt + .2))})`;
+      if (it.fill && a >= 1) n.firstElementChild.style.transform = `scale(${1 + .012 * Math.sin((t - it.at) * 3)})`; }); },
+};
+
+// Una persona sostiene a su familia sobre una plataforma; si deja de producir, todo cae
+C.support = {
+  make(el, c) { fullBase(el, c, `<g data-fig></g><g data-slab></g><g data-fam></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.10 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 86, keyColor: TH(c).acc })}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, fy = (V ? .84 : .93) * H, hh = (V ? 470 : 300) * U, x0 = W / 2;
+    const drop = c.dropAt != null ? prog(t, c.dropAt, c.dropAt + .7) : 0, de = eInOut(drop), save = c.saveAt != null ? eInOut(prog(t, c.saveAt, c.saveAt + .6)) : 0;
+    const pose = drop > 0 ? { blend: { from: "hold", to: "kneel", x: clamp(drop * 1.4) } } : save > 0 ? { blend: { from: "strain", to: "stand", x: save } } : { pose: c.saveAt != null ? "strain" : "hold" };
+    const shake = drop > 0 || save > 0 ? 0 : Math.sin(t * 38) * 1.6 * U * prog(t, c.start + .3, c.dropAt ?? c.saveAt ?? c.end);
+    el.querySelector("[data-fig]").innerHTML = PJ.draw({ x: x0 + shake, y: fy, h: hh, t: t - c.start, facing: 1, color: "acc", ...pose }, th);
+    // plataforma sobre las manos; al caer baja y se inclina
+    const sy = fy - hh * 1.1 + de * hh * .62, ang = de * 16, sw = (V ? 760 : 560) * U;
+    const slab = `<g transform="translate(${x0} ${sy}) rotate(${ang})"><rect x="${-sw / 2}" y="${-12 * U}" width="${sw}" height="${24 * U}" rx="${12 * U}" fill="${th.acc}" opacity=".9"/></g>`;
+    // columnas que suben a cargar la plataforma (variante "saveAt")
+    const cols = save > 0 ? [-1, 1].map(sg => { const ch = (fy - sy - 12 * U) * save, cx = x0 + sg * sw * .36;
+      return `<rect x="${cx - 34 * U}" y="${fy - ch}" width="${68 * U}" height="${ch}" rx="${10 * U}" fill="${th.acc}" opacity=".85"/>`; }).join("") : "";
+    el.querySelector("[data-slab]").innerHTML = cols + slab;
+    // familia encima (gris), cae con la plataforma y se asusta
+    const fs_ = V ? 1 : .68, fam = [{ dx: -240, h: 270 }, { dx: -70, h: 175, kid: 1 }, { dx: 85, h: 160, kid: 1 }, { dx: 245, h: 275 }].map(f => ({ ...f, dx: f.dx * fs_, h: f.h * fs_ }));
+    const pa = prog(t, c.famAt, c.famAt + .25);
+    el.querySelector("[data-fam]").innerHTML = `<g transform="translate(${x0} ${sy}) rotate(${ang})" opacity="${pa}">` + fam.map((f, i) => {
+      const d = PJ.draw({ x: f.dx * U, y: -12 * U + (1 - eOut(prog(t, c.famAt + i * .05, c.famAt + i * .05 + .25))) * -60 * U, h: f.h * U, t: t - c.start + i * .3, color: "grey", kid: f.kid,
+        pose: drop > .2 ? "worried" : save > .5 ? "cheer" : (i % 2 ? "wave" : "stand"), facing: i < 2 ? 1 : -1 }, th);
+      return `<g transform="translate(${drop * f.dx * .25 * U} ${drop * drop * (40 + i * 25) * U})">${d}</g>`; }).join("") + `</g>`;
+    animKinetic(el, t); },
+};
+
+// Torre en construcción: un monito sube bloques; la parte que falta está punteada
+C.build = {
+  make(el, c) { fullBase(el, c, `<g data-tower></g><g data-fly></g><g data-fig></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.09 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 86, keyColor: TH(c).acc })}</div>
+      <div data-tag style="position:absolute;left:0;right:0;top:${(V ? .80 : .92) * H}px;text-align:center"><span style="display:inline-block;padding:${14 * U}px ${30 * U}px;border-radius:${10 * U}px;
+        font:800 ${34 * U}px Helvetica;letter-spacing:.18em;color:#10202c;background:repeating-linear-gradient(-45deg,${TH(c).acc} 0 ${22 * U}px,#e9f2f7 ${22 * U}px ${44 * U}px)">${c.tag || "EN CONSTRUCCIÓN"}</span></div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, fy = (V ? .76 : .9) * H, bw = (V ? 310 : 260) * U, bh = (V ? 72 : 50) * U, tx = W * (V ? .64 : .6), total = c.total || 9;
+    const throws = c.throws || []; const placed = (c.built || 3) + throws.filter(x => t >= x + .45).length;
+    let tower = "";
+    for (let i = 0; i < total; i++) { const y = fy - (i + 1) * (bh + 6 * U), ok = i < placed;
+      tower += ok ? `<rect x="${tx - bw / 2}" y="${y}" width="${bw}" height="${bh}" rx="${8 * U}" fill="${th.acc}" opacity="${.55 + .45 * (i / total)}"/>`
+                  : `<rect x="${tx - bw / 2}" y="${y}" width="${bw}" height="${bh}" rx="${8 * U}" fill="none" stroke="#fff" stroke-opacity=".45" stroke-width="${3 * U}" stroke-dasharray="${14 * U} ${10 * U}" stroke-dashoffset="${-t * 40 * U}"/>`; }
+    el.querySelector("[data-tower]").innerHTML = tower;
+    // monito: carga un bloque y lo lanza a la torre en cada "throw"
+    const nx = throws.find(x => t < x + .45), hx = W * (V ? .24 : .33), hh = (V ? 430 : 330) * U;
+    let pose = "carry", prop = "box";
+    if (nx != null && t >= nx) { pose = "reach"; prop = null; }
+    if (nx == null) { pose = "victory"; prop = null; }
+    const last = throws.filter(x => t >= x + .45).pop();
+    const bl = last != null && t < last + .75 ? { from: "reach", to: pose, x: prog(t, last + .45, last + .75) } : null;
+    el.querySelector("[data-fig]").innerHTML = PJ.draw({ x: hx, y: fy, h: hh, t: t - c.start, color: "acc", pose, prop: bl ? null : prop, blend: bl }, th);
+    // bloque en vuelo (arco con giro)
+    let fly = ""; if (nx != null && t >= nx && t < nx + .45) { const q = eInOut(prog(t, nx, nx + .45)), y0 = fy - hh * .78, y1 = fy - (placed + 1) * (bh + 6 * U) + bh / 2;
+      const x = lerp(hx + 70 * U, tx, q), y = lerp(y0, y1, q) - Math.sin(q * Math.PI) * 220 * U;
+      fly = `<rect x="${x - bw / 2}" y="${y - bh / 2}" width="${bw}" height="${bh}" rx="${8 * U}" fill="${th.acc}" transform="rotate(${(1 - q) * -25} ${x} ${y})" style="filter:blur(${Math.sin(q * Math.PI) * 3 * U}px)"/>`; }
+    el.querySelector("[data-fly]").innerHTML = fly;
+    pop(el.querySelector("[data-tag]"), t, c.tagAt ?? c.start + .3, { dy: 30, sc: .6, d: .25 }); animKinetic(el, t); },
+};
+
+// Tarjeta de reproductor de video (mockup tipo ref7) con contador de tiempo
+C.videocard = {
+  make(el, c) { const th = THEMES[E.theme] || THEMES.marino, w = (c.w || .74) * W; css(el, { left: (c.x != null ? c.x * W : (W - w) / 2) + "px", top: (c.y || .05) * H + "px", width: w + "px" });
+    el.innerHTML = `<div style="border-radius:${30 * U}px;overflow:hidden;background:${th.card || "#0f1d28"};box-shadow:0 ${30 * U}px ${80 * U}px rgba(0,0,0,.5);border:${2 * U}px solid rgba(255,255,255,.12)">
+      <div style="display:flex;gap:${10 * U}px;padding:${16 * U}px ${22 * U}px">${["#ff5f57", "#febc2e", "#28c840"].map(x => `<i style="width:${14 * U}px;height:${14 * U}px;border-radius:50%;background:${x}"></i>`).join("")}</div>
+      <div style="position:relative;height:${w * .5}px;background:radial-gradient(circle at 50% 45%,${(th.grad || ["#274760", "#0d1a24"]).join(",")})">
+        <div style="position:absolute;left:0;right:0;top:${28 * U}px;text-align:center;font:700 ${34 * U}px Helvetica;color:${th.acc};letter-spacing:.2em">${c.brand || th.brand || "la marca del cliente"}</div>
+        <div data-play style="position:absolute;left:50%;top:50%;width:${120 * U}px;height:${120 * U}px;margin:${-60 * U}px;border-radius:50%;background:${th.acc};display:grid;place-items:center">
+          <i style="margin-left:${10 * U}px;border-left:${40 * U}px solid ${th.ink ? "#fff" : "#10202c"};border-top:${24 * U}px solid transparent;border-bottom:${24 * U}px solid transparent"></i></div></div>
+      <div style="padding:${22 * U}px ${28 * U}px ${28 * U}px">
+        <div style="font:800 ${40 * U}px Helvetica;color:#fff">${c.title || ""}</div>
+        <div style="margin-top:${18 * U}px;height:${10 * U}px;border-radius:9px;background:rgba(255,255,255,.15)"><div data-bar style="height:100%;width:0;border-radius:9px;background:${th.acc}"></div></div>
+        <div style="display:flex;justify-content:space-between;margin-top:${10 * U}px;font:600 ${26 * U}px Helvetica;color:rgba(255,255,255,.7)"><span data-time>0:00</span><span>${c.total || "7:00"}</span></div></div></div>`; },
+  draw(el, c, t) { const a = prog(t, c.start, c.start + .42), b = prog(t, c.end - .3, c.end);
+    css(el, { opacity: clamp(a * 2) * (1 - b), filter: `blur(${((1 - eOut(a)) + b) * 10 * U}px)`,
+      transform: `translateY(${(1 - eOut(a)) * 220 * U + b * 120 * U + Math.sin(t * 1.6) * 4 * U}px) scale(${lerp(.94, 1, eOut(a))})` });
+    const p = eInOut(prog(t, c.countAt, c.countAt + .9)), secs = Math.round(p * (c.seconds || 420));
+    el.querySelector("[data-time]").textContent = `${Math.floor(secs / 60)}:${String(secs % 60).padStart(2, "0")}`;
+    el.querySelector("[data-bar]").style.width = p * 100 + "%";
+    el.querySelector("[data-play]").style.transform = `scale(${1 + .06 * Math.sin(t * 5)})`; },
+};
+
+// Escudo: aparece, se aparta mientras se dibuja lo que "todavía no existe", y luego lo envuelve
+C.shield = {
+  make(el, c) { fullBase(el, c, `<g data-solid></g><g data-ghost></g><g data-shield></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.08 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 86, keyColor: TH(c).acc })}</div>
+      <div data-l1 style="position:absolute;left:0;right:0;top:${.785 * H}px;text-align:center;font:700 ${46 * U}px Helvetica;color:rgba(255,255,255,.7)">${c.solidLabel || "Lo que ya tienes"}</div>
+      <div data-l2 style="position:absolute;${V ? `left:0;right:0;top:${.30 * H}px;text-align:center` : `left:${W / 2 + 370 * U}px;width:${.24 * W}px;top:${.5 * H}px;text-align:left`};font:italic 800 ${64 * U}px 'Chamberi Headline';color:${TH(c).acc}">${c.ghostLabel || "Lo que todavía no existe"}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, q = s => el.querySelector(s), cx = W / 2;
+    // bloque sólido (lo que ya existe) abajo, bloque punteado grande (lo que falta) arriba
+    const ga = prog(t, c.ghostAt, c.ghostAt + .45), gx = cx - 330 * U, gy = (V ? .37 : .36) * H, gw = 660 * U, gh = (V ? .36 : .36) * H, per = 2 * (gw + gh);
+    q("[data-solid]").innerHTML = `<rect x="${cx - 200 * U}" y="${.735 * H}" width="${400 * U}" height="${30 * U}" rx="${10 * U}" fill="#fff" opacity="${.8 * eOut(prog(t, c.start + .1, c.start + .35))}"/>`;
+    q("[data-ghost]").innerHTML = ga > 0 ? `<rect x="${gx}" y="${gy}" width="${gw}" height="${gh}" rx="${26 * U}" fill="${th.acc}" fill-opacity="${.06 * ga}" stroke="${th.acc}" stroke-width="${5 * U}"
+      stroke-dasharray="${per * eOut(ga)} ${per}" />` + (ga >= 1 ? `<rect x="${gx}" y="${gy}" width="${gw}" height="${gh}" rx="${26 * U}" fill="none" stroke="#0D1A24" stroke-width="${6 * U}" stroke-dasharray="${8 * U} ${16 * U}" stroke-dashoffset="${-t * 50 * U}"/>` : "") : "";
+    // escudo: grande al centro → se aparta arriba → envuelve el bloque punteado
+    const s1 = back(prog(t, c.shieldAt, c.shieldAt + .3)), mv = eInOut(prog(t, c.ghostAt - .1, c.ghostAt + .25)), wrap = eInOut(prog(t, c.wrapAt, c.wrapAt + .4));
+    let sx = lerp(cx, V ? cx : cx - 560 * U, mv), sy = lerp(.55 * H, V ? .2 * H : .55 * H, mv), sc = lerp(V ? 1 : .8, .35, mv); sx = lerp(sx, cx, wrap); sy = lerp(sy, gy + gh * .5, wrap); sc = lerp(sc, V ? 1.55 : 1.0, wrap);
+    const path = "M0 -200 L170 -140 L170 20 C170 120 90 185 0 220 C-90 185 -170 120 -170 20 L-170 -140 Z";
+    q("[data-shield]").innerHTML = s1 > 0 ? `<g transform="translate(${sx} ${sy}) scale(${sc * Math.max(0, s1) * U})"><path d="${path}" fill="${th.acc}" fill-opacity="${lerp(.18, .05, wrap)}" stroke="${th.acc}" stroke-width="${8 / Math.max(.3, sc)}"
+      style="filter:drop-shadow(0 0 ${18}px ${th.acc})"/>${wrap < .5 ? `<path d="M-60 0 L-15 45 L70 -50" fill="none" stroke="#fff" stroke-width="${16 / Math.max(.3, sc)}" stroke-linecap="round" stroke-linejoin="round" opacity="${1 - wrap * 2}"/>` : ""}</g>` : "";
+    pop(q("[data-l1]"), t, c.start + .2, { dy: 16, d: .2 }); pop(q("[data-l2]"), t, c.labelAt, { dy: 20, d: .2, sc: .8 }); animKinetic(el, t); },
+};
+
+// Botón de llamada a la acción con cursor que da clic + flechas hacia abajo
+C.cta = {
+  make(el, c) { const th = THEMES[E.theme] || THEMES.marino; css(el, { left: 0, top: (c.y || .46) * H + "px", width: W + "px", height: 360 * U + "px" });
+    el.innerHTML = `<div style="position:absolute;left:0;right:0;text-align:center"><span data-btn style="display:inline-block;padding:${38 * U}px ${80 * U}px;border-radius:999px;background:${th.acc};color:${th.ink || "#10202c"};
+      font:800 ${66 * U}px Helvetica;letter-spacing:-.02em;box-shadow:0 ${20 * U}px ${60 * U}px rgba(0,0,0,.45)">${c.text || "Ver el video"} ▶</span></div>
+      <div data-ring style="position:absolute;width:${80 * U}px;height:${80 * U}px;border-radius:50%;border:${5 * U}px solid #fff"></div>
+      <svg data-cur viewBox="0 0 24 24" style="position:absolute;width:${80 * U}px;height:${80 * U}px"><path d="M5 3l14 8-6.5 1.5L9.5 19z" fill="#fff" stroke="#10202c" stroke-width="1.4" stroke-linejoin="round"/></svg>
+      <div data-arr style="position:absolute;left:0;right:0;top:${200 * U}px;text-align:center;font:800 ${70 * U}px Helvetica;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,.5)">↓</div>`; },
+  draw(el, c, t) { const a = prog(t, c.start, c.start + .4), b = c.hold ? 0 : prog(t, c.end - .3, c.end), btn = el.querySelector("[data-btn]");
+    css(el, { opacity: clamp(a * 3) * (1 - b), filter: `blur(${((1 - eOut(a)) + b) * 16 * U}px)` });
+    const clk = prog(t, c.clickAt, c.clickAt + .18);
+    btn.style.transform = `translateY(${(1 - eOut(a)) * 80 * U}px) scale(${lerp(.88, 1, eOut(a)) * (1 - .06 * Math.sin(clk * Math.PI))})`;
+    // cursor: entra desde abajo a la derecha y llega al botón justo en el clic
+    const m = eInOut(prog(t, c.clickAt - .5, c.clickAt - .02)), cx = lerp(W * .88, W * .66, m), cy = lerp(320 * U, 70 * U, m);
+    css(el.querySelector("[data-cur]"), { left: cx + "px", top: cy + "px", opacity: prog(t, c.clickAt - .55, c.clickAt - .4), transform: `scale(${1 - .15 * Math.sin(clk * Math.PI)})` });
+    const r = prog(t, c.clickAt, c.clickAt + .4); css(el.querySelector("[data-ring]"), { left: cx - 20 * U + "px", top: cy - 20 * U + "px", opacity: r > 0 && r < 1 ? 1 - r : 0, transform: `scale(${lerp(.3, 2.4, eOut(r))})` });
+    const ar = el.querySelector("[data-arr]"); pop(ar, t, c.arrowAt, { dy: -20, d: .2 }); if (t > c.arrowAt + .2) ar.style.transform = `translateY(${Math.abs(Math.sin((t - c.arrowAt) * 5)) * 26 * U}px)`; },
+};
+
+// Familia conectada: el protagonista al centro, su familia alrededor; líneas de dependencia y pulsos de energía
+C.family = {
+  make(el, c) { fullBase(el, c, `<g data-lines></g><g data-pulses></g><g data-halo></g><g data-figs></g><g data-heart></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.09 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 84, keyColor: TH(c).acc })}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, fy = (c.floor || .76) * H, lt = t - c.start;
+    const hero = { x: (c.heroX ?? .5) * W, h: (c.heroH || 440) * U }, chest = (x, h) => [x, fy - h * .66];
+    let figs = "", lines = "", pulses = "";
+    const hc = chest(hero.x, hero.h);
+    (c.members || []).forEach((m, i) => {
+      const a = prog(t, m.at, m.at + .4); if (a <= 0) return;
+      const x = m.x * W, h = (m.h || 300) * U, mc = chest(x, h);
+      figs += `<g opacity="${eOut(a)}" transform="translate(0 ${(1 - eOut(a)) * 40 * U})">${PJ.draw({ x, y: fy, h, t: lt + i * .4, kid: m.kid, color: "grey", facing: x < hero.x ? 1 : -1, pose: m.pose || (m.kid ? "wave" : "stand") }, th)}</g>`;
+      if (c.linkAt != null) { const L = Math.hypot(mc[0] - hc[0], mc[1] - hc[1]), p = eInOut(prog(t, c.linkAt + i * .12, c.linkAt + i * .12 + .5));
+        lines += `<line x1="${hc[0]}" y1="${hc[1]}" x2="${mc[0]}" y2="${mc[1]}" stroke="${th.acc}" stroke-opacity=".55" stroke-width="${4 * U}" stroke-dasharray="${14 * U} ${10 * U}" stroke-dashoffset="${-t * 40 * U}"
+          style="clip-path:inset(0)" ${p < 1 ? `stroke-dasharray="${p * L} ${L}"` : ""}/>`;
+        if (c.pulseAt != null && t > c.pulseAt) for (let n = 0; n < 40; n++) { const s0 = c.pulseAt + n * .22 + i * .07; if (s0 > t) break; const q = (t - s0) / .55; if (q > 1) continue;
+          pulses += `<circle cx="${lerp(hc[0], mc[0], q)}" cy="${lerp(hc[1], mc[1], q)}" r="${7 * U}" fill="${th.acc}" style="filter:drop-shadow(0 0 ${8 * U}px ${th.acc})"/>`; } }
+    });
+    figs += `<g transform="rotate(${Math.sin(t * 1.4) * 1.5} ${hero.x} ${fy}) translate(${Math.sin(t * 1.4) * 5 * U} ${-Math.abs(Math.sin(t * 1.4)) * 4 * U})">${PJ.draw({ x: hero.x, y: fy, h: hero.h, t: lt, color: "acc", pose: c.heroPose || "stand" }, th)}</g>`;   // respira
+    el.querySelector("[data-figs]").innerHTML = figs; el.querySelector("[data-lines]").innerHTML = lines; el.querySelector("[data-pulses]").innerHTML = pulses;
+    // halo del protagonista (cuando "todo depende de ti")
+    const hp = c.pulseAt != null ? prog(t, c.pulseAt, c.pulseAt + .4) : 0;
+    el.querySelector("[data-halo]").innerHTML = hp > 0 ? [0, .5, 1].map(k => { const r = ((t - c.pulseAt) * .8 + k) % 1.5 / 1.5;
+      return `<circle cx="${hc[0]}" cy="${hc[1]}" r="${(120 + r * 260) * U}" fill="none" stroke="${th.acc}" stroke-width="${3 * U}" opacity="${(1 - r) * .45 * hp}"/>`; }).join("") : "";
+    // corazón que late sobre el recién llegado
+    if (c.heartAt != null) { const m = (c.members || [])[0], a = prog(t, c.heartAt, c.heartAt + .35); if (m && a > 0) { const x = m.x * W, y = fy - (m.h || 300) * U * 1.25, b = 1 + .08 * Math.sin((t - c.heartAt) * 7);
+      el.querySelector("[data-heart]").innerHTML = `<g transform="translate(${x} ${y}) scale(${eOut(a) * b * 2.6 * U})" opacity="${eOut(a)}"><path d="M0 8 C-14 -2 -10 -14 0 -7 C10 -14 14 -2 0 8 Z" fill="${th.acc}" style="filter:drop-shadow(0 0 6px ${th.acc})"/></g>`; } }
+    animKinetic(el, t); },
+};
+
+// De la preocupación a los números: un monito preocupado con un "?" que se transforma en una tarjeta con gráfica
+C.numbers = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-fig></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.09 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 84, keyColor: th.acc })}</div>
+      <div data-q style="position:absolute;left:${.44 * W}px;top:${.28 * H}px;width:${.5 * W}px;text-align:center;font:800 ${420 * U}px/1 Helvetica;color:#9aa7b0">?</div>
+      <div data-card style="position:absolute;left:${.40 * W}px;top:${.31 * H}px;width:${.56 * W}px;padding:${32 * U}px;box-sizing:border-box;border-radius:${26 * U}px;background:#12263a;border:${2 * U}px solid rgba(186,210,223,.35);box-shadow:0 ${24 * U}px ${60 * U}px rgba(0,0,0,.45)">
+        <div style="font:700 ${30 * U}px Helvetica;color:rgba(255,255,255,.7)">${c.cardLabel || "Tu plan en números"}</div>
+        <div data-n style="font:800 ${84 * U}px/1.1 Helvetica;color:#fff;margin-top:${6 * U}px">0</div>
+        <div style="display:flex;align-items:flex-end;gap:${12 * U}px;height:${210 * U}px;margin-top:${18 * U}px">${[.35, .5, .62, .8, 1].map(h => `<i data-bar style="flex:1;height:${h * 100}%;border-radius:${6 * U}px ${6 * U}px 0 0;background:${th.acc};transform-origin:bottom"></i>`).join("")}</div></div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s), fy = .80 * H, lt = t - c.start;
+    const m = eInOut(prog(t, c.morphAt, c.morphAt + .5));
+    // monito: gris y preocupado → celeste y tranquilo (se cruzan)
+    const a = PJ.draw({ x: .27 * W, y: fy, h: 440 * U, t: lt, color: "grey", pose: "worried", opacity: 1 - m }, th);
+    const b = PJ.draw({ x: .27 * W, y: fy, h: 440 * U, t: lt, color: "acc", pose: "point", opacity: m }, th);
+    q("[data-fig]").innerHTML = a + b;
+    const qa = eOut(prog(t, c.qAt ?? c.start + .2, (c.qAt ?? c.start + .2) + .35));
+    css(q("[data-q]"), { opacity: qa * (1 - m), transform: `rotate(${Math.sin(t * 3) * 8}deg) scale(${lerp(.6, 1, qa) * lerp(1, .3, m)})`, filter: `blur(${m * 14 * U}px)` });
+    css(q("[data-card]"), { opacity: m, transform: `scale(${lerp(.4, 1, m)}) translateY(${Math.sin(t * 1.6) * 5 * U}px)`, filter: `blur(${(1 - m) * 14 * U}px)` });
+    const cnt = eOut(prog(t, c.morphAt + .2, c.morphAt + 1.4)); q("[data-n]").textContent = (c.prefix || "$") + Math.round(cnt * (c.value || 2500000)).toLocaleString("es-MX");
+    el.querySelectorAll("[data-bar]").forEach((n, k) => n.style.transform = `scaleY(${eOut(prog(t, c.morphAt + .25 + k * .1, c.morphAt + .7 + k * .1))})`);
+    animKinetic(el, t); },
+};
+
+// Edificio (empresa) que se levanta + etiqueta de precio que se mece; opcional: líder que desaparece y roles que quedan sin cubrir
+C.company = {
+  make(el, c) { fullBase(el, c, `<g data-bld></g><g data-lead></g><g data-tag></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.08 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 86, keyColor: TH(c).acc })}</div>
+      ${(c.roles || []).map((r, i) => `<div data-role="${i}" style="position:absolute;left:${.04 * W}px;top:${(.36 + i * .085) * H}px;padding:${16 * U}px ${30 * U}px;border-radius:999px;border:${3 * U}px dashed ${TH(c).acc};
+        color:${TH(c).acc};font:700 ${54 * U}px Helvetica;background:rgba(13,26,36,.7)">${r.t}</div>`).join("")}`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s), fy = .80 * H, lt = t - c.start;
+    // edificio: pisos que suben uno por uno
+    const bx = (c.bx ?? .64) * W, bw = 470 * U, floors = 7, fh = 96 * U; let b = "";
+    for (let i = 0; i < floors; i++) { const a = eOut(prog(t, (c.buildAt ?? c.start) + i * .07, (c.buildAt ?? c.start) + i * .07 + .3)); if (a <= 0) continue;
+      const y = fy - (i + 1) * fh;
+      b += `<g opacity="${a}" transform="translate(0 ${(1 - a) * 60 * U})"><rect x="${bx - bw / 2}" y="${y}" width="${bw}" height="${fh - 6 * U}" rx="${6 * U}" fill="#16324a" stroke="${th.acc}" stroke-opacity=".5" stroke-width="${2 * U}"/>
+        ${[0, 1, 2, 3].map(k => `<rect x="${bx - bw / 2 + 34 * U + k * 108 * U}" y="${y + 22 * U}" width="${62 * U}" height="${42 * U}" rx="${4 * U}" fill="${th.acc}" opacity="${.25 + .55 * ((i * 4 + k) % 3 === 0 ? 1 : .3) * (.6 + .4 * Math.sin(t * 2 + i + k))}"/>`).join("")}</g>`; }
+    q("[data-bld]").innerHTML = b;
+    // etiqueta de precio colgando del techo, se mece; el valor sube y (opcional) se desploma
+    const top = fy - floors * fh, ta = back(prog(t, c.tagAt, c.tagAt + .45)), sw = Math.sin(t * 2.4) * 7;
+    const val = c.value || 0, up = eOut(prog(t, c.tagAt + .2, c.tagAt + 1.2)), down = c.dropAt != null ? eInOut(prog(t, c.dropAt, c.dropAt + .8)) : 0;
+    const v = Math.round(val * up * (1 - down * (1 - (c.dropTo ?? .35))));
+    const txt = c.tagText || (val ? "$" + v.toLocaleString("es-MX") : "$ ?");
+    if (ta > 0) q("[data-tag]").innerHTML = `<g transform="translate(${bx + bw * .35} ${top - 10 * U}) rotate(${sw + down * 12}) scale(${Math.max(0, ta)})">
+      <line x1="0" y1="0" x2="0" y2="${90 * U}" stroke="#fff" stroke-opacity=".6" stroke-width="${3 * U}"/>
+      <g transform="translate(0 ${90 * U}) rotate(-8)"><path d="M${-150 * U} ${20 * U} L${-110 * U} ${-30 * U} L${150 * U} ${-30 * U} L${150 * U} ${70 * U} L${-110 * U} ${70 * U} Z" fill="${down > .3 ? "#E7A1A1" : th.acc}"/>
+      <circle cx="${-112 * U}" cy="${20 * U}" r="${10 * U}" fill="#0D1A24"/>
+      <text x="${18 * U}" y="${36 * U}" text-anchor="middle" font-family="Helvetica" font-weight="800" font-size="${52 * U}" fill="#0D1A24">${txt}</text></g></g>`;
+    // líder al lado del edificio: desaparece en "falta" y queda su contorno punteado
+    if (c.leader) { const gone = eInOut(prog(t, c.goneAt, c.goneAt + .5)), lx = .2 * W, lh = 470 * U;
+      const solid = PJ.draw({ x: lx, y: fy, h: lh, t: lt, color: "acc", pose: "stand", opacity: 1 - gone }, th);
+      const ghost = gone > 0 ? `<g opacity="${gone}" style="filter:blur(${(1 - gone) * 6 * U}px)">${PJ.draw({ x: lx, y: fy, h: lh, t: lt, color: "#BAD2DF", pose: "stand", opacity: .18 }, th)}</g>
+        <ellipse cx="${lx}" cy="${fy - lh * .5}" rx="${110 * U}" ry="${lh * .58}" fill="none" stroke="${th.acc}" stroke-width="${4 * U}" stroke-dasharray="${16 * U} ${12 * U}" stroke-dashoffset="${-t * 40 * U}" opacity="${gone * .8}"/>` : "";
+      q("[data-lead]").innerHTML = solid + ghost; }
+    (c.roles || []).forEach((r, i) => pop(q(`[data-role="${i}"]`), t, r.at, { dx: -30, dy: 0, d: .35 }));
+    animKinetic(el, t); },
+};
+
+// Fila de íconos con etiqueta (sobre la persona, arriba): aparecen uno por uno
+C.iconrow = {
+  make(el, c) { const th = THEMES.marino; css(el, { left: 0, top: (c.y || .07) * H + "px", width: W + "px" });
+    el.innerHTML = `<div style="display:flex;justify-content:center;gap:${34 * U}px">${c.items.map(it => `<div data-it style="display:flex;flex-direction:column;align-items:center;gap:${12 * U}px;width:${.27 * W}px">
+      <div style="width:${130 * U}px;height:${130 * U}px;border-radius:50%;background:${th.acc};color:#10202c;display:grid;place-items:center;box-shadow:0 ${14 * U}px ${36 * U}px rgba(0,0,0,.4)"><div style="width:52%;height:52%">${icon(it.icon, 2)}</div></div>
+      <div style="font:800 ${36 * U}px/1.1 Helvetica;color:#fff;text-align:center;text-shadow:0 3px 0 rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.85)">${it.t}</div></div>`).join("")}</div>`; },
+  draw(el, c, t) { const b = prog(t, c.end - .3, c.end);
+    el.querySelectorAll("[data-it]").forEach((n, k) => { const a = eOut(prog(t, c.items[k].at, c.items[k].at + .38));
+      css(n, { opacity: a * (1 - b), filter: `blur(${((1 - a) + b) * 8 * U}px)`, transform: `translateY(${(1 - a) * 30 * U - b * 20 * U}px) translateY(${Math.sin(t * 2 + k) * 3 * U}px)` }); }); },
+};
+
+// Liquidez atorada: los activos van por un tubo hacia "Liquidez", pero el medidor no se llena; la familia espera
+C.liquidity = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-pipe></g><g data-fam></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.07 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 72, keyColor: th.acc })}</div>
+      ${(c.assets || []).map((a, i) => `<div data-as="${i}" style="position:absolute;left:${.05 * W}px;top:${(.42 + i * .1) * H}px;display:flex;align-items:center;gap:${18 * U}px">
+        <div style="width:${110 * U}px;height:${110 * U}px;border-radius:50%;background:#16324a;border:${3 * U}px solid ${th.acc};color:${th.acc};display:grid;place-items:center"><div style="width:50%;height:50%">${icon(a.icon, 2)}</div></div>
+        <span style="font:700 ${34 * U}px Helvetica;color:#fff">${a.t}</span></div>`).join("")}
+      <div data-tank style="position:absolute;left:${.62 * W}px;top:${.42 * H}px;width:${.3 * W}px;text-align:center">
+        <div style="position:relative;margin:0 auto;width:${200 * U}px;height:${300 * U}px;border-radius:${30 * U}px;border:${5 * U}px solid ${th.acc};overflow:hidden;background:#0f2232">
+          <div data-lvl style="position:absolute;left:0;right:0;bottom:0;height:0;background:linear-gradient(${th.acc},#5e86a0)"></div>
+          <div data-hg style="position:absolute;left:50%;top:50%;margin:${-40 * U}px;width:${80 * U}px;height:${80 * U}px;color:#fff">${icon("clock", 2)}</div></div>
+        <div style="margin-top:${16 * U}px;font:italic 800 ${50 * U}px 'Chamberi Headline';color:${th.acc}">${c.tankLabel || "Liquidez"}</div></div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s), lt = t - c.start;
+    (c.assets || []).forEach((a, i) => pop(q(`[data-as="${i}"]`), t, a.at, { dx: -30, dy: 0, d: .35 }));
+    // tubo con partículas que avanzan y se frenan antes del tanque
+    const x0 = .42 * W, x1 = .66 * W, ys = [.42, .52, .62].map(v => v * H + 55 * U), yT = .42 * H + 150 * U, slow = prog(t, c.stuckAt, c.stuckAt + .6);
+    let pipe = ys.map(y => `<path d="M${x0} ${y} C${x0 + 120 * U} ${y}, ${x1 - 120 * U} ${yT}, ${x1} ${yT}" fill="none" stroke="${th.acc}" stroke-opacity=".35" stroke-width="${6 * U}" stroke-dasharray="${14 * U} ${10 * U}"/>`).join("");
+    if (t > c.flowAt) for (let n = 0; n < 30; n++) { const s0 = c.flowAt + n * .18; if (s0 > t) break; let q2 = (t - s0) / 1.1; if (q2 > 1) continue;
+      q2 = Math.min(q2, lerp(1, .55, slow)); const y = ys[n % 3], u = q2, xx = lerp(x0, x1, u), yy = (1 - u) ** 3 * y + 3 * (1 - u) ** 2 * u * y + 3 * (1 - u) * u * u * yT + u ** 3 * yT;
+      pipe += `<circle cx="${xx}" cy="${yy}" r="${8 * U}" fill="${th.acc}" opacity="${1 - slow * .5}"/>`; }
+    q("[data-pipe]").innerHTML = pipe;
+    // el medidor apenas sube y se queda atorado; el reloj gira
+    q("[data-lvl]").style.height = (eOut(prog(t, c.flowAt + .5, c.stuckAt + .3)) * 22) + "%";
+    q("[data-hg]").style.transform = `rotate(${slow * (t - c.stuckAt) * 120}deg)`; q("[data-hg]").style.opacity = slow;
+    pop(q("[data-tank]"), t, c.start + .25, { dy: 30, d: .4 });
+    // familia que espera (gris, preocupada)
+    const fa = prog(t, c.famAt, c.famAt + .4);
+    q("[data-fam]").innerHTML = fa > 0 ? `<g opacity="${eOut(fa)}">${[[.62, 300], [.75, 190, 1], [.86, 300]].map(([x, h, k], i) => PJ.draw({ x: x * W, y: .93 * H, h: h * U, kid: k, t: lt + i * .3, color: "grey", pose: "worried", facing: -1 }, th)).join("")}</g>` : "";
+    animKinetic(el, t); },
+};
+
+// Red: el protagonista al centro sostiene/alimenta nodos (íconos con etiqueta) con líneas y pulsos
+C.hub = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-links></g><g data-pulses></g><g data-hero></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.07 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 80, keyColor: th.acc })}</div>
+      ${(c.nodes || []).map((n, i) => `<div data-node="${i}" style="position:absolute;left:${n.x * W - 95 * U}px;top:${n.y * H - 95 * U}px;width:${190 * U}px;text-align:center">
+        <div style="width:${150 * U}px;height:${150 * U}px;margin:0 auto;border-radius:50%;background:#16324a;border:${4 * U}px solid ${th.acc};color:${th.acc};display:grid;place-items:center;box-shadow:0 0 ${30 * U}px rgba(186,210,223,.25)">
+          <div style="width:50%;height:50%">${icon(n.icon, 2)}</div></div><div style="margin-top:${10 * U}px;font:700 ${36 * U}px Helvetica;color:#fff">${n.t}</div></div>`).join("")}`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s), fy = (c.floor || .86) * H, hh = (c.heroH || 440) * U, hx = W / 2, hc = [hx, fy - hh * .66];
+    q("[data-hero]").innerHTML = PJ.draw({ x: hx, y: fy, h: hh, t: t - c.start, color: "acc", pose: c.heroPose || "hold" }, th);
+    let links = "", pulses = "";
+    (c.nodes || []).forEach((n, i) => { pop(q(`[data-node="${i}"]`), t, n.at, { dy: 30, d: .4 });
+      const a = eInOut(prog(t, n.at, n.at + .45)); if (a <= 0) return; const nx = n.x * W, ny = n.y * H + 20 * U;
+      links += `<line x1="${hc[0]}" y1="${hc[1]}" x2="${lerp(hc[0], nx, a)}" y2="${lerp(hc[1], ny, a)}" stroke="${th.acc}" stroke-opacity=".5" stroke-width="${4 * U}" stroke-dasharray="${14 * U} ${10 * U}" stroke-dashoffset="${-t * 40 * U}"/>`;
+      for (let k = 0; k < 30; k++) { const s0 = n.at + .45 + k * .3; if (s0 > t) break; const u = (t - s0) / .7; if (u > 1) continue;
+        pulses += `<circle cx="${lerp(hc[0], nx, u)}" cy="${lerp(hc[1], ny, u)}" r="${7 * U}" fill="${th.acc}" style="filter:drop-shadow(0 0 ${8 * U}px ${th.acc})"/>`; } });
+    q("[data-links]").innerHTML = links; q("[data-pulses]").innerHTML = pulses; animKinetic(el, t); },
+};
+
+// Estado de cuenta (sobre la persona, abajo): filas que aparecen; la última "no aparece"
+C.statement = {
+  make(el, c) { const th = THEMES.marino, w = (c.w || .82) * W; css(el, { left: (W - w) / 2 + "px", top: (c.y || .55) * H + "px", width: w + "px" });
+    el.innerHTML = `<div style="border-radius:${28 * U}px;background:#f4f7f9;color:#10202c;padding:${26 * U}px ${34 * U}px;box-shadow:0 ${30 * U}px ${80 * U}px rgba(0,0,0,.45)">
+      <div style="display:flex;justify-content:space-between;align-items:center;font:800 ${38 * U}px Helvetica"><span>${c.title || "Estado de cuenta"}</span><span style="font:600 ${24 * U}px Helvetica;color:#6b7c88">${c.sub || "Activos"}</span></div>
+      ${c.rows.map(r => `<div data-row style="display:flex;align-items:center;gap:${18 * U}px;margin-top:${18 * U}px;padding-top:${16 * U}px;border-top:${2 * U}px solid #dde5ea">
+        <div style="width:${56 * U}px;height:${56 * U}px;border-radius:50%;background:${r.missing ? "transparent" : "#274760"};border:${r.missing ? `${3 * U}px dashed #9aabb6` : "0"};color:#fff;display:grid;place-items:center">
+          ${r.missing ? "" : `<div style="width:55%;height:55%">${icon(r.icon || "check", 2.2)}</div>`}</div>
+        <span style="flex:1;font:${r.missing ? "italic 800" : "700"} ${34 * U}px ${r.missing ? "'Chamberi Headline'" : "Helvetica"};color:${r.missing ? "#274760" : "#10202c"}">${r.t}</span>
+        ${r.missing ? `<span style="font:600 ${28 * U}px Helvetica;color:#9aabb6">${r.note || "No aparece"}</span>` : `<div style="width:${180 * U}px;height:${16 * U}px;border-radius:9px;background:#dde5ea"><i data-fill style="display:block;height:100%;width:0;border-radius:9px;background:#5e86a0"></i></div>`}</div>`).join("")}</div>`; },
+  draw(el, c, t) { const a = eOut(prog(t, c.start, c.start + .4)), b = prog(t, c.end - .3, c.end);
+    css(el, { opacity: a * (1 - b), filter: `blur(${((1 - a) + b) * 10 * U}px)`, transform: `translateY(${(1 - a) * 160 * U + b * 80 * U + Math.sin(t * 1.6) * 4 * U}px)` });
+    el.querySelectorAll("[data-row]").forEach((n, k) => { const r = c.rows[k]; pop(n, t, r.at, { dx: -30, dy: 0, d: .35 });
+      const f = n.querySelector("[data-fill]"); if (f) f.style.width = eOut(prog(t, r.at + .1, r.at + .6)) * (r.v || .7) * 100 + "%";
+      if (r.missing && t > r.at + .3) n.style.opacity = (+n.style.opacity) * (.75 + .25 * Math.sin((t - r.at) * 6)); }); },
+};
+
+// Línea de años: marcas que se encienden mientras el protagonista camina sobre ella
+C.years = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-ticks></g><g data-fig></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.08 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 80, keyColor: th.acc })}</div>
+      <div data-l0 style="position:absolute;left:${.06 * W}px;top:${.70 * H}px;font:700 ${36 * U}px Helvetica;color:#fff">${c.from || "Hoy"}</div>
+      <div data-l1 style="position:absolute;right:${.06 * W}px;top:${.70 * H}px;font:italic 800 ${44 * U}px 'Chamberi Headline';color:${th.acc}">${c.to || "Tus años productivos"}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s), y = .66 * H, x0 = .08 * W, x1 = .92 * W, n = c.n || 26;
+    const p = eInOut(prog(t, c.fillFrom, c.fillTo)); let tk = `<line x1="${x0}" y1="${y}" x2="${x1}" y2="${y}" stroke="#fff" stroke-opacity=".25" stroke-width="${4 * U}"/>`;
+    for (let i = 0; i < n; i++) { const x = lerp(x0, x1, i / (n - 1)), on = i / (n - 1) <= p, big = i % 5 === 0;
+      tk += `<rect x="${x - 5 * U}" y="${y - (big ? 46 : 28) * U}" width="${10 * U}" height="${(big ? 46 : 28) * U}" rx="${4 * U}" fill="${on ? th.acc : "#fff"}" opacity="${on ? 1 : .25}" ${on ? `style="filter:drop-shadow(0 0 ${8 * U}px ${th.acc})"` : ""}/>`; }
+    q("[data-ticks]").innerHTML = tk;
+    q("[data-fig]").innerHTML = PJ.draw({ x: lerp(x0, x1, p), y: y - 50 * U, h: 300 * U, t: t - c.start, color: "acc", pose: p > 0 && p < 1 ? "walk" : "stand" }, th);
+    pop(q("[data-l0]"), t, c.start + .3, { dy: 20 }); pop(q("[data-l1]"), t, c.labelAt ?? c.fillTo - .3, { dy: 20 }); animKinetic(el, t); },
+};
+
+// Desprotegido: los activos tienen escudo; el protagonista no (un escudo vacío parpadea sobre él)
+C.unprotected = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-sh></g><g data-fig></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.07 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 78, keyColor: th.acc })}</div>
+      ${c.assets.map((a, i) => `<div data-as="${i}" style="position:absolute;left:${(.2 + i * .3) * W - 80 * U}px;top:${.30 * H}px;width:${160 * U}px;text-align:center">
+        <div style="width:${120 * U}px;height:${120 * U}px;margin:0 auto;border-radius:50%;background:#16324a;color:${th.acc};display:grid;place-items:center"><div style="width:50%;height:50%">${icon(a.icon, 2)}</div></div>
+        <div style="margin-top:${10 * U}px;font:700 ${32 * U}px Helvetica;color:#fff">${a.t}</div></div>`).join("")}
+      <div data-tag style="position:absolute;left:0;right:0;top:${.48 * H}px;text-align:center;font:italic 800 ${52 * U}px 'Chamberi Headline';color:#E7A1A1">${c.tag || "Sin protección"}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s);
+    const sp = "M0 -100 L85 -70 L85 10 C85 60 45 92 0 110 C-45 92 -85 60 -85 10 L-85 -70 Z"; let sh = "";
+    c.assets.forEach((a, i) => { const n = q(`[data-as="${i}"]`); pop(n, t, a.at, { dy: 24, d: .35 }); const fl = Math.sin(t * 1.8 + i * 1.3) * 7 * U;   // flotan suave
+      n.style.transform += ` translateY(${fl}px)`; const s1 = eOut(prog(t, a.shieldAt, a.shieldAt + .4)); if (s1 <= 0) return;
+      sh += `<g transform="translate(${(.2 + i * .3) * W} ${.30 * H + 60 * U + fl}) scale(${lerp(1.6, 1.15, s1) * U * (1 + .03 * Math.sin(t * 3 + i))})" opacity="${s1}"><path d="${sp}" fill="${th.acc}" fill-opacity="${.08 + .06 * Math.sin(t * 3 + i)}" stroke="${th.acc}" stroke-width="5" style="filter:drop-shadow(0 0 ${8 + 6 * Math.sin(t * 3 + i)}px ${th.acc})"/></g>`; });
+    const ex = prog(t, c.exposedAt, c.exposedAt + .4), hx = W / 2, fy = .9 * H, hh = 400 * U;
+    if (ex > 0) sh += `<g transform="translate(${hx} ${fy - hh * .55}) scale(${2.6 * U})" opacity="${eOut(ex) * (.45 + .45 * Math.abs(Math.sin((t - c.exposedAt) * 4)))}"><path d="${sp}" fill="none" stroke="#E7A1A1" stroke-width="3" stroke-dasharray="10 8"/></g>`;
+    q("[data-sh]").innerHTML = sh;
+    q("[data-fig]").innerHTML = `<g transform="translate(${Math.sin(t * 1.4) * 6 * U} 0) rotate(${Math.sin(t * 1.4) * 1.5} ${hx} ${fy})">${PJ.draw({ x: hx, y: fy, h: hh, t: t - c.start, color: "acc", pose: ex > .3 ? "shrug" : "stand" }, th)}</g>`;   // respira
+    pop(q("[data-tag]"), t, c.exposedAt + .1, { dy: 16, d: .35 }); animKinetic(el, t); },
+};
+
+// Medidor de riesgo: la aguja recorre el arco y se asienta
+C.gauge = {
+  make(el, c) { const th = TH(c), cx = W / 2, cy = .58 * H, R = 330 * U, seg = ["#BAD2DF", "#8FB3C8", "#F2C46D", "#EE9A7A", "#E7A1A1"];
+    const arc = (a0, a1) => { const p = a => [cx + Math.cos(a) * R, cy + Math.sin(a) * R]; const [x0, y0] = p(a0), [x1, y1] = p(a1); return `M${x0} ${y0} A${R} ${R} 0 0 1 ${x1} ${y1}`; };
+    fullBase(el, c, seg.map((col, i) => `<path data-seg="${i}" d="${arc(Math.PI + i * Math.PI / 5 + .03, Math.PI + (i + 1) * Math.PI / 5 - .03)}" fill="none" stroke="${col}" stroke-width="${46 * U}" stroke-linecap="round"/>`).join("") +
+      `<g data-needle><line x1="${cx}" y1="${cy}" x2="${cx - R * .82}" y2="${cy}" stroke="#fff" stroke-width="${12 * U}" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="${26 * U}" fill="#fff"/></g>`);
+    el._g = { cx, cy };
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.10 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 80, keyColor: th.acc })}</div>
+      <div data-lbl style="position:absolute;left:0;right:0;top:${.63 * H}px;text-align:center;font:800 ${48 * U}px Helvetica;letter-spacing:.2em;color:#fff">${c.label || "RIESGO"}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const g = el._g, q = s => el.querySelector(s);
+    el.querySelectorAll("[data-seg]").forEach((n, i) => n.setAttribute("opacity", eOut(prog(t, c.start + .15 + i * .07, c.start + .45 + i * .07))));
+    const sweep = eInOut(prog(t, c.measureAt, c.measureAt + .9)), settle = Math.sin(Math.max(0, t - c.measureAt - .9) * 6) * Math.exp(-Math.max(0, t - c.measureAt - .9) * 3) * 8;
+    const ang = lerp(0, 180 * (c.value ?? .62), sweep) + settle;
+    q("[data-needle]").setAttribute("transform", `rotate(${ang} ${g.cx} ${g.cy})`);
+    pop(q("[data-lbl]"), t, c.start + .3, { dy: 16 }); animKinetic(el, t); },
+};
+
+const STAR = "M0 -50 L14.7 -20.2 L47.6 -15.5 L23.8 7.7 L29.4 40.5 L0 25 L-29.4 40.5 L-23.8 7.7 L-47.6 -15.5 L-14.7 -20.2 Z";
+// Calificación: tarjeta con 5 estrellas que se apagan hasta 1 ("mala fama")
+C.rating = {
+  make(el, c) { const th = TH(c); fullBase(el, c, "");
+    htmlLayer(el, `<div data-card style="position:absolute;left:${.1 * W}px;top:${.30 * H}px;width:${.8 * W}px;height:${.30 * H}px;border-radius:${36 * U}px;background:#12263a;border:${2 * U}px solid rgba(186,210,223,.3);box-shadow:0 ${30 * U}px ${80 * U}px rgba(0,0,0,.45)">
+        <div style="position:absolute;left:${48 * U}px;top:${40 * U}px;font:800 ${64 * U}px Helvetica;color:#fff">${c.title || "Seguros"}</div>
+        <div data-score style="position:absolute;right:${48 * U}px;top:${46 * U}px;font:800 ${56 * U}px Helvetica;color:${th.acc}">5.0</div>
+        <svg data-stars viewBox="0 0 ${.8 * W} ${.3 * H}" style="position:absolute;inset:0;width:100%;height:100%;overflow:visible"></svg></div>
+      <div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.66 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 92, keyColor: th.acc })}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, q = s => el.querySelector(s);
+    pop(q("[data-card]"), t, c.start + .1, { dy: 40, d: .4 });
+    const lost = [4, 3, 2, 1].map((k, i) => eInOut(prog(t, c.dropAt + i * .22, c.dropAt + i * .22 + .3)));
+    let st = ""; for (let k = 0; k < 5; k++) { const x = .12 * W + k * .14 * W, y = .19 * H, a = eOut(prog(t, c.start + .2 + k * .06, c.start + .5 + k * .06)), off = k === 0 ? 0 : lost[4 - k];
+      st += `<g transform="translate(${x} ${y + off * 30 * U}) scale(${a * (1 - off * .15) * 1.25 * U}) rotate(${off * 25})"><path d="${STAR}" fill="${th.acc}" fill-opacity="${1 - off * .9}" stroke="${th.acc}" stroke-width="4" opacity="${1 - off * .5}"/></g>`; }
+    q("[data-stars]").innerHTML = st;
+    const sc = 5 - lost.reduce((a, b) => a + b, 0); q("[data-score]").textContent = sc.toFixed(1); q("[data-score]").style.color = sc < 2.5 ? "#E7A1A1" : th.acc;
+    animKinetic(el, t); },
+};
+
+// Vendedor insistente: globos de diálogo que vuelan hacia un cliente confundido
+C.pitch = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-figs></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.07 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 78, keyColor: th.acc })}</div>
+      ${(c.bubbles || []).map((b, i) => `<div data-b="${i}" style="position:absolute;padding:${18 * U}px ${30 * U}px;border-radius:${30 * U}px;background:#f4f7f9;color:#10202c;font:800 ${40 * U}px Helvetica;white-space:nowrap;box-shadow:0 ${12 * U}px ${30 * U}px rgba(0,0,0,.35)">${b.t}</div>`).join("")}
+      ${[0, 1, 2].map(i => `<div data-qm="${i}" style="position:absolute;font:800 ${90 * U}px Helvetica;color:${th.acc}">?</div>`).join("")}`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s), fy = .86 * H, lt = t - c.start;
+    q("[data-figs]").innerHTML = PJ.draw({ x: .25 * W, y: fy, h: 420 * U, t: lt, color: "grey", pose: "talk" }, th) + PJ.draw({ x: .76 * W, y: fy, h: 420 * U, t: lt, color: "acc", pose: t > c.confusedAt ? "shrug" : "stand", facing: -1 }, th);
+    (c.bubbles || []).forEach((b, i) => { const n = q(`[data-b="${i}"]`), a = prog(t, b.at, b.at + 1.4), e = eOut(clamp(a * 2.5));
+      const x = lerp(.16 * W, .46 * W, eInOut(a)), y = lerp(.56 * H, (.40 + (i % 3) * .07) * H, eInOut(a));
+      css(n, { left: x + "px", top: y + "px", opacity: a <= 0 ? 0 : e * (1 - clamp((a - .8) / .2)), transform: `scale(${lerp(.4, 1, e)}) rotate(${(i % 2 ? 1 : -1) * 6}deg)` }); });
+    [0, 1, 2].forEach(i => { const a = prog(t, c.confusedAt + i * .25, c.confusedAt + i * .25 + .35);
+      css(q(`[data-qm="${i}"]`), { left: (.70 + i * .07) * W + "px", top: (.50 - (i % 2) * .04) * H + Math.sin(t * 3 + i) * 10 * U + "px", opacity: eOut(a), transform: `scale(${lerp(.3, 1, eOut(a))}) rotate(${(i - 1) * 15}deg)` }); });
+    animKinetic(el, t); },
+};
+
+// Checklist: tarjetas numeradas que aparecen y se palomean al ritmo de la voz
+C.checklist = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-fig></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.07 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 78, keyColor: th.acc })}</div>
+      ${c.items.map((it, i) => `<div data-ci="${i}" style="position:absolute;left:${.08 * W}px;top:${(.22 + i * .15) * H}px;width:${.84 * W}px;display:flex;align-items:center;gap:${26 * U}px;padding:${28 * U}px ${32 * U}px;box-sizing:border-box;
+        border-radius:${28 * U}px;background:#12263a;border:${2 * U}px solid rgba(186,210,223,.3);box-shadow:0 ${20 * U}px ${50 * U}px rgba(0,0,0,.4)">
+        <div style="flex:none;width:${86 * U}px;height:${86 * U}px;border-radius:50%;background:${th.acc};color:#10202c;display:grid;place-items:center;font:800 ${44 * U}px Helvetica">${i + 1}</div>
+        <div style="flex:1;font:700 ${44 * U}px/1.15 Helvetica;color:#fff">${it.t}</div>
+        <svg data-chk viewBox="0 0 24 24" style="flex:none;width:${70 * U}px;height:${70 * U}px"><path d="M4 12.5l5 5L20 6.5" fill="none" stroke="${th.acc}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="30" stroke-dashoffset="30"/></svg></div>`).join("")}`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s);
+    c.items.forEach((it, i) => { const n = q(`[data-ci="${i}"]`); pop(n, t, it.at, { dx: -40, dy: 0, d: .4 }); if (t > it.at + .4) n.style.transform = `translateY(${Math.sin(t * 1.7 + i) * 4 * U}px)`;
+      n.querySelector("[data-chk] path").setAttribute("stroke-dashoffset", 30 * (1 - eOut(prog(t, it.checkAt ?? it.at + .5, (it.checkAt ?? it.at + .5) + .35)))); });
+    q("[data-fig]").innerHTML = PJ.draw({ x: .5 * W, y: .93 * H, h: 300 * U, t: t - c.start, color: "acc", pose: "talk" }, th);
+    animKinetic(el, t); },
+};
+
+// Pizarrón: el protagonista explica; el diagrama se dibuja; la etiqueta "$" se aleja (sin venta)
+C.teach = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-board></g><g data-fig></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.07 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 78, keyColor: th.acc })}</div>
+      <div data-tag style="position:absolute;padding:${16 * U}px ${30 * U}px;border-radius:${14 * U}px;background:#E7A1A1;color:#10202c;font:800 ${48 * U}px Helvetica">$ VENTA</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s), bx = .38 * W, by = .30 * H, bw = .56 * W, bh = .34 * H;
+    const d = k => eInOut(prog(t, c.start + .3 + k * .45, c.start + .75 + k * .45));
+    const bars = [.35, .55, .8].map((h, k) => `<rect x="${bx + 60 * U + k * 110 * U}" y="${by + bh - 50 * U - h * (bh - 120 * U) * d(k)}" width="${70 * U}" height="${h * (bh - 120 * U) * d(k)}" rx="${8 * U}" fill="${th.acc}"/>`).join("");
+    const ar = d(3), L = 300;
+    q("[data-board]").innerHTML = `<rect x="${bx}" y="${by}" width="${bw}" height="${bh}" rx="${24 * U}" fill="#f4f7f9" opacity=".96"/>${bars}
+      <path d="M${bx + 60 * U} ${by + bh - 70 * U} L${bx + 200 * U} ${by + bh - 180 * U} L${bx + 300 * U} ${by + bh - 150 * U} L${bx + bw - 60 * U} ${by + 80 * U}" fill="none" stroke="#274760" stroke-width="${7 * U}" stroke-linecap="round" stroke-linejoin="round" pathLength="${L}" stroke-dasharray="${L}" stroke-dashoffset="${L * (1 - ar)}"/>`;
+    q("[data-fig]").innerHTML = PJ.draw({ x: .2 * W, y: .86 * H, h: 430 * U, t: t - c.start, color: "acc", pose: "talk" }, th);
+    const a = eOut(prog(t, c.start + .3, c.start + .7)), go = eInOut(prog(t, c.noSaleAt, c.noSaleAt + .8));
+    css(q("[data-tag]"), { left: lerp(.55 * W, .9 * W, go) + "px", top: lerp(.72 * H, .62 * H, go) + "px", opacity: a * (1 - go), filter: `blur(${go * 12 * U}px)`, transform: `rotate(${lerp(-6, 25, go)}deg) scale(${lerp(1, .6, go)})` });
+    animKinetic(el, t); },
+};
+
+// Explicar sin vender: documento que se llena entre asesor y cliente; la línea de firma se tacha y aparece "Sin presión"
+C.explain = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-figs></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.07 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 76, keyColor: th.acc })}</div>
+      <div data-doc style="position:absolute;left:${.2 * W}px;top:${.30 * H}px;width:${.6 * W}px;padding:${34 * U}px ${36 * U}px;box-sizing:border-box;border-radius:${26 * U}px;background:#f4f7f9;color:#10202c;box-shadow:0 ${30 * U}px ${80 * U}px rgba(0,0,0,.45)">
+        <div style="font:800 ${40 * U}px Helvetica;letter-spacing:-.01em">${c.docTitle || "Tu plan, explicado"}</div>
+        ${c.rows.map((r, i) => `<div data-r="${i}" style="display:flex;align-items:center;gap:${18 * U}px;margin-top:${24 * U}px">
+          <svg viewBox="0 0 24 24" style="flex:none;width:${48 * U}px;height:${48 * U}px"><circle cx="12" cy="12" r="11" fill="#274760"/><path data-ck d="M6.5 12.5l3.5 3.5 7.5-8" fill="none" stroke="#fff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="20" stroke-dashoffset="20"/></svg>
+          <span style="font:700 ${34 * U}px Helvetica">${r.t}</span></div>`).join("")}
+        <div data-sign style="position:relative;margin-top:${40 * U}px;padding-top:${10 * U}px">
+          <div style="font:600 ${26 * U}px Helvetica;color:#6b7c88">Firma aquí</div>
+          <div style="height:${3 * U}px;background:#10202c;margin-top:${34 * U}px;width:80%"></div>
+          <i data-x style="position:absolute;left:-2%;top:55%;height:${8 * U}px;width:86%;border-radius:9px;background:#E05A4E;transform-origin:left;transform:scaleX(0) rotate(-4deg)"></i>
+          <svg data-pen viewBox="0 0 24 24" style="position:absolute;left:62%;top:${-10 * U}px;width:${90 * U}px;height:${90 * U}px"><path d="M4 20l2-6L16 4l4 4-10 10z" fill="#274760"/><path d="M4 20l2-6 4 4z" fill="#BAD2DF"/></svg></div></div>
+      <div data-stamp style="position:absolute;left:0;right:0;top:${.64 * H}px;text-align:center"><span style="display:inline-block;padding:${18 * U}px ${40 * U}px;border:${6 * U}px solid ${th.acc};border-radius:${18 * U}px;
+        color:${th.acc};font:800 ${52 * U}px Helvetica;letter-spacing:.04em;background:rgba(13,26,36,.85);transform:rotate(-5deg)">${c.stamp || "SIN PRESIÓN ✓"}</span></div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, PJ = window.PERSONAJES, q = s => el.querySelector(s), lt = t - c.start, fy = .95 * H;
+    const calm = prog(t, c.noSaleAt + .3, c.noSaleAt + .8);
+    q("[data-figs]").innerHTML = PJ.draw({ x: .13 * W, y: fy, h: 330 * U, t: lt, color: "acc", pose: "talk" }, th) +
+      PJ.draw({ x: .87 * W, y: fy, h: 330 * U, t: lt + .5, color: "grey", facing: -1, ...(calm > 0 ? { blend: { from: "think", to: "stand", x: calm } } : { pose: "think" }) }, th);
+    const d = q("[data-doc]"), a = eOut(prog(t, c.start + .1, c.start + .5));
+    css(d, { opacity: a, transform: `translateY(${(1 - a) * 60 * U + Math.sin(t * 1.5) * 4 * U}px)`, filter: `blur(${(1 - a) * 10 * U}px)` });
+    c.rows.forEach((r, i) => { const n = q(`[data-r="${i}"]`); pop(n, t, r.at, { dx: -24, dy: 0, d: .3 }); n.querySelector("[data-ck]").setAttribute("stroke-dashoffset", 20 * (1 - eOut(prog(t, r.at + .15, r.at + .4)))); });
+    pop(q("[data-sign]"), t, c.signAt, { dy: 20, d: .3 });
+    const x = eOut(prog(t, c.noSaleAt, c.noSaleAt + .3)); q("[data-x]").style.transform = `scaleX(${x}) rotate(-4deg)`;
+    const pen = eInOut(prog(t, c.noSaleAt + .1, c.noSaleAt + .6)), pn = q("[data-pen]");
+    css(pn, { opacity: prog(t, c.signAt, c.signAt + .2) * (1 - pen), transform: `translate(${pen * 260 * U}px, ${-pen * 120 * U + Math.sin(t * 4) * 3 * U}px) rotate(${pen * 40}deg)` });
+    const st = prog(t, c.noSaleAt + .25, c.noSaleAt + .6), sn = q("[data-stamp]");
+    css(sn, { opacity: clamp(st * 2), transform: `scale(${lerp(1.6, 1, eOut(st))})` });
+    animKinetic(el, t); },
+};
+
+// Lo que ya tienes: bloques con ícono que caen y se apilan; arriba se insinúa un espacio punteado mucho mayor ("no es solamente")
+C.stack = {
+  make(el, c) { const th = TH(c); fullBase(el, c, `<g data-ghost></g>`);
+    htmlLayer(el, `<div data-k style="position:absolute;left:${.06 * W}px;right:${.06 * W}px;top:${.08 * H}px;text-align:center;line-height:1.15">${kinetic(c.words || [], { size: 84, keyColor: th.acc })}</div>
+      ${c.blocks.map((b, i) => `<div data-bk="${i}" style="position:absolute;left:${(V ? .3 : .37) * W}px;width:${(V ? .4 : .26) * W}px;height:${(V ? 120 : 92) * U}px;top:${V ? (.80 - (i + 1) * .068) * H : .86 * H - (i + 1) * 104 * U}px;border-radius:${18 * U}px;background:#16324a;border:${3 * U}px solid ${th.acc};
+        display:flex;align-items:center;gap:${18 * U}px;padding:0 ${30 * U}px;box-sizing:border-box;color:#fff;font:700 ${38 * U}px Helvetica">
+        <div style="width:${62 * U}px;height:${62 * U}px;color:${th.acc}">${icon(b.icon, 2)}</div>${b.t}</div>`).join("")}
+      <div data-lbl style="position:absolute;left:0;right:0;top:${(V ? .82 : .875) * H}px;text-align:center;font:700 ${40 * U}px Helvetica;color:rgba(255,255,255,.75)">${c.label || "Lo que ya tienes"}</div>`); },
+  draw(el, c, t) { fullIO(el, c, t); animBg(el, t, c.start); const th = el._th, q = s => el.querySelector(s);
+    c.blocks.forEach((b, i) => { const n = q(`[data-bk="${i}"]`), a = prog(t, b.at, b.at + .45), e = eOut(a), land = Math.sin(clamp((a - .7) / .3) * Math.PI) * 6 * U;
+      css(n, { opacity: clamp(a * 3), transform: `translateY(${(1 - e) * -420 * U + land}px) rotate(${(1 - e) * (i % 2 ? 8 : -8)}deg)` }); });
+    const g = eInOut(prog(t, c.ghostAt, c.ghostAt + .6)), top = V ? .80 * H - c.blocks.length * .068 * H : .86 * H - c.blocks.length * 104 * U, gh = (V ? .24 : .2) * H * g, gw = (V ? .62 : .4) * W;
+    q("[data-ghost]").innerHTML = g > 0 ? `<rect x="${(W - gw) / 2}" y="${top - gh - 20 * U}" width="${gw}" height="${gh}" rx="${26 * U}" fill="${th.acc}" fill-opacity=".05" stroke="${th.acc}" stroke-width="${5 * U}"
+      stroke-dasharray="${16 * U} ${12 * U}" stroke-dashoffset="${-t * 40 * U}" opacity="${g}"/>
+      <text x="${W / 2}" y="${top - gh / 2}" text-anchor="middle" font-family="Helvetica" font-weight="800" font-size="${150 * U}" fill="${th.acc}" opacity="${g * (.5 + .2 * Math.sin(t * 3))}">?</text>` : "";
+    pop(q("[data-lbl]"), t, c.labelAt, { dy: 16, d: .35 }); animKinetic(el, t); },
+};
+
+// ---------- subtítulos ----------
+function buildChunks(words, S) {
+  const fixes = S.fixes || {};
+  const clean = w => { let x = w.replace(/[.,;:¡!¿?…"“”]/g, ""); for (const [a, b] of Object.entries(fixes)) if (x.toLowerCase() === a.toLowerCase()) x = b; return x; };
+  const keys = (S.keywords || []).map(k => k.toLowerCase());
+  const out = []; let cur = [];
+  const flush = () => { if (cur.length) out.push(cur); cur = []; };
+  words.forEach((w, i) => {
+    const txt = clean(w.w); if (!txt) return;
+    const prev = words[i - 1];
+    if (cur.length && (cur.length >= (S.maxWords || 3) || cur.map(x => x.t).join(" ").length + txt.length > (S.maxChars || 16) ||
+        (prev && /[.,;:?!…]$/.test(prev.w)) || (prev && w.s - prev.e > 0.28))) flush();
+    cur.push({ t: txt, s: w.s, e: w.e, key: /\d/.test(txt) || keys.includes(txt.toLowerCase()) });
+  });
+  flush();
+  return out.map((ws, k) => ({ ws, s: ws[0].s, e: Math.min(ws[ws.length - 1].e + .45, out[k + 1] ? out[k + 1][0].s : 1e9) }));
+}
+let subsEl;
+// Estilos de subtítulos sacados de las referencias, con las fuentes instaladas en esta Mac.
+// reveal: chunk (el bloque entra junto) | word (cada palabra aparece al decirse) | karaoke (todas visibles, se pintan al decirse)
+const SUB_PRESETS = {
+  marino:      { font: "Poppins", weight: 800, color: "#fff", stroke: 12, active: "pill", reveal: "chunk", keyColor: "#BAD2DF", y: .70, size: 80 },
+  karaoke:   { font: "Georgia", weight: 700, color: "#E9792B", dim: "rgba(160,150,140,.42)", reveal: "karaoke", size: 74, y: .74, maxWords: 4, maxChars: 24, shadow: "0 2px 10px rgba(255,255,255,.35)" },   // ref6
+  editorial: { font: '"Big Caslon", "Bodoni 72"', weight: 700, color: "#fff", keyFont: '"Chamberi Headline"', keyItalic: true, keyColor: "#FF4A1C", keyScale: 1.3, reveal: "word", blur: true,
+               size: 92, y: .60, maxWords: 3, maxChars: 18, shadow: "0 6px 22px rgba(0,0,0,.45)" },   // ref7
+  swiss:     { font: "Helvetica", weight: 700, spacing: "-.045em", color: "#fff", keyColor: "#E3141F", keyScale: 1.4, smallWords: .58, reveal: "word", blur: true,
+               size: 84, y: .62, maxWords: 4, maxChars: 22, shadow: "0 6px 22px rgba(0,0,0,.4)" },   // ref8 / ref11
+  clean:     { font: '"Alliance No.2"', weight: 400, color: "#fff", keyFont: '"Chamberi Text"', keyItalic: true, keyColor: "#3BD16F", keyScale: 1.15, reveal: "word", blur: true,
+               size: 84, y: .64, maxWords: 3, maxChars: 20, shadow: "0 4px 16px rgba(0,0,0,.45)" },   // ref9
+  italic:    { font: "Coolvetica", italic: true, weight: 400, color: "#fff", keyColor: "#F0BE2C", reveal: "word", blur: true, size: 84, y: .66, maxWords: 3, maxChars: 20,
+               shadow: "0 4px 14px rgba(0,0,0,.5)" },   // ref4
+  hand:      { font: "Noteworthy", weight: 700, color: "#fff", keyColor: "#F5B547", reveal: "word", blur: true, size: 86, y: .66, maxWords: 3, maxChars: 20,
+               shadow: "0 0 18px rgba(255,190,90,.55), 0 4px 14px rgba(0,0,0,.5)" },   // ref13
+  glow:      { font: "Helvetica", weight: 700, upper: true, color: "#fff", keyColor: "#9B5CFF", keyGlow: "0 0 24px rgba(155,92,255,.85)", reveal: "word", blur: true,
+               size: 82, y: .64, maxWords: 3, maxChars: 18, shadow: "0 4px 14px rgba(0,0,0,.45)" },   // ref10
+};
+const SMALL_WORDS = new Set("a al de del el en la las lo los mi se su sus te tu un una y o que con por para es ya no si".split(" "));
+function subStyle() { const S = E.subs || {}; const o = Object.assign({}, SUB_PRESETS[S.preset || "marino"], S);
+  if (!o.allowSizes) { o.keyScale = 1; o.smallWords = 0; }   // regla: todas las letras del mismo tamaño, nunca cambian
+  return o; }
+function drawSubs(t, fullOn) {
+  const S = subStyle();
+  if (S.off || (fullOn && !S.overFull)) { subsEl.classList.add("hide"); return; }
+  const ch = chunks.find(c => t >= c.s && t < c.e);
+  if (!ch) { subsEl.classList.add("hide"); return; }
+  subsEl.classList.remove("hide");
+  if (subsEl._ch !== ch) {
+    subsEl._ch = ch;
+    const size = S.size * U, stroke = (S.stroke || 0) * U;
+    subsEl.innerHTML = `<div class="line">${ch.ws.map(w => {
+      const key = w.key, small = S.smallWords && !key && SMALL_WORDS.has(w.t.toLowerCase());
+      const fs_ = size * (key ? (S.keyScale || 1) : small ? S.smallWords : 1);
+      const txt = S.upper ? w.t.toUpperCase() : w.t;
+      return `<span class="sw${key ? " key" : ""}" style="font-family:${(key && S.keyFont ? S.keyFont : S.font).replace(/"/g, "'")};font-weight:${S.weight};font-style:${(key && S.keyItalic) || S.italic ? "italic" : "normal"};
+        font-size:${fs_}px;letter-spacing:${S.spacing || "0"};color:${key ? S.keyColor : S.color};-webkit-text-stroke:${stroke ? stroke + "px var(--ink)" : "0"};paint-order:stroke fill;
+        text-shadow:${key && S.keyGlow ? S.keyGlow : S.shadow || "0 .08em .3em rgba(0,0,0,.35)"};${S.active === "pill" ? "" : "background:none;padding:0 .08em"}">${txt}</span>`;
+    }).join(" ")}</div>`;
+    css(subsEl, { top: S.y * H + "px" });
+  }
+  const line = subsEl.firstChild;
+  if (S.reveal === "chunk") { const p = eOut(prog(t, ch.s, ch.s + .18)); line.style.transform = `translateY(${(1 - p) * 12 * U}px)`; line.style.opacity = p; }
+  else { line.style.transform = ""; line.style.opacity = 1; }
+  subsEl.querySelectorAll(".sw").forEach((n, k) => {
+    const w = ch.ws[k], nxt = ch.ws[k + 1], on = t >= w.s && t < (nxt ? nxt.s : ch.e), p = eOut(prog(t, w.s - .05, w.s + .22));
+    if (S.reveal === "word") {   // aparece al decirse: desenfoque → nítido, sube un poco (≈0.15 s como en las referencias)
+      css(n, { opacity: p, filter: S.blur ? `blur(${(1 - p) * 6 * U}px)` : "", transform: `translateY(${(1 - p) * 12 * U}px)` });
+    } else if (S.reveal === "karaoke") {   // visibles en gris, se pintan al decirse
+      n.style.color = t >= w.s ? (w.key ? S.keyColor : S.color) : S.dim; n.style.transform = "";
+    } else {
+      n.classList.toggle("on", on && S.highlight !== false && S.active === "pill");
+      n.style.transform = "";
+    }
+  });
+}
+
+// ---------- flash de transición ----------
+let flashEl;
+function drawFlash(t) {
+  const f = (E.flashes || []).find(x => t >= x && t < x + .16);
+  if (f == null) { flashEl.style.opacity = 0; return; }
+  flashEl.style.opacity = .75 * (1 - (t - f) / .16);
+}
+
+// ---------- montaje ----------
+async function init() {
+  await load(`${PROJ}/_data.js`); await load(`${PROJ}/cues.js`);
+  E = window.EDIT; W = window.EDL.W; H = window.EDL.H; V = H > W; U = V ? W / 1080 : H / 1080; F = V ? 1.55 : 1.2;
+  stage = document.getElementById("stage"); css(stage, { width: W + "px", height: H + "px" });
+  cues = (E.cues || []).map(c => { const el = document.createElement("div"); stage.appendChild(el); C[c.type].make(el, c); el.classList.add("hide"); return { c, el }; });
+  subsEl = document.createElement("div"); subsEl.id = "subs"; stage.appendChild(subsEl);
+  css(subsEl, { top: ((E.subs && E.subs.y) || (V ? 0.70 : 0.80)) * H + "px", transform: "translateY(-50%)" });
+  flashEl = document.createElement("div"); flashEl.id = "flash"; css(flashEl, { width: W + "px", height: H + "px", opacity: 0 }); stage.appendChild(flashEl);
+  chunks = buildChunks(window.WORDS, subStyle());
+  await document.fonts.ready;
+  window.__ready = true;
+}
+function render(t) {
+  let fullOn = false;
+  for (const { c, el } of cues) {
+    const on = t >= c.start && t <= c.end; el.classList.toggle("hide", !on);
+    if (on) { C[c.type].draw(el, c, t); if (el.classList.contains("full") || c.noSubs || (E.subs && E.subs.onlyClean && t >= c.start - .15 && t <= c.end + .15)) fullOn = true; }
+  }
+  drawSubs(t, fullOn); drawFlash(t);
+}
+window.__render = render;
+init().then(() => { if (qs.has("t")) render(+qs.get("t")); });
+</script>
+<script src="estilos.js"></script>
+</body>
+</html>

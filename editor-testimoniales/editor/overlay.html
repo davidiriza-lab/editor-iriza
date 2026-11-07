@@ -1,0 +1,240 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+/* Capa de subtítulos de testimoniales.
+   Se abre con ?proj=<carpeta absoluta del proyecto>[&v1=1]. render.mjs llama window.__render(t) cuadro por cuadro. */
+@font-face{font-family:LG;src:url(fonts/league-gothic_latin-400-normal.woff2)}
+@font-face{font-family:IS;font-style:italic;src:url(fonts/instrument-serif_latin-400-italic.woff2)}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1920px;height:1080px;overflow:hidden;background:transparent}
+/* vertical (proyecto.json "vertical": true): texto centrado abajo, sin panel ni tarjeta */
+html.vert,html.vert body{width:1080px;height:1920px}
+html.vert .page{text-align:center}
+html.vert .B{font-size:170px}
+:root{--terra:#C0663A;--pill:#A65A3A;--cream:#FCEBDD;--peach:#F3D2BC;
+ --sh:0 2px 3px rgba(0,22,70,.55),0 0 22px rgba(0,22,70,.55),0 0 60px rgba(0,22,70,.35)}
+.page{position:absolute;top:0;opacity:0;will-change:filter,opacity}
+.line{display:block;white-space:nowrap;color:#fff}
+.s{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:500;font-size:var(--fs,56px);letter-spacing:-.6px;line-height:1.16;text-shadow:var(--sh)}
+.B{font-family:LG;text-transform:uppercase;font-size:190px;line-height:.86;letter-spacing:.5px;text-shadow:0 3px 4px rgba(0,22,70,.45),0 0 40px rgba(0,22,70,.5);margin:2px 0 6px -4px}
+.i{font-family:IS;font-style:italic;font-size:74px;line-height:1.08;color:#fff;text-shadow:var(--sh)}
+.w{display:inline-block;opacity:0;will-change:transform,filter,opacity}
+.sp{display:inline-block;width:.26em}
+.box{position:relative;display:inline-block;white-space:nowrap;padding:0 12px 0 10px;text-shadow:none;isolation:isolate;z-index:0}
+.box::before{content:"";position:absolute;left:0;top:6%;bottom:2%;right:0;background:var(--terra);transform-origin:0 50%;transform:scaleX(var(--k,0));z-index:-1}
+.pill{position:relative;display:inline-block;white-space:nowrap;padding:0 22px 2px;isolation:isolate;color:#fff;text-shadow:none}
+.pill::before{content:"";position:absolute;inset:4% 0 0 0;border-radius:999px;background:var(--pill);opacity:var(--k,0);transform:scale(calc(.85 + .15*var(--k,0)));z-index:-1;box-shadow:0 0 0 3px rgba(252,235,221,.18)}
+/* fondo claro detrás del texto (contraste.py): sombra fuerte + velo oscuro suave */
+.page.claro .s,.page.claro .i{text-shadow:0 2px 4px rgba(0,0,0,.85),0 0 24px rgba(0,0,0,.75),0 0 70px rgba(0,0,0,.55)}
+.page.claro .B{text-shadow:0 3px 6px rgba(0,0,0,.8),0 0 46px rgba(0,0,0,.72)}
+.page.claro::before{content:"";position:absolute;inset:-50px -70px;background:radial-gradient(closest-side,rgba(0,0,0,.45),rgba(0,0,0,0));z-index:-1}
+/* degradado fijo del lado del texto (fondos con logo/texto) */
+#vig{position:absolute;top:0;bottom:0;width:1150px;opacity:0}
+#vig.izq{left:0;background:linear-gradient(to right,rgba(0,0,0,.82) 0%,rgba(0,0,0,.7) 38%,rgba(0,0,0,.35) 58%,rgba(0,0,0,0) 78%)}
+#vig.der{right:0;background:linear-gradient(to left,rgba(0,0,0,.82) 0%,rgba(0,0,0,.7) 38%,rgba(0,0,0,.35) 58%,rgba(0,0,0,0) 78%)}
+/* subtítulos normales abajo (tomas de stock) */
+.bsub{left:160px;width:1600px;text-align:center}
+.bsub .flow{width:1350px;margin:0 auto;text-wrap:balance;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-weight:600;font-size:58px;line-height:1.22;color:#fff;letter-spacing:-.4px;
+ text-shadow:0 2px 3px rgba(0,0,0,.7),0 0 18px rgba(0,0,0,.6),0 0 44px rgba(0,0,0,.45)}
+.bsub .flow .bw{font-weight:800}
+#scrim{position:absolute;left:0;right:0;bottom:0;height:420px;background:linear-gradient(to top,rgba(0,0,0,.62),rgba(0,0,0,.32) 45%,rgba(0,0,0,0));opacity:0}
+/* tarjeta de perfil */
+.card{position:absolute;width:640px;padding:26px 30px;border-radius:24px;background:#141519;border:4px solid #d8d4d0;display:flex;gap:24px;align-items:center;opacity:0;box-shadow:0 30px 70px rgba(0,20,60,.45)}
+.av{width:118px;height:118px;border-radius:50%;padding:5px;background:conic-gradient(#F9A03F,#E1306C,#833AB4,#F9A03F);flex:none}
+.av img{width:100%;height:100%;border-radius:50%;border:4px solid #141519;display:block;object-fit:cover}
+.ci{font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;color:#fff}
+.ci .h{font-size:34px;font-weight:700;display:flex;align-items:center;gap:10px}
+.ci .h svg{width:28px;height:28px}
+.ci .n{font-size:21px;opacity:.75;margin-top:4px}
+.ci .st{display:flex;gap:26px;margin-top:14px;font-size:21px;opacity:.95}
+.ci .st b{font-size:24px;margin-right:6px}
+/* panel claro a pantalla completa */
+#panel{position:absolute;inset:0;background:radial-gradient(1400px 900px at 30% 45%,#f4f2f0,#e6e3e0);opacity:0}
+#panel .circ{position:absolute;left:330px;top:250px;width:620px;height:620px;border-radius:50%;background:#EDB898;opacity:.55;transform:scale(0)}
+#panel .page{left:150px;width:1640px}
+#panel .s{color:#B5603C;text-shadow:none;font-size:58px}
+.B.acento{margin-top:.17em}
+#panel .B{color:#B9603A;text-shadow:none;font-size:250px;white-space:normal;line-height:.84}
+#panel .bar{position:absolute;left:130px;height:250px;background:var(--peach);transform-origin:0 50%;opacity:.85}
+#panel .box{padding:0 26px}
+#panel .box .w{font-family:LG;font-size:150px;text-transform:uppercase;color:#fff;line-height:1.02;letter-spacing:2px}
+</style></head><body>
+<div id="vig"></div><div id="scrim"></div>
+<div id="panel"><div class="circ"></div><div class="bar"></div></div>
+<div id="root"></div>
+<svg id="flecha" viewBox="0 0 120 160" style="position:absolute;width:150px;height:200px;opacity:0;filter:drop-shadow(0 6px 18px rgba(0,0,0,.55)) drop-shadow(0 0 22px rgba(192,102,58,.7))"><path d="M60 8 V118 M18 80 L60 122 L102 80" fill="none" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<script>
+window.__ready=false;
+const Q=new URLSearchParams(location.search), PROJ=Q.get("proj"), IS_V1=Q.has("v1"), VERT=Q.has("vert");
+if(VERT) document.documentElement.classList.add("vert");
+const VER=`<svg viewBox="0 0 24 24"><path fill="#3897F0" d="M12 1l2.6 2.3 3.4-.5 1 3.3 3 1.7-1.2 3.2 1.2 3.2-3 1.7-1 3.3-3.4-.5L12 23l-2.6-2.3-3.4.5-1-3.3-3-1.7L3.2 13 2 9.8l3-1.7 1-3.3 3.4.5z"/><path fill="#fff" d="M10.6 15.6l-3.3-3.3 1.3-1.3 2 2 4.9-4.9 1.3 1.3z"/></svg>`;
+const ease=x=>1-Math.pow(1-x,3), cl=(x,a=0,b=1)=>Math.min(b,Math.max(a,x)), ramp=(t,a,d)=>ease(cl((t-a)/d));
+let PAGES=[], CONF, FACES, V1=null, SIDE;
+const J=f=>fetch("file://"+PROJ+"/"+f).then(r=>r.json());
+const mk=(tag,cls,parent)=>{ const e=document.createElement(tag); if(cls)e.className=cls; if(parent)parent.appendChild(e); return e; };
+
+function buildLines(p,el){
+  p.lines.forEach(ln=>{
+    const L=mk("div","line "+ln.st,el); let grp=null,gtype=null;
+    // en mayúsculas el acento (É, Í, Ñ…) sube más que la línea: sin aire choca con el renglón de arriba
+    if(ln.st==="B"&&ln.w.some(w=>/[áéíóúüñÁÉÍÓÚÜÑ]/.test(w.t))) L.classList.add("acento");
+    ln.w.forEach((w,k)=>{
+      const isNew=w.dec!==gtype;
+      if(k>0) ((!isNew&&w.dec)?grp:L).appendChild(mk("span","sp"));
+      if(isNew){ gtype=w.dec; grp=null; if(w.dec){ grp=mk("span",w.dec,L); p.decs.push({el:grp,t:w.s}); } }
+      const s=mk("span","w",grp||L); s.textContent=w.t; p.ws.push({el:s,t:w.s,big:ln.st==="B"});
+    });
+  });
+}
+function buildBottom(p,root){
+  const el=mk("div","page bsub",root), F=mk("div","flow",el); p.el=el; let first=true;
+  for(const ln of p.lines){ let grp=null,gtype=null;
+    ln.w.forEach((w,k)=>{ const isNew=w.dec!==gtype;
+      if(!first) ((!isNew&&w.dec&&k>0)?grp:F).appendChild(mk("span","sp")); first=false;
+      if(isNew||k===0){ gtype=w.dec; grp=null; if(w.dec){ grp=mk("span",w.dec,F); p.decs.push({el:grp,t:w.s}); } }
+      const s=mk("span","w"+(ln.st==="B"?" bw":""),grp||F); s.textContent=w.t; p.ws.push({el:s,t:w.s,big:false});
+    });
+  }
+}
+// ajusta renglones al ancho: chicas envuelven, grandes encogen (o envuelven si quedarían < 150 px)
+function fit(p,maxW,inPanel){
+  p.el.querySelectorAll(".line").forEach(L=>{ const lim=maxW-30; if(L.scrollWidth<=lim) return;
+    const fs=parseFloat(getComputedStyle(L).fontSize), k=lim/L.scrollWidth*.96;
+    if(!inPanel && (!L.classList.contains("B") || fs*k<150)){ L.style.whiteSpace="normal"; L.style.width=lim+"px";
+      if(L.classList.contains("B")){ let f=165; L.style.fontSize=f+"px"; while(L.scrollWidth>lim && f>90){ f-=5; L.style.fontSize=f+"px"; } } }
+    else L.style.fontSize=(fs*k)+"px"; });
+}
+// Cabeza de la persona en TODOS los fotogramas (caras.json, de bin/caras): el texto nunca va encima.
+// zona(p) = de la coronilla a la barbilla (+aire) en todos los fotogramas en que la página está en pantalla,
+// sin contar los tramos de tomas (broll), donde la persona no se ve.
+let CARAS=null, ZS=null;
+const AIRE=28, FLH=200+34;                                                 // alto de la flecha + rebote
+// fotogramas donde Vision no vio la cara (de perfil, mano enfrente): se usa la detección más cercana (≤ 1 s)
+function rellenarCaras(){
+  const F=CARAS.f, ok=F.map(f=>f[1]>=0&&f[4]-f[2]>=60);
+  for(let i=0;i<F.length;i++){ if(ok[i]) continue; let best=null,d=1e9;
+    for(let j=Math.max(0,i-30);j<Math.min(F.length,i+31);j++) if(ok[j]&&Math.abs(j-i)<d){ d=Math.abs(j-i); best=F[j]; }
+    if(best) F[i]=[F[i][0],...best.slice(1)]; }
+}
+function zona(a,b){
+  if(!CARAS) return null; const br=CONF.broll||[];
+  let arriba=1e9, abajo=-1, n=0;
+  for(const f of CARAS.f){ const [t,x0,y0,x1,y1,cab]=f; if(t<a||t>b||x0<0) continue;
+    if(br.some(r=>t>=r.a-.02&&t<r.b+.02)) continue;
+    const hc=y1-y0; if(hc<60) continue;                                  // detección diminuta = falsa
+    arriba=Math.min(arriba,cab>=0?Math.min(cab,y0-.25*hc):y0-.35*hc); abajo=Math.max(abajo,y1+.1*hc); n++; }
+  return n?{arriba:Math.max(0,arriba-AIRE),abajo:abajo+AIRE}:null;
+}
+// Dónde va cada página (vertical): dentro de la zona segura de Instagram, fuera de la cabeza, sin pisar la flecha.
+// Orden: altura preferida → debajo de la barbilla → arriba de la cabeza → lo mismo encogiendo el bloque hasta 85 % (si no cabe, partir.py la divide).
+function topLibre(p,h){
+  const techo=ZS.y0, FLc=CONF.flecha, conFlecha=FLc&&p.end>FLc.en-.35&&p.start<(FLc.fin??99);
+  let piso=conFlecha?Math.min(ZS.y1,FLc.y-20):ZS.y1;
+  const z=zona(p.start-.3,p.end+.3); p.zona=z; p.sc=1;
+  const pref=Math.max(techo,Math.min(piso-h,(CONF.texto_y??1250)-h/2));
+  if(!z) return pref;
+  const intentar=()=>{ for(const s of [1,.92,.85]){ const hs=h*s;
+    const libre=top=>top>=techo&&top+hs<=piso&&(top>=z.abajo||top+hs<=z.arriba);
+    const op=[Math.max(techo,Math.min(piso-hs,(CONF.texto_y??1250)-hs/2)), Math.max(z.abajo,techo), z.arriba-hs];
+    for(const top of op) if(libre(top)){ p.sc=s; return top; } } return null; };
+  let top=intentar(); if(top!=null) return top;
+  if(conFlecha&&(FLc.sc??1)>.65){                                          // no cabe: la flecha se achica (hasta 65 %) y baja
+    FLc.sc=.65; FLc.y=ZS.y1-FLH*.65-6; piso=Math.min(ZS.y1,FLc.y-14); top=intentar(); if(top!=null) return top; }
+  if(conFlecha&&FLc.x==null){                                               // último recurso: la flecha se va al lado del texto
+    const der=Math.max(...[...p.el.querySelectorAll(".w")].map(w=>w.getBoundingClientRect().right));
+    const ax=ZS.x1-75*(FLc.sc??1)-12;                                       // centro de la flecha pegada al borde seguro
+    if(der<=ax-75*(FLc.sc??1)-16){ FLc.x=ax; piso=ZS.y1; top=intentar(); if(top!=null) return top; FLc.x=null; } }
+  p.zonaChoca=true; return Math.max(techo,Math.min(z.abajo,piso-h));       // no hay hueco: lo menos malo (revisar_texto lo reporta)
+}
+async function init(){
+  const BASE=await fetch("plantilla.json").then(r=>r.json()).catch(()=>({}));
+  CONF=await J("proyecto.json"); PAGES=await J("pages.json"); FACES=await J("faces.json"); if(IS_V1) V1=await J("v1.json");
+  CONF={...BASE,...CONF,zona_segura:{...(BASE.zona_segura||{}),...(CONF.zona_segura||{})}};
+  ZS=CONF.zona_segura.y1?CONF.zona_segura:{x0:42,x1:900,y0:262,y1:1540,botones_y:700};
+  if(CONF.flecha&&CONF.flecha.en==null) CONF.flecha=null;                 // sin "clic" encontrado: no hay flecha
+  if(CONF.flecha) CONF.flecha.y=Math.min(CONF.flecha.y??1e9,ZS.y1-FLH-6);   // la flecha, rebote incluido, dentro de la zona segura
+  try{ CARAS=await J("caras.json"); rellenarCaras(); }catch(e){ CARAS=null; }
+  await document.fonts.load("190px LG"); await document.fonts.load("italic 62px IS");
+  const fx=FACES.filter(c=>c.cx!=null), meanCx=fx.reduce((a,c)=>a+c.cx,0)/(fx.length||1);
+  SIDE=CONF.lado==="izquierda"||CONF.lado==="derecha"?CONF.lado:(meanCx<.45?"derecha":"izquierda");
+  const CY=CONF.centro_y??(SIDE==="derecha"?470:520);
+  if(CONF.tam_chica) document.documentElement.style.setProperty("--fs",CONF.tam_chica+"px");
+  const over=(a,b)=>FACES.filter(c=>c.b>a&&c.a<b&&c.cx!=null);
+  // derecha: arranca después del borde derecho de la cara · izquierda: termina antes del hombro
+  const place=p=>{ const cs=over(p.start,p.end);
+    if(SIDE==="derecha"){ const r=Math.max(0,...cs.map(c=>c.right)); const left=Math.min(1200,Math.max(960,r+50)); return {left,lim:1870}; }
+    const l=Math.min(...cs.map(c=>c.left),1e9); return {left:90,lim:Math.max(600,Math.min(900,l-100))}; };
+  const vig=document.getElementById("vig"); vig.className=SIDE==="izquierda"?"izq":"der"; vig.style.opacity=CONF.vineta&&!IS_V1?1:0;
+  const root=document.getElementById("root"), panel=document.getElementById("panel");
+  PAGES.forEach((p,i)=>{ p.i=i; p.ws=[]; p.decs=[];
+    p.mode=IS_V1?((V1.modos||{})[i]||"lado"):"lado";
+    if(IS_V1 && p.tag) p.tag=null;                         // sobre tomas no hay panel ni tarjeta
+    if(p.mode==="abajo"){ buildBottom(p,root); return; }
+    if(p.mode==="omitir"){ p.skip=true; return; }
+    const el=mk("div","page",p.tag==="panel"?panel:root); p.el=el;
+    if(p.tag==="panel"){ buildLines(p,el); fit(p,1640,true); return; }
+    if(VERT && p.tag) p.tag=null;
+    // vertical: columna de texto dentro de la zona segura (lejos de los botones de la derecha)
+    let {left,lim}=VERT?{left:ZS.x0+(CONF.margen??30),lim:ZS.x1-(CONF.margen??30)}:place(p);
+    if(IS_V1 && V1.izquierdas && V1.izquierdas[i]!=null){ left=V1.izquierdas[i]; lim=V1.limites?.[i]??(p.mode==="izquierda"?Math.min(1000,left+900):1870); }
+    p.left=left; el.style.left=left+"px"; el.style.width=(lim-left)+"px";
+    buildLines(p,el); fit(p,lim-left+30,false);
+    if(p.tag==="card" && CONF.tarjeta){ const T=CONF.tarjeta, c=mk("div","card",root);
+      c.innerHTML=`<div class="av"><img src="file://${PROJ}/${T.avatar||"avatar.png"}"></div><div class="ci"><div class="h">${T.handle} ${VER}</div><div class="n">${T.nombre||""}</div><div class="st"><span><b>${T.publicaciones||""}</b>publicaciones</span><span><b>${T.seguidores}</b>seguidores</span></div></div>`;
+      c.style.left=left+"px"; p.card=c; }
+  });
+  // palabras gigantes del mismo tamaño en todo el video (el más chico que quepa, nunca menos de 130 px)
+  if(VERT){ const Bs=[...document.querySelectorAll("#root .page .B")], fs=Bs.map(b=>parseFloat(getComputedStyle(b).fontSize));
+    const tgt=Math.max(130,Math.min(...fs)); Bs.forEach((b,k)=>{ if(fs[k]>tgt) b.style.fontSize=tgt+"px"; }); }
+  let CLARAS={}; try{ CLARAS=await J("contraste.json"); }catch(e){}
+  PAGES.forEach((p,i)=>{ if(p.el&&CLARAS[i]) p.el.classList.add("claro"); });
+  for(const p of PAGES){ if(p.skip) continue; const h=p.el.offsetHeight;
+    if(p.mode==="abajo"){ p.el.style.top=(1035-h)+"px"; continue; }
+    if(p.tag==="panel"){ p.el.style.top=(540-h/2-20)+"px"; const B=p.el.querySelector(".B"), bar=document.querySelector("#panel .bar");
+      bar.style.top=(p.el.offsetTop+B.offsetTop+10)+"px"; bar.style.height=(B.offsetHeight-10)+"px";
+      bar.style.width=(Math.max(...[...B.querySelectorAll(".w")].map(s=>s.getBoundingClientRect().right))-130+40)+"px"; continue; }
+    if(p.card){ const tot=h+30+190; p.el.style.top=(CY-tot/2)+"px"; p.card.style.top=(CY-tot/2+h+30)+"px"; continue; }
+    p.el.style.top=(VERT?topLibre(p,h):Math.max(80,CY-h/2))+"px";
+    p.el.style.transformOrigin="50% 0"; if(p.sc&&p.sc<1) p.el.style.transform=`scale(${p.sc})`;
+  }
+  // caja real de cada página y de la flecha (para revisar_texto.py)
+  const caja=r=>({x0:Math.min(...r.map(b=>b.left)),x1:Math.max(...r.map(b=>b.right)),y0:Math.min(...r.map(b=>b.top)),y1:Math.max(...r.map(b=>b.bottom))});
+  window.__layout=PAGES.map(p=>{ if(p.skip||!p.el) return null; const r=[...p.el.querySelectorAll(".w")].map(s=>s.getBoundingClientRect());
+    return r.length?{start:p.start,end:p.end,...caja(r),sc:p.sc||1,zona:p.zona||null,choca:!!p.zonaChoca}:null; });
+  if(CONF.flecha){ const x=CONF.flecha.x??(VERT?(ZS.x0+ZS.x1)/2:960), k=CONF.flecha.sc??1; window.__flecha={en:CONF.flecha.en,fin:CONF.flecha.fin??99,x0:x-75*k,x1:x+75*k,y0:CONF.flecha.y,y1:CONF.flecha.y+FLH*k}; }
+  window.__zs=VERT?ZS:null;
+  window.__ready=true;
+}
+// t = segundos del armado (EDIT). En modo V1: tv = segundos del video de la persona, se mapea con los desfases.
+window.__render=function(tv){
+  let t=tv;
+  if(IS_V1){ const vis=V1.ventanas.some(([a,b])=>tv>=a&&tv<b); document.getElementById("root").style.display=vis?"block":"none";
+    let off=0; for(const [desde,o] of V1.desfases) if(tv>=desde) off=o; t=tv+off;
+    let sc=0; if(vis) for(const p of PAGES) if(p.mode==="abajo" && t>=p.start-.3 && t<=p.end+.05) sc=Math.max(sc,ramp(t,p.start-.3,.3)*(1-ramp(t,p.end-.25,.25)));
+    document.getElementById("scrim").style.opacity=sc; if(!vis) return; }
+  const panel=document.getElementById("panel"); let pa=0;
+  for(const p of PAGES){ if(p.skip) continue;
+    const on=t>=p.start-.3 && t<=p.end+.05;
+    if(!on){ p.el.style.opacity=0; if(p.card)p.card.style.opacity=0; continue; }
+    const out=ramp(t,p.end-.25,.25);
+    p.el.style.opacity=1-out; p.el.style.filter=out>0?`blur(${out*14}px)`:"none"; p.el.style.transform=`translateY(${-out*10}px) scale(${p.sc||1})`;
+    for(const w of p.ws){ const a=ramp(t,w.t-.06,w.big?.34:.3);
+      w.el.style.opacity=a; w.el.style.filter=a<1?`blur(${(1-a)*(w.big?12:8)}px)`:"none";
+      w.el.style.transform=`translateY(${(1-a)*(w.big?22:12)}px) scale(${w.big?1+(1-a)*.06:1})`; }
+    for(const d of p.decs) d.el.style.setProperty("--k",ramp(t,d.t-.12,.38));
+    if(p.card){ const a=ramp(t,p.start+.35,.4), k=a*(1-out);
+      p.card.style.opacity=k; p.card.style.filter=k<1?`blur(${(1-k)*12}px)`:"none"; p.card.style.transform=`scale(${.9+.1*a}) translateY(${(1-a)*20}px)`; }
+    if(p.tag==="panel"){ pa=ramp(t,p.start-.2,.3)*(1-ramp(t,p.end-.2,.22));
+      const B=p.ws.filter(w=>w.big);
+      document.querySelector("#panel .bar").style.transform=`scaleX(${ramp(t,B[0].t-.15,.6)})`;
+      document.querySelector("#panel .circ").style.transform=`scale(${ramp(t,B[Math.min(2,B.length-1)].t,.7)})`;
+      for(const w of p.ws) if(!w.big && w.el.closest(".box")){ const a=ramp(t,w.t-.06,.28); w.el.style.transform=`scale(${1.35-.35*a}) rotate(${-4*(1-a)}deg)`; } }
+  }
+  panel.style.opacity=pa; panel.style.transform=`scale(${1.03-.03*pa})`;
+  // flecha hacia abajo (proyecto.json -> "flecha": {"en": s, "fin": s, "y": px}): señala el botón del anuncio
+  const FL=CONF.flecha, fe=document.getElementById("flecha");
+  if(FL){ const a=ramp(t,FL.en,.3)*(1-ramp(t,FL.fin??1e9,.25)), W0=VERT?1080:1920;
+    const k=FL.sc??1; fe.style.transformOrigin="50% 0";
+    fe.style.left=((FL.x??(VERT?(ZS.x0+ZS.x1)/2:W0/2))-75)+"px"; fe.style.top=(FL.y+Math.abs(Math.sin((t-FL.en)*5))*34*k*(a>0?1:0))+"px";
+    fe.style.opacity=a; fe.style.transform=`scale(${(.6+.4*a)*k})`; }
+};
+init();
+</script></body></html>

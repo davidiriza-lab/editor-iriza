@@ -1,0 +1,2230 @@
+{
+ "familias": {
+  "pantalla-filmada": {
+   "nombre": "Pantalla Filmada",
+   "eds": [
+    1,
+    13,
+    15,
+    17,
+    25,
+    29,
+    30,
+    31,
+    32,
+    40
+   ],
+   "idea": "Se filma con el celular una laptop o monitor REAL (cuarto oscuro, escritorio con plantas o ventana con ciudad) y la animación vive dentro de la pantalla. Vende \"esto lo hizo la IA\": etiqueta fija arriba tipo \"Video hecho 100% con Opus 5.5\".",
+   "texto": "Etiqueta fija arriba (píldora negra o texto blanco bold con emoji). Dentro de la pantalla: tipografía cinética grande, palabra clave en otro color o en serif itálica.",
+   "mov": "Cámara en mano con micro-movimiento; dentro de la pantalla transiciones suaves con resplandor (glow) del color de la marca. Casi sin cortes: un solo plano de 6–30 s.",
+   "audio": "Música o voz en off; el sonido real del cuarto se pierde.",
+   "para": "Demostrar que la IA hizo un comercial/animación. Ideal para Autoridad y Valor (“mira lo que hizo Claude”).",
+   "motor": "Ya lo tenemos casi: animación con estilo-cine/HTML → render → se pega en perspectiva sobre una toma real de tu laptop (como la laptop de Higgsfield de C8253). Solo falta grabar tu laptop/monitor con la pantalla en blanco."
+  },
+  "tutorial-flechas": {
+   "nombre": "Tutorial con Flechas",
+   "eds": [
+    4,
+    26,
+    28
+   ],
+   "idea": "Paso a paso de una herramienta con capturas reales. Cada clic se señala con una flecha roja curva dibujada a mano y un recuadro rojo.",
+   "texto": "Titular grande blanco o negro con palabra en color (\"Cómo crear carruseles *ganadores*\"). Subtítulo corto (2–4 palabras) justo arriba de la captura; \"Paso uno/dos/tres\". Cierre con CTA grande \"Comenta “BOT”\".",
+   "mov": "Corte cada ~1 s, zoom a la ventana activa, flecha que entra con rebote, sello verde \"CONNECTED\" cuando algo queda listo.",
+   "audio": "Voz en off rápida + clics y whooshes suaves.",
+   "para": "Tutoriales y lead magnets (“comenta X y te mando el tutorial”). Metodología.",
+   "motor": "Se hace con el motor de Metodología (grabación de pantalla + zoom al cursor) agregando flechas rojas y fondo de cuadrícula."
+  },
+  "mundo-voxel": {
+   "nombre": "Mundo Voxel",
+   "eds": [
+    2,
+    38
+   ],
+   "idea": "Personajes 3D tipo bloques (Claudes naranjas con cara) actuando la idea en un escenario: tribunal, oficina, riel con muro de “LÍMITE”.",
+   "texto": "Titular arriba blanco bold + palabra en color/serif itálica; subtítulos chicos abajo con la palabra clave resaltada en caja (cian o dorada).",
+   "mov": "Cámara que viaja por la escena (dolly), desenfoque de profundidad entre planos, tarjetas de colores con bordes neón, barras comparativas animadas.",
+   "audio": "Voz en off + efectos de juego.",
+   "para": "Explicar un concepto abstracto (manías de Claude, cómo decide) de forma divertida. Valor.",
+   "motor": "Three.js del motor (personajes con RoundedBox) o imágenes de Higgsfield de los personajes + animación por código."
+  },
+  "mascota-marfil": {
+   "nombre": "Mascota en Marfil",
+   "eds": [
+    3
+   ],
+   "idea": "Fondo marfil liso, una mascota 3D (robot) que interactúa con íconos, celular y tarjetas.",
+   "texto": "Titular negro mayúsculas bold + palabra naranja; subtítulo en etiqueta negra mayúsculas chica con palabra naranja.",
+   "mov": "Objetos que entran con rebote, confeti, cuadrícula de 13 mascotas que se ilumina, candado resaltado.",
+   "audio": "Voz en off + pops.",
+   "para": "Noticia de herramienta (“Claude acaba de…”). Valor.",
+   "motor": "Imágenes de Higgsfield (mascota) recortadas + animación por código sobre papel."
+  },
+  "split-explicador": {
+   "nombre": "Split Explicador",
+   "eds": [
+    7,
+    9,
+    12,
+    45,
+    48
+   ],
+   "idea": "Pantalla dividida: arriba (40–45 %) un gráfico que cambia con cada idea; abajo tú hablando. El subtítulo vive en la unión.",
+   "texto": "Subtítulo en etiqueta (negra, azul o con bloque naranja detrás de la palabra) justo en la línea de unión. Arriba titulares cortos.",
+   "mov": "El gráfico de arriba cambia ~1 vez por segundo (íconos, pósters, sellos, capturas); tu toma corre continua.",
+   "audio": "Tu voz + música baja.",
+   "para": "Hablar a cámara sin perder el ritmo visual. Sirve para Dolor, Valor y Objeciones.",
+   "motor": "Lo tenemos casi: es el formato doble.mjs (Original vs Editado) con la mitad de arriba hecha en estilo-cine."
+  },
+  "montaje-relampago": {
+   "nombre": "Montaje Relámpago",
+   "eds": [
+    35
+   ],
+   "idea": "Hook en split (titular serif arriba, tú abajo) y luego montaje rapidísimo: tú, B-roll, capturas, titular pixel, billetes, celular.",
+   "texto": "Subtítulos blancos bold grandes con palabra amarilla/verde; algunos en serif itálica.",
+   "mov": "Corte cada 0.5–0.7 s, destellos amarillos, zoom de golpe.",
+   "audio": "Voz rápida + beat marcado.",
+   "para": "Listas (“5 proyectos que…”). Valor.",
+   "motor": "Cine Pro con cortes más rápidos y B-roll."
+  },
+  "brutalista-neon": {
+   "nombre": "Brutalista Neón",
+   "eds": [
+    36
+   ],
+   "idea": "Franja negra arriba con titular condensado en mayúsculas y una palabra verde neón tachada; luego pantallas negras con una palabra itálica por golpe.",
+   "texto": "Condensada mayúsculas (tipo Druk) blanca + verde neón; subtítulos en caja roja itálica mayúsculas.",
+   "mov": "Una palabra por golpe al ritmo de la voz, pósters verde neón, fondos naranja.",
+   "audio": "Voz + golpes secos.",
+   "para": "Declaraciones fuertes (“Claude mató a…”). Dolor/Autoridad.",
+   "motor": "estilo-cine con fuente condensada + paleta negro/verde neón."
+  },
+  "tipografia-roja": {
+   "nombre": "Tipografía Roja Editorial",
+   "eds": [
+    5
+   ],
+   "idea": "Persona real con tipografía cinética muy cargada alrededor: palabras en arco, silueta rellena de rojo, papel rasgado que revela billetes, collage de recortes de la cara.",
+   "texto": "Sans blanca + serif itálica + rojo; texto que gira en curva alrededor de la persona.",
+   "mov": "Zoom y giros, destellos blancos, papel que se rasga; 10 cortes en 11 s.",
+   "audio": "Voz + efectos de papel y golpe.",
+   "para": "Hooks muy llamativos con persona. Dolor.",
+   "motor": "estilo-cine con texto en curva y máscara de persona (ya la tenemos)."
+  },
+  "raw-vs-editado": {
+   "nombre": "Raw vs Editado",
+   "eds": [
+    6
+   ],
+   "idea": "Alterna la toma cruda (etiqueta “Raw”) y la editada (“Edited”) para presumir edición.",
+   "texto": "Palabra gigante detrás de la persona (roja), tarjetas flotantes, letras amarillas brillantes, nota cian.",
+   "mov": "Corte seco Raw → Edited con desenfoque de movimiento.",
+   "audio": "Canción.",
+   "para": "Vender el servicio de edición / mostrar el antes y después.",
+   "motor": "Igual a nuestro formato Original vs Editado (doble.mjs) pero alternando en vez de pantalla dividida."
+  },
+  "comercial-producto": {
+   "nombre": "Comercial de Producto",
+   "eds": [
+    8,
+    34,
+    47
+   ],
+   "idea": "Comercial sin persona: mockups de iPhone/iPad con la app real, mundo 3D o fotos cinematográficas por nicho, y titulares grandes.",
+   "texto": "Titular blanco/negro bold + palabra en color de marca (naranja, verde menta) o serif itálica; resalte en caja.",
+   "mov": "Dispositivos que entran y salen, notificaciones, tarjetas UI que se apilan, cierre con logo y botón al sitio.",
+   "audio": "Voz en off + música de marca.",
+   "para": "Anunciar un producto o servicio propio (bots, apps, tarjetas de fidelidad).",
+   "motor": "estilo-cine + mockups de celular (ya los hacemos en código) + imágenes de Higgsfield para fondos."
+  },
+  "testimonio-cinematico": {
+   "nombre": "Testimonio Cinemático",
+   "eds": [
+    10
+   ],
+   "idea": "Persona de cuerpo completo en estudio de color con palabra gigante en degradado sobre el pecho, íconos 3D tipo emoji y cierre con B-roll emotivo.",
+   "texto": "Línea chica blanca + palabra condensada gigante con degradado amarillo→naranja→rojo.",
+   "mov": "Zoom de golpe con desenfoque, íconos que entran desde abajo.",
+   "audio": "Voz + música emotiva.",
+   "para": "Testimoniales e historias personales.",
+   "motor": "Editor de testimoniales + capa de tipografía de estilo-cine."
+  },
+  "acento-amarillo": {
+   "nombre": "Acento Amarillo",
+   "eds": [
+    11,
+    33
+   ],
+   "idea": "Tú hablando + capturas a pantalla completa; la palabra clave en amarillo (manuscrita o serif itálica).",
+   "texto": "Subtítulo blanco chico + palabra amarilla (manuscrita en 11, serif itálica en 33); conteo 1/2/3 gigante.",
+   "mov": "Cortes rápidos a capturas y ejemplos; en 33 ejemplos con grano de película, serigrafía de puntos y sepia.",
+   "audio": "Voz + música.",
+   "para": "Tutoriales de herramientas (CapCut, ChatGPT). Metodología.",
+   "motor": "Cine Pro cambiando la fuente del acento."
+  },
+  "franja-cinemascope": {
+   "nombre": "Franja Cinemascope",
+   "eds": [
+    14,
+    22
+   ],
+   "idea": "Fondo negro con una franja horizontal al centro (formato panorámico) donde pasa toda la animación.",
+   "texto": "Sans fina; palabra clave con brillo naranja/rojo; animaciones de texto: pixelado, máquina de escribir, rebote.",
+   "mov": "Motion graphics minimal (ojo que se abre, silueta, palabras que rotan).",
+   "audio": "Música ambiental.",
+   "para": "Intros de marca personal o presentaciones.",
+   "motor": "estilo-cine con lienzo panorámico (ya soporta “lienzo”)."
+  },
+  "ui-minimal": {
+   "nombre": "UI Minimal",
+   "eds": [
+    20,
+    24,
+    50
+   ],
+   "idea": "Elementos de interfaz aislados flotando sobre fondo liso (negro con brillo azul o blanco/gris), con cursor que hace clic.",
+   "texto": "Sans fina negra/blanca; palabras que entran por letras; palabra en azul o rojo.",
+   "mov": "Botones que se presionan, menús que se despliegan, tarjetas que se inclinan en 3D, barras de progreso.",
+   "audio": "Clics y whooshes.",
+   "para": "Tutoriales cortos o anuncios de tu propia cuenta.",
+   "motor": "Interfaces en código (como las de Cine Pro 3D) sin fondo."
+  },
+  "tarjetas-anthropic": {
+   "nombre": "Tarjetas Anthropic",
+   "eds": [
+    16
+   ],
+   "idea": "Fondo carbón, tarjetas oscuras que aparecen una por una con cifras que cuentan; titular serif con palabra itálica naranja subrayada a mano.",
+   "texto": "Etiqueta mayúsculas naranja espaciada arriba; cifras grandes; subtítulo gris chico con palabra naranja.",
+   "mov": "Tarjetas en cuadrícula 2x2 que entran en orden, contadores, barras de progreso.",
+   "audio": "Voz en off tranquila.",
+   "para": "Explicar beneficios, programas o requisitos (becas, ofertas).",
+   "motor": "estilo-cine (tarjetas + contadores ya existen)."
+  },
+  "recorte-collage": {
+   "nombre": "Recorte en Collage",
+   "eds": [
+    18,
+    39
+   ],
+   "idea": "Tú recortado (sin fondo) encima de fondos que cambian con cada idea: cuadrícula, papel arrugado, fotos, papel rasgado amarillo.",
+   "texto": "Titulares de póster (serif negra + script roja, o condensada negra sobre tiras de papel); subtítulo una palabra blanca mayúsculas con contorno.",
+   "mov": "Cambio de fondo por frase, stickers, cinta adhesiva, cabezas recortadas multiplicadas.",
+   "audio": "Voz + efectos de papel.",
+   "para": "Hooks y explicaciones con mucha energía. OJO: a ti no te gustó cuando te cambiamos el fondo; usar solo si el recorte queda limpio.",
+   "motor": "Máscara de persona (Vision) + fondos de Higgsfield o collage en código."
+  },
+  "vidrio-toma-real": {
+   "nombre": "Vidrio sobre Toma Real",
+   "eds": [
+    19
+   ],
+   "idea": "Toma real ambiental (tú en la laptop, sin hablar) con tarjetas de vidrio esmerilado numeradas encima.",
+   "texto": "Titular serif itálica naranja + sans blanca bold; tarjetas “01/07 Setter 24/7” con mini diagrama de íconos.",
+   "mov": "Cada tarjeta reemplaza a la anterior con desenfoque.",
+   "audio": "Música.",
+   "para": "Listas rápidas (“7 agentes que puedes crear”). Valor.",
+   "motor": "estilo-cine sobre tu toma real."
+  },
+  "escritorio-3d": {
+   "nombre": "Escritorio 3D",
+   "eds": [
+    21
+   ],
+   "idea": "Entrevista/podcast con cortes a una mesa beige vista desde arriba donde aparecen objetos 3D (cerebro, foco, notas, storyboard).",
+   "texto": "Subtítulos cinéticos: serif amarilla brillante, caja naranja de resalte.",
+   "mov": "Objetos que caen con rebote, flechas punteadas, sombra de ventana.",
+   "audio": "Voz de la entrevista + música.",
+   "para": "Clips de podcast o reacciones a entrevistas.",
+   "motor": "Imágenes de objetos de Higgsfield recortadas + animación por código."
+  },
+  "poster-editorial": {
+   "nombre": "Póster Editorial",
+   "eds": [
+    23,
+    41,
+    42
+   ],
+   "idea": "Cada frase es un póster: imagen IA fotorrealista (calavera dorada, pan, ajedrez de vidrio) + tipografía de revista.",
+   "texto": "Condensada gigante + serif itálica; palabra repetida en capas; bloques de texto chico justificado.",
+   "mov": "Corte seco por frase, leve zoom, palabra que pasa detrás del objeto.",
+   "audio": "Voz en off grave + música.",
+   "para": "Frases motivacionales o de mentalidad. Encaja con tu marca personal.",
+   "motor": "Imágenes de Higgsfield (GPT Image) + tipografía en estilo-cine."
+  },
+  "pasos-numerados": {
+   "nombre": "Pasos Numerados",
+   "eds": [
+    27
+   ],
+   "idea": "“Paso 1/2/3” gigante rojo-naranja arriba; mockups de tablet/celular y tarjetas de fotos que se abren en abanico.",
+   "texto": "Paso gigante + subtítulo chico al centro; palabra acento en serif itálica o manuscrita.",
+   "mov": "Alterna fondo blanco (degradado rosa) y negro; cuadritos de color flotando.",
+   "audio": "Voz en off.",
+   "para": "Tutoriales de 3 pasos. Metodología.",
+   "motor": "estilo-cine + mockups en código."
+  },
+  "ugc-pantalla": {
+   "nombre": "Selfie + Pantalla (UGC)",
+   "eds": [
+    37
+   ],
+   "idea": "Look casero: tú en selfie muy cerca + el celular apuntando al monitor mientras señalas con el dedo.",
+   "texto": "Título fijo arriba en caja roja con emojis; subtítulos amarillos con contorno, frase completa.",
+   "mov": "Cámara en mano, sin animaciones.",
+   "audio": "Tu voz directa.",
+   "para": "Videos rápidos y auténticos (“mira lo que me hizo Claude”).",
+   "motor": "Solo corte + subtítulos (Editor Anuncios o Metodología)."
+  },
+  "podcast-verde": {
+   "nombre": "Podcast Verde",
+   "eds": [
+    44
+   ],
+   "idea": "Clip de podcast en blanco y negro que se interrumpe con pantallas verde bosque y una palabra gigante.",
+   "texto": "Sans bold gigante blanca/verde + línea chica serif itálica.",
+   "mov": "Una palabra por golpe; la tarjeta del reel B/N dentro del verde.",
+   "audio": "Voz del podcast.",
+   "para": "Recortes de podcast o entrevistas.",
+   "motor": "Corte de podcast + estilo-cine paleta verde."
+  },
+  "bola-de-luz": {
+   "nombre": "Bola de Luz",
+   "eds": [
+    46
+   ],
+   "idea": "Una esfera roja que rebota y funciona como foco: proyecta un cono de luz que revela el texto. Termina con texturas 3D y partículas.",
+   "texto": "Sans black gigante (palabra roja o azul), luego condensada sobre texturas 3D.",
+   "mov": "Física de rebote, cono de luz, partículas que forman letras; 31 cortes en 19 s.",
+   "audio": "Música electrónica.",
+   "para": "Intro de marca / presentación de producto.",
+   "motor": "Three.js en estilo-cine (luz y partículas)."
+  },
+  "showreel-cinematico": {
+   "nombre": "Showreel Cinemático",
+   "eds": [
+    49
+   ],
+   "idea": "Tipografía cinética gris/negra sobre marfil o negro con escenas 3D elegantes y oscuras (ojo, puerta con haz de luz, rosas, balanza, túnel).",
+   "texto": "Palabras de distintos tamaños y pesos, onda de audio, palabras borrosas que entran.",
+   "mov": "Desenfoque de movimiento entre escenas, 40 cortes en 45 s.",
+   "audio": "Voz en off + música cinematográfica.",
+   "para": "Es la referencia de la plantilla Cine Pro.",
+   "motor": "Cine Pro (ya existe)."
+  },
+  "duelo-pantallas": {
+   "nombre": "Duelo de Pantallas",
+   "eds": [
+    43
+   ],
+   "idea": "Dos ventanas apiladas (ChatGPT vs Gemini) con la misma petición escribiéndose y el resultado de cada una.",
+   "texto": "Etiqueta arriba; CTA fijo abajo en serif (“Comenta la palabra…”).",
+   "mov": "Tecleo simultáneo, resultado que crece desde la ventana.",
+   "audio": "Música.",
+   "para": "Comparativos de herramientas.",
+   "motor": "Interfaces en código (Cine Pro 3D) duplicadas."
+  },
+  "pizarra-pro": {
+   "nombre": "Pizarra Pro",
+   "eds": [
+    "pizarra"
+   ],
+   "idea": "Fondo blanco con cuadrícula fina tipo libreta: íconos en círculos oscuros (Claude, monitores) unidos con líneas punteadas, anillos azules con signos “?”, círculo que se rompe en pedazos, termómetro de proyectos que sube.",
+   "texto": "Etiquetas serif itálica en píldora terracota (“Claude”) y píldoras negras (“Project 1”).",
+   "mov": "Íconos que caen y se juntan en embudo, brillo naranja, piezas que se rompen y se arman.",
+   "audio": "Voz en off.",
+   "para": "Explicar sistemas o cómo se conectan herramientas (Claude + Higgsfield).",
+   "motor": "Plantilla Esquema de empresa (Miro) animada en estilo-cine."
+  },
+  "doc-cinetico": {
+   "nombre": "Documento Cinético",
+   "eds": [
+    "1p"
+   ],
+   "idea": "Animación horizontal sobre una hoja blanca hueso tipo documento: la frase se escribe con tipografía cinética y aparecen objetos 3D (fajos de billetes) y cifras grandes. Parece un archivo de trabajo que cobra vida.",
+   "texto": "Sans negra grande que entra letra por letra con giro y desenfoque; palabra clave en serif itálica azul. Cifras gigantes arriba a la derecha (\"$4.000.000\"). Subtítulo chico abajo al centro, palabra por palabra, con la palabra clave en verde o morado.",
+   "mov": "Un solo plano de ~6 s sin cortes. Letras que caen y se acomodan; billetes 3D que se apilan desde arriba con rebote suave; cifra que aparece con fundido.",
+   "audio": "Voz en off; música mínima.",
+   "para": "Hook de dinero o de dolor de negocio (\"tu caja te está mintiendo\"). Funciona como el video que va DENTRO de la laptop de un video Pantalla Filmada.",
+   "motor": "estilo-cine con lienzo horizontal 1920x1080, fondo papel #e3dfd3, escena moneda/tarjetas para los billetes 3D y grupos de texto palabra por palabra."
+  },
+  "ui-orbita-oscura": {
+   "nombre": "Interfaz en Órbita",
+   "eds": [
+    "13p"
+   ],
+   "idea": "Fondo morado oscuro con viñeta: tarjetas de interfaz (chat de WhatsApp, teclado numérico, tablero de creativos) y un círculo de fotos verticales de creadores que gira alrededor de un logo (Meta).",
+   "texto": "Blanca bold centrada arriba; palabras clave en lila/morado; frases secundarias en serif itálica gris. Subtítulo abajo palabra por palabra.",
+   "mov": "Continuo, sin cortes (~16 s): tarjetas que entran con desenfoque, fotos que se acomodan en anillo y orbitan, contador que sube, tachado rojo sobre una tarjeta para el \"problema\".",
+   "audio": "Voz en off + música suave tecnológica.",
+   "para": "Explicar un servicio digital (anuncios, contenido UGC, automatización) con piezas de interfaz reales.",
+   "motor": "estilo-cine: escenas tarjetas/chat/telefonos con lienzo horizontal, fondo #1b1626 con viñeta morada, órbita con Three.js o CSS."
+  },
+  "lienzo-amarillo": {
+   "nombre": "Lienzo Amarillo con Íconos",
+   "eds": [
+    "15p"
+   ],
+   "idea": "Vertical 9:16 con fondo amarillo saturado: frases cortas, íconos de línea negros (velocímetro con aguja, personas, hexágonos con íconos) y una mascota negra en la esquina.",
+   "texto": "Sans negra mediana para frases; palabra gigante condensada al entrar (\"Tiempo\"); serif itálica para la frase de remate (\"cada hora\"); notas tipo post-it flotando.",
+   "mov": "Transiciones con desenfoque y zoom, aguja que gira, hexágonos que se duplican y se conectan, contador circular \"3 en segundos\". 1 corte en 12 s.",
+   "audio": "Voz en off + música alegre.",
+   "para": "Explicar un beneficio con metáforas visuales simples (tiempo, equipo, IA que ayuda).",
+   "motor": "estilo-cine vertical con tema de fondo #f1b80c, íconos SVG de línea, escena contador y tarjetas."
+  },
+  "persona-tarjetas-ui": {
+   "nombre": "Persona con Tarjetas de Interfaz",
+   "eds": [
+    "17p"
+   ],
+   "idea": "Persona sentada a cámara en estudio claro; sobre ella aparecen palabras gigantes en serif y tarjetas de interfaz (tarjeta de precio con botón verde, lista de pasos con borde rojo neón) que ilustran lo que dice.",
+   "texto": "Serif bold blanca grande con efecto de entrada; palabras gigantes semitransparentes detrás; tarjetas oscuras con texto blanco y acento verde o rojo.",
+   "mov": "2 cortes en 14 s: la persona se tapa por completo con una tarjeta que hace zoom, cursor que da clic, lista que se va llenando con marca roja.",
+   "audio": "Voz real de la persona + música de fondo.",
+   "para": "Anuncio de servicio con persona a cámara que \"explica con interfaces\" (precio, pasos, comparación).",
+   "motor": "Editor de testimoniales/anuncios para el corte y subtítulos + tarjetas de interfaz en código (escena interfaz/tarjetas de estilo-cine) encima."
+  },
+  "tarjetas-coral-cifras": {
+   "nombre": "Tarjetas Coral con Cifras",
+   "eds": [
+    "25p"
+   ],
+   "idea": "Horizontal y muy dinámico: alterna fondos coral/salmón, gris oscuro y blanco; ventanas de app 3D apiladas, pantalla dividida \"vos vs tu competencia\" con chats, cifras gigantes (\"+28 negocios\", \"8 países\") con cintas de texto diagonales y mockup de celular.",
+   "texto": "Sans redondeada extra bold (blanca o negra); palabra clave en coral o rojo; subtítulo abajo con la palabra clave resaltada; etiquetas tipo píldora (\"vos\", \"tu competencia\").",
+   "mov": "Rápido: 11 cortes en 26 s. Entradas con rebote, glitch de texto (\"se va\"), cintas que corren, contadores que suben, ventanas que caen en cascada.",
+   "audio": "Voz en off + música enérgica + efectos (pop, whoosh).",
+   "para": "Vender automatización o un servicio a negocios con prueba social en números.",
+   "motor": "estilo-cine horizontal: escenas chat (split), contador, tarjetas, telefonos; paleta #f26b5b / #2a2a2e / #f2f0ec."
+  },
+  "demo-app-terminal": {
+   "nombre": "Demo de App con Terminal",
+   "eds": [
+    "29p"
+   ],
+   "idea": "Demo de producto que mezcla animación y pantalla real: celular con chat y QR, ventana de la app con logo (botones de macOS), panel oscuro con estadísticas y la terminal de Claude Code escribiendo la integración.",
+   "texto": "Blanca bold con la palabra clave en rojo (\"Desde el 1 de octubre, la API de WhatsApp cobra\"); textos cortos que cuentan los pasos (\"Dale a tu agente acceso…\", \"Tu agente escribe la integración\").",
+   "mov": "10 cortes en 25 s: zoom a la ventana, cursor que da clic, terminal que escribe sola, celular que entra girando.",
+   "audio": "Voz en off + música tecnológica.",
+   "para": "Mostrar cómo se instala/usa una herramienta con Claude Code (tutorial vendedor).",
+   "motor": "Interfaces en código (escenas vscode/claudecode y telefonos de estilo-cine) + grabación de pantalla real con el motor de Metodología."
+  },
+  "comercial-glow-marca": {
+   "nombre": "Comercial de Marca con Resplandor",
+   "eds": [
+    "30p",
+    "31p",
+    "32p"
+   ],
+   "idea": "Comercial oscuro, casi negro, donde todo emite luz del color de la marca (naranja Amazon, verde Shopify, lima Higgsfield): logo dibujado por un trazo de luz, celular o interfaz flotando con halo, mapa 3D isométrico con ruta luminosa, objeto 3D (caja), eslogan final y logo.",
+   "texto": "Sans blanca limpia (estilo marca) centrada; una palabra en el color de la marca; textos muy cortos (\"From A to Z.\", \"Sell what you make\", \"Become an AI Director.\").",
+   "mov": "Cámara que viaja (dolly) entre escenas con desenfoque de movimiento; trazos de luz que conectan escenas; 0–16 cortes en ~20 s según la versión.",
+   "audio": "Música de comercial épica-minimalista + efectos de luz (whoosh, shimmer).",
+   "para": "Recrear el comercial de una marca o de tu propio producto para demostrar que la IA lo hizo.",
+   "motor": "estilo-cine en modo código (Three.js: logos extruidos, mapa, objetos) con fondo #050505 y halos del color de la marca; interfaces en código para la app."
+  },
+  "keynote-apple": {
+   "nombre": "Keynote de Producto",
+   "eds": [
+    "40p"
+   ],
+   "idea": "Presentación de producto estilo keynote de Apple: abre con un degradado radial (azul, verde, crema) y el nombre del producto; luego el producto 3D sobre fondo marfil que gira, se abre y se despieza; frases muy cortas en gris.",
+   "texto": "SF Pro / sans fina gris oscuro, pequeña y centrada (\"All new AirPods Pro 3\", \"Rebuilt from the ground up\", \"Fit, finally figured out.\").",
+   "mov": "7 s, 2 cortes: el degradado pulsa, el producto entra desde abajo y rota lento, piezas que se separan y se alinean.",
+   "audio": "Música minimalista de keynote.",
+   "para": "Lanzamiento de producto o servicio con look premium.",
+   "motor": "Plantilla Estilo Apple (estilo-apple/ESTILO.md): estilo-cine con fondo marfil #e9e4da, Three.js o imagen de Higgsfield del producto animada por código."
+  }
+ },
+ "editores": [
+  {
+   "n": 1,
+   "nombre": "Editor 1",
+   "apodo": "Laptop en la oscuridad",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 1.mp4",
+   "detalle": "Toma real de laptop en cuarto oscuro, mano tecleando; la animación vive DENTRO de la pantalla (doc blanco): tipografía cinética negra sans + acento serif itálica azul (\"Tu caja te está mintiendo\"), bloque 3D de billetes verdes, cifra \"$4.000.000\". Texto fijo arriba blanco \"Video hecho 100% con Opus 5.5\". 6 s sin cortes.",
+   "dur": 6.3,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#020105",
+    "#e3dfd3",
+    "#c2d6b6",
+    "#282426",
+    "#4e504f",
+    "#858886"
+   ],
+   "paleta_pct": [
+    69,
+    23,
+    3,
+    3,
+    2,
+    1
+   ],
+   "cuadros": 14,
+   "carpeta": "plantillas/formatos/editor-01"
+  },
+  {
+   "n": 2,
+   "nombre": "Editor 2",
+   "apodo": "Tribunal voxel",
+   "familia": "mundo-voxel",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 2.mp4",
+   "detalle": "Personajes 3D tipo bloque/arcilla (Claudes naranjas con cara) en un tribunal/biblioteca morado-dorado. Píldora arriba con 3 puntitos: blanco + palabra en serif itálica dorada (\"12 Claudes *juzgan* tu idea\"). Subtítulos abajo al centro, chicos, cada palabra en cajita oscura, palabra clave en serif itálica. Objetos: carteles \"TU IDEA\", stickers \"¡SÍ!\", foco, signos ?, paletas verde/rojo \"inocente/culpable\", marcador digital CULPABLE/INOCENTE 5–7, sello \"honesta\". Cámara se mueve (dolly/zoom), transiciones con desenfoque de profundidad. 26 s, 13 cortes.",
+   "dur": 26.0,
+   "cortes": 13,
+   "ritmo": 0.5,
+   "paleta": [
+    "#1d1419",
+    "#43254e",
+    "#9f3e36",
+    "#bf945a",
+    "#e3dbc3",
+    "#45ac7b"
+   ],
+   "paleta_pct": [
+    55,
+    16,
+    15,
+    9,
+    4,
+    2
+   ],
+   "cuadros": 63,
+   "carpeta": "plantillas/formatos/editor-02"
+  },
+  {
+   "n": 3,
+   "nombre": "Editor 3",
+   "apodo": "Mascota en marfil",
+   "familia": "mascota-marfil",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 3.mp4",
+   "detalle": "Fondo marfil liso, mascota 3D (robot verde agua) + íconos (Instagram), celular mockup con perfil, tarjeta tipo skill con sello GRATIS, cuadrícula de 13 mascotas, candado resaltado \"LA MEJOR\". Titular arriba negro mayúsculas bold + palabra naranja. Subtítulos abajo en etiqueta negra mayúsculas chica con palabra naranja. Marca de agua arriba (píldora con handle). 14 s.",
+   "dur": 13.9,
+   "cortes": 1,
+   "ritmo": 0.07,
+   "paleta": [
+    "#dad9cf",
+    "#e9e8e0",
+    "#f4f4ee",
+    "#b39996",
+    "#1e2020",
+    "#619082"
+   ],
+   "paleta_pct": [
+    42,
+    33,
+    18,
+    3,
+    2,
+    2
+   ],
+   "cuadros": 23,
+   "carpeta": "plantillas/formatos/editor-03"
+  },
+  {
+   "n": 4,
+   "nombre": "Editor 4",
+   "apodo": "Tutorial en laptop",
+   "familia": "tutorial-flechas",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 4.mp4",
+   "detalle": "Grabación de pantalla montada dentro de una laptop real en cuarto oscuro (teclado abajo). Arriba fija una fórmula con íconos: [Claude] + [Instagram] = 🔥. Flechas rojas curvas dibujadas a mano señalando cada clic. Sello verde \"CONNECTED\". Subtítulos 1–2 palabras blancos bold con contorno oscuro al centro-abajo. Marca de agua del handle arriba a la derecha. Paso a paso, 27 s, zoom a cada ventana.",
+   "dur": 27.3,
+   "cortes": 3,
+   "ritmo": 0.11,
+   "paleta": [
+    "#f7f7f5",
+    "#1a1611",
+    "#080806",
+    "#a3a7a4",
+    "#dcdfde",
+    "#7e706f"
+   ],
+   "paleta_pct": [
+    37,
+    26,
+    25,
+    6,
+    4,
+    2
+   ],
+   "cuadros": 36,
+   "carpeta": "plantillas/formatos/editor-04"
+  },
+  {
+   "n": 5,
+   "nombre": "Editor 5",
+   "apodo": "Tipografía roja",
+   "familia": "tipografia-roja",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 5.mp4",
+   "detalle": "Persona real (mujer) + tipografía cinética muy cargada: palabras que giran en arco alrededor de ella (texto en curva), mezcla de sans blanca + serif itálica + rojo; silueta rellena de rojo con \"!!!\" dibujado; papel rasgado que revela billetes (\"ten grand\"); collage de recortes de la cara; destellos blancos; cámara con zoom. Paleta rojo/blanco/negro. 11 s, 10 cortes.",
+   "dur": 11.4,
+   "cortes": 10,
+   "ritmo": 0.88,
+   "paleta": [
+    "#463a3c",
+    "#82645d",
+    "#131012",
+    "#b7a08e",
+    "#e9e6dc",
+    "#770306"
+   ],
+   "paleta_pct": [
+    25,
+    22,
+    19,
+    13,
+    10,
+    10
+   ],
+   "cuadros": 29,
+   "carpeta": "plantillas/formatos/editor-05"
+  },
+  {
+   "n": 6,
+   "nombre": "Editor 6",
+   "apodo": "Raw vs Edited",
+   "familia": "raw-vs-editado",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 6.mp4",
+   "detalle": "Comparativo: etiqueta píldora arriba \"Raw\"/\"Edited\" que alterna. Lo crudo (persona sentada en estudio blanco o gym) y luego la versión editada: palabra gigante roja DETRÁS de la persona (\"Scripts\", \"sell\"), tarjetas flotantes con fotos, letras amarillas brillantes \"BOMB\", tarjeta cian tipo nota \"mistake\", \"LEG DAY\" detrás. Sirve como demo de servicio de edición. 19 s.",
+   "dur": 19.5,
+   "cortes": 12,
+   "ritmo": 0.62,
+   "paleta": [
+    "#e4e3e4",
+    "#463937",
+    "#151211",
+    "#bfb6b4",
+    "#837670",
+    "#74e1f1"
+   ],
+   "paleta_pct": [
+    44,
+    18,
+    17,
+    10,
+    9,
+    2
+   ],
+   "cuadros": 40,
+   "carpeta": "plantillas/formatos/editor-06"
+  },
+  {
+   "n": 7,
+   "nombre": "Editor 7",
+   "apodo": "Split hoja rayada",
+   "familia": "split-explicador",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 7.mp4",
+   "detalle": "Arriba ~40 % blanco/hoja rayada con gráficos simples (logo de Instagram + mascota pixel de Claude con cuchillo, celular con perfil, tarjeta de skill con sello GRATIS, cuadrícula \"13 skills\", chat). Abajo ~60 % la persona hablando (casa, plantas). En la unión, subtítulo en etiqueta negra mayúsculas chica. Gráfico cambia con cada idea, ~1 cambio por segundo. 21 s.",
+   "dur": 20.9,
+   "cortes": 3,
+   "ritmo": 0.14,
+   "paleta": [
+    "#eeeeec",
+    "#31302f",
+    "#1e1a18",
+    "#a17561",
+    "#675535",
+    "#c3a791"
+   ],
+   "paleta_pct": [
+    40,
+    23,
+    10,
+    9,
+    9,
+    9
+   ],
+   "cuadros": 44,
+   "carpeta": "plantillas/formatos/editor-07"
+  },
+  {
+   "n": 8,
+   "nombre": "Editor 8",
+   "apodo": "Demo SaaS restaurante",
+   "familia": "comercial-producto",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 8.mp4",
+   "detalle": "Sin persona. Intro oscura con resplandor radial naranja y pregunta grande blanca con palabras naranjas (\"¿Y si tu restaurante funcionara en piloto automático?\") + chips flotando. Luego fondo claro durazno-lavanda, barra de pasos con íconos arriba, titular negro bold + palabra naranja (\"Tus clientes piden solos.\"), mockups de iPhone/iPad con la app real (QR, menú, pedido enviado ✓, cobrado $728, tickets por WhatsApp). Transiciones de dispositivo que entra/sale. 26 s.",
+   "dur": 25.6,
+   "cortes": 13,
+   "ritmo": 0.51,
+   "paleta": [
+    "#f2eeed",
+    "#edded7",
+    "#161010",
+    "#8e7d73",
+    "#c4bbb8",
+    "#54433d"
+   ],
+   "paleta_pct": [
+    49,
+    26,
+    10,
+    6,
+    5,
+    3
+   ],
+   "cuadros": 50,
+   "carpeta": "plantillas/formatos/editor-08"
+  },
+  {
+   "n": 9,
+   "nombre": "Editor 9",
+   "apodo": "Split podcast logos",
+   "familia": "split-explicador",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 9.mp4",
+   "detalle": "Persona con micrófono, luz azul de fondo. Alterna toma completa con pantalla dividida (arriba blanco con logos de ChatGPT/Gemini/Claude, embudos, tarjetas; abajo él). Titular pixel naranja \"CLAUDE CODE\", texto serif itálica blanca sobre capturas oscuras, subtítulos blancos bold frase corta; en split van en etiqueta azul. Transición verde desenfocada. 16 s, 19 cortes (muy rápido).",
+   "dur": 16.5,
+   "cortes": 19,
+   "ritmo": 1.15,
+   "paleta": [
+    "#130e17",
+    "#f4f0f4",
+    "#263366",
+    "#7e433a",
+    "#d2f29e",
+    "#d18c6d"
+   ],
+   "paleta_pct": [
+    37,
+    31,
+    11,
+    7,
+    7,
+    6
+   ],
+   "cuadros": 48,
+   "carpeta": "plantillas/formatos/editor-09"
+  },
+  {
+   "n": 10,
+   "nombre": "Editor 10",
+   "apodo": "Testimonio rojo",
+   "familia": "testimonio-cinematico",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 10.mp4",
+   "detalle": "Mujer de cuerpo completo en estudio rojo. Sobre su pecho: línea chica blanca + palabra gigante condensada con degradado amarillo→naranja→rojo (\"IMPORTAR\", \"CERCANAS\", \"IMPORTACIÓN\"). Íconos 3D tipo emoji (portapapeles con lápiz) que entran desde abajo, burbujas, \"¿\" naranja dibujado. Cierre con B-roll cinematográfico emotivo (mujer llorando, apretón de manos, \"aprender a CONFIAR\"). Zooms de golpe con desenfoque. 17.6 s.",
+   "dur": 17.6,
+   "cortes": 14,
+   "ritmo": 0.8,
+   "paleta": [
+    "#1c1210",
+    "#bd4539",
+    "#4e352e",
+    "#ce968d",
+    "#846d62",
+    "#dcd1d8"
+   ],
+   "paleta_pct": [
+    23,
+    22,
+    19,
+    16,
+    13,
+    6
+   ],
+   "cuadros": 46,
+   "carpeta": "plantillas/formatos/editor-10"
+  },
+  {
+   "n": 11,
+   "nombre": "Editor 11",
+   "apodo": "Manuscrito amarillo",
+   "familia": "acento-amarillo",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 11.mp4",
+   "detalle": "Persona (hombre) en cuarto cálido. Subtítulos con letra tipo manuscrito: blanco + palabra clave amarilla (\"conectar\", \"Chat GPT\", \"de video\"). Chip de logo arriba (ChatGPT). Capturas de páginas/apps a pantalla completa en fondo negro, B-roll de manos tecleando, frases manuscritas solas sobre negro (\"algo que no existe\"), luego pantalla dividida UI arriba / él abajo. 17 s.",
+   "dur": 17.3,
+   "cortes": 6,
+   "ritmo": 0.35,
+   "paleta": [
+    "#030202",
+    "#211d18",
+    "#463b2d",
+    "#a39a8d",
+    "#6b6862",
+    "#ced2ca"
+   ],
+   "paleta_pct": [
+    52,
+    19,
+    10,
+    8,
+    6,
+    4
+   ],
+   "cuadros": 32,
+   "carpeta": "plantillas/formatos/editor-11"
+  },
+  {
+   "n": 12,
+   "nombre": "Editor 12",
+   "apodo": "Split ilustración terracota",
+   "familia": "split-explicador",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 12.mp4",
+   "detalle": "Pantalla dividida: arriba ilustración plana (personajes de caricatura, sillas, monitores, cuadrícula sobre fondo terracota o marfil); abajo la persona hablando. Subtítulo en la unión: texto oscuro chico con bloque naranja detrás de la palabra clave. Algunas tomas a pantalla completa de UI (mockup de laptop/carpetas, árbol de archivos). Paleta terracota/marfil/negro. 15 s.",
+   "dur": 14.7,
+   "cortes": 8,
+   "ritmo": 0.55,
+   "paleta": [
+    "#e9e7df",
+    "#1c1b1b",
+    "#b65638",
+    "#b9aca4",
+    "#504a4b",
+    "#817b78"
+   ],
+   "paleta_pct": [
+    32,
+    20,
+    16,
+    12,
+    12,
+    8
+   ],
+   "cuadros": 32,
+   "carpeta": "plantillas/formatos/editor-12"
+  },
+  {
+   "n": 13,
+   "nombre": "Editor 13",
+   "apodo": "Laptop UI morada",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 13.mp4",
+   "detalle": "Laptop filmada en cuarto oscuro cálido; en su pantalla una animación con fondo morado oscuro: textos que se escriben (blanco bold + palabra morada/roja: \"tuvieras de 10 a 100\", \"frena\"), galería de miniaturas en órbita, tarjetas UI verdes. Sin persona. 15.7 s.",
+   "dur": 15.7,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#321e09",
+    "#19120e",
+    "#040201",
+    "#25222d",
+    "#70827a",
+    "#cbd4c5"
+   ],
+   "paleta_pct": [
+    41,
+    27,
+    20,
+    10,
+    1,
+    1
+   ],
+   "cuadros": 28,
+   "carpeta": "plantillas/formatos/editor-13"
+  },
+  {
+   "n": 14,
+   "nombre": "Editor 14",
+   "apodo": "Franja cinemascope",
+   "familia": "franja-cinemascope",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 14.mp4",
+   "detalle": "Fondo negro con una franja horizontal blanca al centro (formato panorámico). Motion graphics minimal: guías de diseño, \"Hello\" con mano saludando, silueta de perfil, ojo de gato que se abre, palabras que rotan (\"Creative Producer/Director/Editor/Partner\"), logo al final. Tipografía sans negra fina. Presentación de marca personal. 11 s.",
+   "dur": 11.1,
+   "cortes": 4,
+   "ritmo": 0.36,
+   "paleta": [
+    "#000000",
+    "#f1f3f6",
+    "#0c0b1a",
+    "#ca9167",
+    "#766359",
+    "#b1adb0"
+   ],
+   "paleta_pct": [
+    69,
+    18,
+    12,
+    0,
+    0,
+    0
+   ],
+   "cuadros": 15,
+   "carpeta": "plantillas/formatos/editor-14"
+  },
+  {
+   "n": 15,
+   "nombre": "Editor 15",
+   "apodo": "Laptop lienzo amarillo",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 15.mp4",
+   "detalle": "Laptop en cuarto oscuro, en la pantalla un lienzo vertical amarillo con íconos negros, medidor/velocímetro, contador circular, hexágonos que se conectan. Texto fijo arriba \"Gracias Opus 5.5\". Cámara en mano. 12.6 s.",
+   "dur": 12.6,
+   "cortes": 1,
+   "ritmo": 0.08,
+   "paleta": [
+    "#090401",
+    "#241b15",
+    "#e7b208",
+    "#8c9580",
+    "#615033",
+    "#e6dac9"
+   ],
+   "paleta_pct": [
+    48,
+    25,
+    16,
+    5,
+    4,
+    2
+   ],
+   "cuadros": 27,
+   "carpeta": "plantillas/formatos/editor-15"
+  },
+  {
+   "n": 16,
+   "nombre": "Editor 16",
+   "apodo": "Tarjetas Anthropic",
+   "familia": "tarjetas-anthropic",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 16.mp4",
+   "detalle": "Sin persona. Fondo carbón casi negro. Etiqueta arriba en mayúsculas naranja espaciada (\"SI TE ACEPTAN\"). Tarjetas oscuras con borde sutil que aparecen una a una en cuadrícula 2x2 (logo + cifra grande que cuenta: \"1 año\", \"$1.000\", \"$45K\", \"45 sesiones\"). Luego titular serif con palabra itálica naranja subrayada a mano (\"¿Quién puede *postular*?\") y barras de progreso naranjas. Subtítulos abajo gris chico con palabra naranja. Estética Anthropic. 22.7 s, sin cortes.",
+   "dur": 22.7,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#11120d",
+    "#1e1c1b",
+    "#524c49",
+    "#908f8e",
+    "#e2e2df",
+    "#c36b58"
+   ],
+   "paleta_pct": [
+    82,
+    15,
+    1,
+    1,
+    1,
+    0
+   ],
+   "cuadros": 15,
+   "carpeta": "plantillas/formatos/editor-16"
+  },
+  {
+   "n": 17,
+   "nombre": "Editor 17",
+   "apodo": "Monitor de edición",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 17.mp4",
+   "detalle": "Monitor vertical filmado en un cuarto de edición; en él se ve un video editado de un hombre de traje sobre fondo blanco: palabra gigante detrás (\"YES\", \"LEGAL\"), subtítulos serif itálica, tarjeta de precio que entra, tarjeta de vidrio con bordes rojos \"You need\". 14 s.",
+   "dur": 13.9,
+   "cortes": 2,
+   "ritmo": 0.14,
+   "paleta": [
+    "#2e3135",
+    "#848f7d",
+    "#0d0f12",
+    "#5a5f63",
+    "#bfb2b9",
+    "#d7d7e1"
+   ],
+   "paleta_pct": [
+    22,
+    19,
+    18,
+    18,
+    12,
+    11
+   ],
+   "cuadros": 30,
+   "carpeta": "plantillas/formatos/editor-17"
+  },
+  {
+   "n": 18,
+   "nombre": "Editor 18",
+   "apodo": "Recorte sobre fondos",
+   "familia": "recorte-collage",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 18.mp4",
+   "detalle": "Persona tipo selfie recortada (sin fondo) encima de fondos que cambian por idea: cuadrícula con titular \"GANCHOS adictivos\" (serif negra + script roja) e ilustración de cerebro, papel arrugado con capturas de estadísticas, foto de Santa Claus con gráfica de línea roja, fondo blanco con pictogramas (espectador → ojos; tú → Santa). Subtítulo: una palabra blanca mayúsculas con contorno negro a la altura del pecho. 28 s.",
+   "dur": 28.1,
+   "cortes": 5,
+   "ritmo": 0.18,
+   "paleta": [
+    "#f4f3f3",
+    "#ddd9d7",
+    "#c4bab6",
+    "#ae8b88",
+    "#775b58",
+    "#241d1b"
+   ],
+   "paleta_pct": [
+    44,
+    23,
+    13,
+    11,
+    7,
+    2
+   ],
+   "cuadros": 62,
+   "carpeta": "plantillas/formatos/editor-18"
+  },
+  {
+   "n": 19,
+   "nombre": "Editor 19",
+   "apodo": "Vidrio sobre toma real",
+   "familia": "vidrio-toma-real",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 19.mp4",
+   "detalle": "Persona en su laptop con luz morada/ambiente (toma real, sin hablar a cámara). Titular arriba mezcla serif itálica naranja + sans blanca bold (\"*7 agentes* de Claude / que puedes crear / *en 10 minutos*\"). Luego tarjetas de vidrio esmerilado numeradas \"01/07 Setter 24/7\", \"02 Busca clientes\"… con mini diagrama de flujo de íconos y logo Claude en la esquina; cada tarjeta reemplaza a la anterior. 7 s.",
+   "dur": 7.0,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#1e171f",
+    "#63504a",
+    "#3c323d",
+    "#866d5a",
+    "#2e3a6f",
+    "#e2dfdc"
+   ],
+   "paleta_pct": [
+    27,
+    25,
+    23,
+    18,
+    5,
+    1
+   ],
+   "cuadros": 14,
+   "carpeta": "plantillas/formatos/editor-19"
+  },
+  {
+   "n": 20,
+   "nombre": "Editor 20",
+   "apodo": "UI flotante azul",
+   "familia": "ui-minimal",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 20.mp4",
+   "detalle": "Fondo negro total. Elementos de interfaz aislados que flotan con resplandor azul/morado: logo de Drive, botón \"+ New\" con cursor, menú desplegable, tarjeta \"Upload\" que se inclina en 3D, barra de progreso verde. Tutorial sin persona ni texto grande. 11 s.",
+   "dur": 11.3,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#000000",
+    "#010017",
+    "#121215",
+    "#20223e",
+    "#546586",
+    "#c1b6a3"
+   ],
+   "paleta_pct": [
+    90,
+    6,
+    3,
+    0,
+    0,
+    0
+   ],
+   "cuadros": 15,
+   "carpeta": "plantillas/formatos/editor-20"
+  },
+  {
+   "n": 21,
+   "nombre": "Editor 21",
+   "apodo": "Escritorio 3D",
+   "familia": "escritorio-3d",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 21.mp4",
+   "detalle": "Entrevista/podcast (hombre hablando) con subtítulos cinéticos: serif amarilla brillante (\"on videos\"), caja naranja de resalte. Cortes a una mesa beige con sombra de ventana (vista cenital): cerebro 3D gris, foco amarillo, notas adhesivas, hojas de storyboard con clip, taza de café, flecha punteada, hojas de planta. Objetos que entran con rebote. 14 s.",
+   "dur": 14.1,
+   "cortes": 4,
+   "ritmo": 0.28,
+   "paleta": [
+    "#e3d7c0",
+    "#c2b59b",
+    "#979581",
+    "#0f110c",
+    "#7a705b",
+    "#4c4734"
+   ],
+   "paleta_pct": [
+    22,
+    21,
+    18,
+    17,
+    12,
+    10
+   ],
+   "cuadros": 29,
+   "carpeta": "plantillas/formatos/editor-21"
+  },
+  {
+   "n": 22,
+   "nombre": "Editor 22",
+   "apodo": "Texto con brillo rojo",
+   "familia": "franja-cinemascope",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 22.mp4",
+   "detalle": "Franja horizontal oscura al centro (resto negro) con resplandor rojo-naranja desde abajo. Catálogo de animaciones de texto: pixelado, máquina de escribir con cursor naranja, brillo con estrella, deslizar desde la derecha, rebote brillante. Texto blanco sans chico + palabra naranja/amarilla brillante. 10 s.",
+   "dur": 10.0,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#000000",
+    "#150303",
+    "#310a04",
+    "#501305",
+    "#a57443",
+    "#ddcfcd"
+   ],
+   "paleta_pct": [
+    77,
+    11,
+    7,
+    4,
+    0,
+    0
+   ],
+   "cuadros": 15,
+   "carpeta": "plantillas/formatos/editor-22"
+  },
+  {
+   "n": 23,
+   "nombre": "Editor 23",
+   "apodo": "Póster de revista",
+   "familia": "poster-editorial",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 23.mp4",
+   "detalle": "Fondo papel blanco hueso, diseño de revista/póster francés: titular gigante condensado azul acero (\"FACE CAMERA\", \"1 CHOSE\", \"Pain\" repetido), objetos 3D fotorrealistas (cámara vintage, baguette en bolsa negra, engrane, celular escultura), bloques de texto chico justificado, código de barras, bloque diagonal azul. Una pantalla por idea con corte seco. 11.8 s.",
+   "dur": 11.8,
+   "cortes": 4,
+   "ritmo": 0.34,
+   "paleta": [
+    "#f2f3ee",
+    "#cbceca",
+    "#596c7c",
+    "#93a5b1",
+    "#2c2b2a",
+    "#d3916c"
+   ],
+   "paleta_pct": [
+    53,
+    14,
+    12,
+    11,
+    8,
+    2
+   ],
+   "cuadros": 26,
+   "carpeta": "plantillas/formatos/editor-23"
+  },
+  {
+   "n": 24,
+   "nombre": "Editor 24",
+   "apodo": "Blanco minimal buscador",
+   "familia": "ui-minimal",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 24.mp4",
+   "detalle": "Fondo blanco/lavanda muy claro, tipografía sans fina negra + palabras azul claro que entran por letras (\"Video Editors still Wasting…\", \"Not Anymore\"), barra de Google que hace zoom y se escribe sola, cursor de mano, carpeta tipo Drive con efectos (Whoosh, Riser…), tarjetas redondeadas que se deslizan, cierre \"Comment \\\"Pack\\\"\". 14.8 s.",
+   "dur": 14.8,
+   "cortes": 2,
+   "ritmo": 0.14,
+   "paleta": [
+    "#edeef6",
+    "#fcfcfb",
+    "#83b2f0",
+    "#e96d26",
+    "#131315",
+    "#599b6a"
+   ],
+   "paleta_pct": [
+    64,
+    31,
+    3,
+    1,
+    1,
+    0
+   ],
+   "cuadros": 18,
+   "carpeta": "plantillas/formatos/editor-24"
+  },
+  {
+   "n": 25,
+   "nombre": "Editor 25",
+   "apodo": "Laptop escritorio luminoso",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 25.mp4",
+   "detalle": "Laptop sobre escritorio con plantas y luz de día; en la pantalla animación coral/oscura (palabras gigantes \"fundir.\", \"inteligencia artificial.\", sello CERRADO, contadores ×1→×31, ventanas, logo final \"atom labs\", \"+30 negocios\", celular con WhatsApp). Arriba etiqueta negra fija \"Video Hecho 100% con Claude Opus 5.5 🤓\" + \"100% gratis\"; al final cambia a CTA \"Comenta \"VIDEO\" y te mando el prompt\". 25.7 s.",
+   "dur": 25.7,
+   "cortes": 1,
+   "ritmo": 0.04,
+   "paleta": [
+    "#060406",
+    "#1f1c1c",
+    "#b0a194",
+    "#76706a",
+    "#49433f",
+    "#dbdad4"
+   ],
+   "paleta_pct": [
+    40,
+    16,
+    12,
+    12,
+    11,
+    8
+   ],
+   "cuadros": 44,
+   "carpeta": "plantillas/formatos/editor-25"
+  },
+  {
+   "n": 26,
+   "nombre": "Editor 26",
+   "apodo": "Tutorial cuadrícula negra",
+   "familia": "tutorial-flechas",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 26.mp4",
+   "detalle": "Sin persona. Fondo negro con cuadrícula gris tenue. Texto cinético blanco gigante (\"Cómo conectar / con tu cuenta / para responder\"), íconos de apps (Claude, Instagram, ManyChat), capturas en marcos redondeados con recuadro rojo y flecha roja curva señalando el clic, \"Paso uno/dos/tres/cuatro\" como subtítulo arriba de la captura, resultado en chats de Instagram, cierre con portada de ebook \"Tutorial para conectar Claude y Instagram\" + \"Comenta \"Bot\"\". 29.6 s, cortes cada ~1 s.",
+   "dur": 29.6,
+   "cortes": 22,
+   "ritmo": 0.74,
+   "paleta": [
+    "#141519",
+    "#f6f6f6",
+    "#2d2b30",
+    "#a49786",
+    "#c51b2f",
+    "#722ad6"
+   ],
+   "paleta_pct": [
+    62,
+    21,
+    10,
+    4,
+    2,
+    1
+   ],
+   "cuadros": 63,
+   "carpeta": "plantillas/formatos/editor-26"
+  },
+  {
+   "n": 27,
+   "nombre": "Editor 27",
+   "apodo": "Pasos numerados",
+   "familia": "pasos-numerados",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 27.mp4",
+   "detalle": "\"Paso 1/2/3\" gigante rojo-naranja arriba. Alterna fondo blanco (degradado rosa abajo, cuadritos de color flotando) y fondo negro. Mockups de tablet/celular con la herramienta, tarjetas de fotos que se abren en abanico (clones de la cara), palabra acento en serif itálica (\"gratis\") o manuscrita (\"lo que querés\"), subtítulo chico al centro. Cierre con un prompt en pantalla. 23 s.",
+   "dur": 23.3,
+   "cortes": 11,
+   "ritmo": 0.47,
+   "paleta": [
+    "#020202",
+    "#f9f9f8",
+    "#ebd7cf",
+    "#2f2b2a",
+    "#7b7b76",
+    "#de4815"
+   ],
+   "paleta_pct": [
+    40,
+    36,
+    9,
+    9,
+    5,
+    1
+   ],
+   "cuadros": 41,
+   "carpeta": "plantillas/formatos/editor-27"
+  },
+  {
+   "n": 28,
+   "nombre": "Editor 28",
+   "apodo": "Tutorial cuadrícula clara",
+   "familia": "tutorial-flechas",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 28.mp4",
+   "detalle": "Igual al 26 pero en papel hueso con cuadrícula fina: titular negro bold + palabra coral (\"Cómo crear carruseles *ganadores* en 60 segundos\"), tarjetas/capturas oscuras al centro, flecha roja curva señalando, carruseles de ejemplo, cierre \"Comenta \"IA\"\" grande con flecha. Subtítulo negro chico arriba de la tarjeta. 25.5 s.",
+   "dur": 25.5,
+   "cortes": 14,
+   "ritmo": 0.55,
+   "paleta": [
+    "#edeae0",
+    "#191816",
+    "#c4c0b9",
+    "#565452",
+    "#938880",
+    "#c21e26"
+   ],
+   "paleta_pct": [
+    76,
+    17,
+    3,
+    2,
+    2,
+    1
+   ],
+   "cuadros": 51,
+   "carpeta": "plantillas/formatos/editor-28"
+  },
+  {
+   "n": 29,
+   "nombre": "Editor 29",
+   "apodo": "Laptop plateada",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 29.mp4",
+   "detalle": "Laptop en escritorio de madera, cámara en mano; en pantalla demo de app (celular con WhatsApp, logo \"wazend\", QR, terminal). Píldora oscura fija arriba \"Hecho por Opus 5.5\". 25 s.",
+   "dur": 25.2,
+   "cortes": 1,
+   "ritmo": 0.04,
+   "paleta": [
+    "#736c5b",
+    "#262529",
+    "#0e0f0e",
+    "#504f49",
+    "#8c8f8a",
+    "#c2d1d2"
+   ],
+   "paleta_pct": [
+    28,
+    21,
+    20,
+    13,
+    10,
+    8
+   ],
+   "cuadros": 51,
+   "carpeta": "plantillas/formatos/editor-29"
+  },
+  {
+   "n": 30,
+   "nombre": "Editor 30",
+   "apodo": "Monitor + laptop Amazon",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 30.mp4",
+   "detalle": "Escritorio frente a ventana con edificios; en el monitor grande un comercial estilo marca (Amazon: logo con brillo, app en celular, mapa 3D con ruta naranja, caja 3D, \"Everything you love. From A to Z.\"). En la laptop abierta un editor de código con etiqueta \"Prompt Below ⬇\". Arriba íconos + etiqueta \"OPUS 5.5 + KATANA\". 19 s.",
+   "dur": 19.3,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#403736",
+    "#171519",
+    "#d5dbde",
+    "#7c6962",
+    "#b39e99",
+    "#d5bc11"
+   ],
+   "paleta_pct": [
+    26,
+    24,
+    21,
+    17,
+    9,
+    2
+   ],
+   "cuadros": 39,
+   "carpeta": "plantillas/formatos/editor-30"
+  },
+  {
+   "n": 31,
+   "nombre": "Editor 31",
+   "apodo": "Monitor verde Shopify",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 31.mp4",
+   "detalle": "Monitor frente a ventana con ciudad; comercial con resplandor verde neón (logo Shopify, celular, tarjetas de pedidos, frase final). Abajo timeline de edición visible. Etiqueta fija arriba \"Claude Opus 5.5 🤓\". 22.7 s.",
+   "dur": 22.7,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#0b0d0e",
+    "#afc6e3",
+    "#282e2a",
+    "#d6e0ec",
+    "#757874",
+    "#29a5ad"
+   ],
+   "paleta_pct": [
+    50,
+    17,
+    14,
+    12,
+    6,
+    1
+   ],
+   "cuadros": 43,
+   "carpeta": "plantillas/formatos/editor-31"
+  },
+  {
+   "n": 32,
+   "nombre": "Editor 32",
+   "apodo": "Monitor amarillo Higgsfield",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 32.mp4",
+   "detalle": "Igual que 30/31 con marca Higgsfield: escenas cinematográficas generadas, resplandor amarillo neón, \"Become an AI Director\", logo. Arriba \"Higgsfield + Claude 😂\" con íconos. 20 s.",
+   "dur": 20.1,
+   "cortes": 5,
+   "ritmo": 0.25,
+   "paleta": [
+    "#06070e",
+    "#363a3c",
+    "#7ab1e8",
+    "#5e759a",
+    "#ece1e3",
+    "#b2a525"
+   ],
+   "paleta_pct": [
+    36,
+    21,
+    15,
+    14,
+    8,
+    6
+   ],
+   "cuadros": 43,
+   "carpeta": "plantillas/formatos/editor-32"
+  },
+  {
+   "n": 33,
+   "nombre": "Editor 33",
+   "apodo": "CapCut efectos de película",
+   "familia": "acento-amarillo",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 33.mp4",
+   "detalle": "Persona (selfie, close-up) + laptop en cuarto oscuro; subtítulos blancos chicos al centro + palabra serif itálica amarilla (\"CapCut\", \"efectos\", \"Retraso\", \"Serigrafía de puntos\"); conteo \"1/2/3\" gigante blanco sobre la cuadrícula de efectos de CapCut; ejemplos de película (Disney, Hollywood, Batman) con grano, serigrafía de puntos, tonos sepia/dorado; ilustración de bicicleta en papel. 21.5 s, 30 cortes.",
+   "dur": 21.5,
+   "cortes": 30,
+   "ritmo": 1.4,
+   "paleta": [
+    "#0f100f",
+    "#3c3834",
+    "#e6e4d9",
+    "#ceb384",
+    "#6e7171",
+    "#a04833"
+   ],
+   "paleta_pct": [
+    39,
+    26,
+    13,
+    9,
+    8,
+    5
+   ],
+   "cuadros": 58,
+   "carpeta": "plantillas/formatos/editor-33"
+  },
+  {
+   "n": 34,
+   "nombre": "Editor 34",
+   "apodo": "Mundo 3D verde",
+   "familia": "comercial-producto",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 34.mp4",
+   "detalle": "Sin persona real. Mundo 3D estilizado verde esmeralda (fachada de café \"Café Llum\", ciudad de bloques vista desde arriba con ruta punteada roja, monito de palitos blanco caminando). Mockups de iPhone con notificaciones, tarjeta de fidelidad en Wallet con QR, ajustes. Titulares blanco bold + serif itálica verde menta + resalte en caja verde (\"¿ESTO ES LEGAL?\", \"tarjeta de fidelidad\"). Cierre con oferta \"¿Quieres una así para tu local?\". 29.9 s.",
+   "dur": 29.9,
+   "cortes": 13,
+   "ritmo": 0.43,
+   "paleta": [
+    "#050e0b",
+    "#1c2c24",
+    "#4d4c3b",
+    "#ecece9",
+    "#877963",
+    "#a6bca5"
+   ],
+   "paleta_pct": [
+    50,
+    22,
+    10,
+    8,
+    5,
+    5
+   ],
+   "cuadros": 63,
+   "carpeta": "plantillas/formatos/editor-34"
+  },
+  {
+   "n": 35,
+   "nombre": "Editor 35",
+   "apodo": "Montaje relámpago",
+   "familia": "montaje-relampago",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 35.mp4",
+   "detalle": "Pantalla dividida al inicio: arriba beige con titular serif (\"Claude Code Skills\", mascota pixel), abajo él con micrófono en estudio rojo. Luego montaje rapidísimo: titular pixel \"CLAUDE CODE\", íconos de archivos con flechas y números rojos a mano, B-roll (billetes contando, ventana con plantas), capturas, celular con WhatsApp sobre ciudad, destellos amarillos. Subtítulos blancos bold grandes + palabra amarilla/verde; algunos serif itálica. 16.7 s, 24 cortes.",
+   "dur": 16.7,
+   "cortes": 24,
+   "ritmo": 1.44,
+   "paleta": [
+    "#130e12",
+    "#dbe1d9",
+    "#492f36",
+    "#827f81",
+    "#f3cb78",
+    "#2699e2"
+   ],
+   "paleta_pct": [
+    35,
+    23,
+    17,
+    11,
+    8,
+    6
+   ],
+   "cuadros": 52,
+   "carpeta": "plantillas/formatos/editor-35"
+  },
+  {
+   "n": 36,
+   "nombre": "Editor 36",
+   "apodo": "Brutalista neón",
+   "familia": "brutalista-neon",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 36.mp4",
+   "detalle": "Arriba franja negra con titular condensado en mayúsculas: logo Claude + \"CLAUDE / MOTION (verde neón, tachado) / DESIGNERS.\". Él abajo frente a ventana con edificios. Luego fondo negro con una palabra itálica condensada por golpe (\"EDITAR\", \"CREAR\", \"VIDEOS\"...) sobre UI de Claude y póster verde neón \"PROMPTEA FÁCIL\"; fondos naranja. Subtítulos en caja roja itálica mayúsculas en la unión. 16 s.",
+   "dur": 16.0,
+   "cortes": 11,
+   "ritmo": 0.69,
+   "paleta": [
+    "#040509",
+    "#e6e6df",
+    "#9da693",
+    "#c1571a",
+    "#dbca3c",
+    "#4c3736"
+   ],
+   "paleta_pct": [
+    44,
+    21,
+    13,
+    8,
+    7,
+    6
+   ],
+   "cuadros": 37,
+   "carpeta": "plantillas/formatos/editor-36"
+  },
+  {
+   "n": 37,
+   "nombre": "Editor 37",
+   "apodo": "Selfie + pantalla",
+   "familia": "ugc-pantalla",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 37.mp4",
+   "detalle": "Él hablando en selfie muy cerca + cámara en mano apuntando al monitor (dedo señalando la pantalla: apps, landing \"Flighty told you first\", terminal con código). Título fijo arriba en caja roja con texto blanco y emojis (\"Motion Graphics con Claude 🤖 en MINUTOS 😍\"). Subtítulos amarillos con contorno, frase completa al centro-abajo. Look casero, sin animaciones. 31 s.",
+   "dur": 31.3,
+   "cortes": 8,
+   "ritmo": 0.26,
+   "paleta": [
+    "#1f1d22",
+    "#dad1c7",
+    "#866c63",
+    "#4d4043",
+    "#b99d89",
+    "#de0629"
+   ],
+   "paleta_pct": [
+    34,
+    25,
+    14,
+    13,
+    12,
+    2
+   ],
+   "cuadros": 70,
+   "carpeta": "plantillas/formatos/editor-37"
+  },
+  {
+   "n": 38,
+   "nombre": "Editor 38",
+   "apodo": "Manías voxel",
+   "familia": "mundo-voxel",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 38.mp4",
+   "detalle": "Fondo azul-negro con cuadrícula; personaje voxel naranja (Claude) en escritorio con hoja larga de factura, otro personaje (perro/emoji). Titular arriba blanco bold + línea amarilla/cian (\"Tu Claude Code tiene *4 manías*\"), tarjetas de colores numeradas con bordes neón (amarillo, rojo, verde, morado), barras comparativas cian \"−53 %\", carrito en riel contra muro \"LÍMITE\". Subtítulos abajo con resalte cian por palabra. Marca de agua abajo. 24 s.",
+   "dur": 24.1,
+   "cortes": 9,
+   "ritmo": 0.37,
+   "paleta": [
+    "#0c0f12",
+    "#e1e0de",
+    "#607174",
+    "#ca6d4d",
+    "#413a38",
+    "#31ccdf"
+   ],
+   "paleta_pct": [
+    86,
+    4,
+    3,
+    3,
+    3,
+    2
+   ],
+   "cuadros": 56,
+   "carpeta": "plantillas/formatos/editor-38"
+  },
+  {
+   "n": 39,
+   "nombre": "Editor 39",
+   "apodo": "Collage papel amarillo",
+   "familia": "recorte-collage",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 39.mp4",
+   "detalle": "Persona recortada con borde blanco (sticker) sobre papel rasgado blanco/amarillo neón, titulares condensados negros en mayúsculas sobre tiras de papel, engranes, garabatos, cinta adhesiva, marco polaroid, cara gigante recortada, cabezas recortadas multiplicadas. Cambia de composición cada ~0.5 s. 8.8 s.",
+   "dur": 8.8,
+   "cortes": 11,
+   "ritmo": 1.25,
+   "paleta": [
+    "#e6dfd9",
+    "#d7cf35",
+    "#372c25",
+    "#d1c8bb",
+    "#b88e79",
+    "#795e46"
+   ],
+   "paleta_pct": [
+    39,
+    23,
+    16,
+    8,
+    7,
+    6
+   ],
+   "cuadros": 26,
+   "carpeta": "plantillas/formatos/editor-39"
+  },
+  {
+   "n": 40,
+   "nombre": "Editor 40",
+   "apodo": "Laptop keynote Apple",
+   "familia": "pantalla-filmada",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 40.mp4",
+   "detalle": "Laptop con fondo de pantalla de macOS; en ella keynote estilo Apple (degradado radial azul-verde, \"AirPods Pro 3\", estuche y audífonos 3D sobre marfil, \"Rebuilt from the ground\"). Texto fijo \"opus 5.5\" sobre el teclado. 7.2 s.",
+   "dur": 7.2,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#c7b9a2",
+    "#433f3c",
+    "#1f2022",
+    "#e0e0d5",
+    "#749ab1",
+    "#666867"
+   ],
+   "paleta_pct": [
+    26,
+    25,
+    20,
+    13,
+    9,
+    6
+   ],
+   "cuadros": 16,
+   "carpeta": "plantillas/formatos/editor-40"
+  },
+  {
+   "n": 41,
+   "nombre": "Editor 41",
+   "apodo": "Pósters IA motivación",
+   "familia": "poster-editorial",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 41.mp4",
+   "detalle": "Imágenes generadas fotorrealistas a pantalla completa (calavera dorada con corona, Pantera Rosa con sudadera, polaroids con emojis en tendedero, reloj de arena) + tipografía de póster: serif itálica + condensada mayúsculas, palabra repetida en capas degradadas (\"SILENT\"), palabra que pasa detrás del objeto. Mensaje motivacional en inglés. 7 s, un cambio por frase.",
+   "dur": 7.0,
+   "cortes": 4,
+   "ritmo": 0.57,
+   "paleta": [
+    "#ece8e1",
+    "#110f0f",
+    "#43232c",
+    "#6f5448",
+    "#c4b4b2",
+    "#af8471"
+   ],
+   "paleta_pct": [
+    34,
+    25,
+    16,
+    9,
+    8,
+    8
+   ],
+   "cuadros": 17,
+   "carpeta": "plantillas/formatos/editor-41"
+  },
+  {
+   "n": 42,
+   "nombre": "Editor 42",
+   "apodo": "Póster lavanda",
+   "familia": "poster-editorial",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 42.mp4",
+   "detalle": "Paleta lavanda/morado: piezas de ajedrez de vidrio, línea de electrocardiograma, cinta 3D morada, logos de marcas, estatua griega con laptop, pasillo de columnas, siluetas caminando. Tipografía serif condensada itálica morada + sans chica espaciada. 11 s.",
+   "dur": 11.0,
+   "cortes": 3,
+   "ritmo": 0.27,
+   "paleta": [
+    "#d9d4df",
+    "#ece8eb",
+    "#b7adc8",
+    "#806c9e",
+    "#513e6a",
+    "#2a1e3a"
+   ],
+   "paleta_pct": [
+    48,
+    19,
+    13,
+    7,
+    7,
+    6
+   ],
+   "cuadros": 25,
+   "carpeta": "plantillas/formatos/editor-42"
+  },
+  {
+   "n": 43,
+   "nombre": "Editor 43",
+   "apodo": "Duelo de pantallas",
+   "familia": "duelo-pantallas",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 43.mp4",
+   "detalle": "Fondo azul eléctrico con degradado. Dos ventanas apiladas (arriba ChatGPT, abajo Gemini / \"GPT 6 Astra\") con la misma petición escribiéndose y el resultado de cada una (paisaje vs ciudad neón). Etiqueta arriba \"After Effects\", CTA fijo abajo serif \"Cmt the word 'Astra' for the link\". 7.4 s.",
+   "dur": 7.4,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#0c102f",
+    "#09090c",
+    "#2114f0",
+    "#a7c6e2",
+    "#2c3c75",
+    "#4180dd"
+   ],
+   "paleta_pct": [
+    38,
+    21,
+    20,
+    7,
+    7,
+    6
+   ],
+   "cuadros": 16,
+   "carpeta": "plantillas/formatos/editor-43"
+  },
+  {
+   "n": 44,
+   "nombre": "Editor 44",
+   "apodo": "Podcast verde",
+   "familia": "podcast-verde",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 44.mp4",
+   "detalle": "Toma de podcast en blanco y negro (close-ups de la cara, micrófono). Corte a fondo verde bosque (con rayas horizontales finas) o blanco con una palabra gigante sans bold blanca/verde (\"Wins\", \"B*TCH\", \"chasing\") + línea chica serif itálica; tarjeta del reel B/N dentro del verde. Ritmo de una palabra por golpe. 6 s.",
+   "dur": 6.2,
+   "cortes": 9,
+   "ritmo": 1.45,
+   "paleta": [
+    "#154833",
+    "#121212",
+    "#f9faf9",
+    "#797b7a",
+    "#4d5b55",
+    "#a0a3a2"
+   ],
+   "paleta_pct": [
+    42,
+    33,
+    13,
+    5,
+    4,
+    3
+   ],
+   "cuadros": 18,
+   "carpeta": "plantillas/formatos/editor-44"
+  },
+  {
+   "n": 45,
+   "nombre": "Editor 45",
+   "apodo": "Split sellos NUNCA",
+   "familia": "split-explicador",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 45.mp4",
+   "detalle": "Arriba blanco con sellos rojos tipo estampa \"NUNCA\" que caen, logo \"Claude Code\" en serif; abajo él en cuarto oscuro con luz azul. Subtítulos blancos chicos en la unión. 3.4 s (solo hook).",
+   "dur": 3.4,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#f4f4f8",
+    "#010104",
+    "#3d382f",
+    "#8a6961",
+    "#bfa89d",
+    "#051a8b"
+   ],
+   "paleta_pct": [
+    49,
+    36,
+    6,
+    5,
+    3,
+    1
+   ],
+   "cuadros": 8,
+   "carpeta": "plantillas/formatos/editor-45"
+  },
+  {
+   "n": 46,
+   "nombre": "Editor 46",
+   "apodo": "Bola de luz",
+   "familia": "bola-de-luz",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 46.mp4",
+   "detalle": "Marca (Claude Opus): fondo negro/marfil alternando, una esfera roja brillante que rebota y funciona como foco de luz (proyecta cono de luz que revela el texto), palabras gigantes sans black (\"we don't just direct.\", \"MADE BY CODE.\", \"LIGHT IS JUST MATH.\" con palabra roja/azul), luego \"claude\" condensado sobre texturas 3D (gelatina, espiral, cubos, celular de vidrio) y \"OPUS\" formado por partículas sobre azul Klein. 19 s, 31 cortes.",
+   "dur": 19.2,
+   "cortes": 31,
+   "ritmo": 1.61,
+   "paleta": [
+    "#ece4d3",
+    "#0b0a0d",
+    "#1f32ec",
+    "#e15735",
+    "#453d3c",
+    "#a4959d"
+   ],
+   "paleta_pct": [
+    35,
+    31,
+    14,
+    9,
+    6,
+    5
+   ],
+   "cuadros": 57,
+   "carpeta": "plantillas/formatos/editor-46"
+  },
+  {
+   "n": 47,
+   "nombre": "Editor 47",
+   "apodo": "Comercial oscuro naranja",
+   "familia": "comercial-producto",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 47.mp4",
+   "detalle": "Fotos cinematográficas oscuras con luz cálida por nicho (consultorio dental, clínica estética, edificio, auto) + notificación de WhatsApp/Instagram arriba; texto abajo blanco grande con punto naranja (\"dentista.\", \"inmobiliario.\"). Cuadrícula de chats, anillo de puntos que gira con punto naranja (marca \"Luma\"), tarjetas UI oscuras que se apilan (\"Insistiendo / Detectando interés / la venta ✓\"), pantalla naranja \"¿Cómo?\", cierre \"Escríbenos.\" + botón con el sitio. 32.6 s.",
+   "dur": 32.6,
+   "cortes": 7,
+   "ritmo": 0.21,
+   "paleta": [
+    "#070707",
+    "#171616",
+    "#d95a1d",
+    "#e5e5e0",
+    "#3c3735",
+    "#857e77"
+   ],
+   "paleta_pct": [
+    40,
+    34,
+    12,
+    7,
+    6,
+    2
+   ],
+   "cuadros": 50,
+   "carpeta": "plantillas/formatos/editor-47"
+  },
+  {
+   "n": 48,
+   "nombre": "Editor 48",
+   "apodo": "Split pósters IA",
+   "familia": "split-explicador",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 48.mp4",
+   "detalle": "Arriba ~45 %: pósters/imágenes IA que cambian cada 0.5 s (máscaras, coronas, monedas, \"STOP CHASING ATTENTION\", \"TRUST comes from CONSISTENCY\"), luego capturas de Claude y Google Flow; abajo él en estudio cálido (lámparas, chamarra verde). Subtítulo blanco chico en la unión. Cierre \"Comment \"AI\"\" amarillo itálico. 28.6 s.",
+   "dur": 28.6,
+   "cortes": 9,
+   "ritmo": 0.31,
+   "paleta": [
+    "#140e0c",
+    "#541c0e",
+    "#3a483c",
+    "#8d6548",
+    "#cda883",
+    "#ece8e4"
+   ],
+   "paleta_pct": [
+    48,
+    16,
+    14,
+    8,
+    8,
+    6
+   ],
+   "cuadros": 65,
+   "carpeta": "plantillas/formatos/editor-48"
+  },
+  {
+   "n": 49,
+   "nombre": "Editor 49",
+   "apodo": "Showreel cinemático",
+   "familia": "showreel-cinematico",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 49.mp4",
+   "detalle": "Tipografía cinética gris/negra sobre marfil o negro con escenas 3D oscuras y elegantes: ojo gigante, silueta \"invisible\", collage de pantallas inclinadas, carta de póker, ventana gótica con sombra, rosas rojas, puerta en pasto con haz de luz, balanza creatividad/eficiencia, reloj, túnel de luces, ramas de cerezo y hojas de maple. Palabras en distintos tamaños/pesos, onda de audio, desenfoque de movimiento entre escenas. 45 s, 40 cortes.",
+   "dur": 44.9,
+   "cortes": 40,
+   "ritmo": 0.89,
+   "paleta": [
+    "#0d0d0c",
+    "#efeadf",
+    "#cac6bd",
+    "#333231",
+    "#695c56",
+    "#97928d"
+   ],
+   "paleta_pct": [
+    29,
+    24,
+    14,
+    14,
+    10,
+    9
+   ],
+   "cuadros": 121,
+   "carpeta": "plantillas/formatos/editor-49"
+  },
+  {
+   "n": 50,
+   "nombre": "Editor 50",
+   "apodo": "Intro perfil gris",
+   "familia": "ui-minimal",
+   "archivo": "<tu carpeta de contenido>/Formatos/1023/editor 50.mp4",
+   "detalle": "Fondo gris claro: palabras chicas que aparecen y se desvanecen (\"A new beginning\", \"Motion Design Ideas\"), frase con palabras rojas, tarjeta de perfil de Instagram oscura que se arma (avatar, Follow → Followed), píldora azul con el handle, cierre en azul eléctrico con @. 11 s.",
+   "dur": 11.1,
+   "cortes": 1,
+   "ritmo": 0.09,
+   "paleta": [
+    "#d6d6d6",
+    "#06080b",
+    "#3d46ea",
+    "#312f38",
+    "#f9fafa",
+    "#a36357"
+   ],
+   "paleta_pct": [
+    59,
+    31,
+    9,
+    1,
+    1,
+    0
+   ],
+   "cuadros": 15,
+   "carpeta": "plantillas/formatos/editor-50"
+  },
+  {
+   "n": "pizarra",
+   "nombre": "Pizarra Pro",
+   "apodo": "Pizarra con íconos",
+   "familia": "pizarra-pro",
+   "archivo": "<tu carpeta de contenido>/Formatos/Pizarra pro.mp4",
+   "detalle": "Ver familia.",
+   "dur": 12.0,
+   "cortes": 3,
+   "ritmo": 0.25,
+   "paleta": [
+    "#d7d5d4",
+    "#bfbab6",
+    "#f1f0ef",
+    "#241c1a",
+    "#b96532",
+    "#7f7776"
+   ],
+   "paleta_pct": [
+    38,
+    26,
+    21,
+    9,
+    3,
+    3
+   ],
+   "cuadros": 25,
+   "carpeta": "plantillas/formatos/pizarra-pro"
+  },
+  {
+   "n": "1p",
+   "nombre": "Editor 1 · pantalla",
+   "apodo": "Documento cinético",
+   "familia": "doc-cinetico",
+   "origen": 1,
+   "archivo": "plantillas/formatos/_interiores/editor-01/interior.mp4",
+   "carpeta_nombre": "editor-01-pantalla",
+   "detalle": "Hoja blanca hueso en horizontal: \"Tu caja te está mintiendo.\" letra por letra en sans negra con \"mintiendo\" en serif itálica azul; se apilan fajos de billetes verdes 3D, aparece \"$4.000.000\" y el subtítulo \"Dice que hoy vendiste $4 millones. ¿Pero cuánto te quedó?\" con palabras clave en verde y morado. 6 s, un solo plano.",
+   "dur": 6.3,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#e3e3d4",
+    "#d9d6ca",
+    "#bcdaaf",
+    "#050607",
+    "#3f453f",
+    "#7d877e"
+   ],
+   "paleta_pct": [
+    47,
+    34,
+    8,
+    6,
+    4,
+    1
+   ],
+   "cuadros": 14,
+   "carpeta": "plantillas/formatos/editor-01-pantalla"
+  },
+  {
+   "n": "13p",
+   "nombre": "Editor 13 · pantalla",
+   "apodo": "Órbita de creadores",
+   "familia": "ui-orbita-oscura",
+   "origen": 13,
+   "archivo": "plantillas/formatos/_interiores/editor-13/interior.mp4",
+   "carpeta_nombre": "editor-13-pantalla",
+   "detalle": "Fondo morado oscuro: chat de WhatsApp con una creadora, mosaico de fotos verticales de creadores que se acomodan en un anillo alrededor del logo de Meta, tablero de \"creativos nuevos\" con miniaturas y tachado rojo. Texto blanco con palabras en lila (\"tuvieras de 10 a 100 videos\", \"Meta\") y serif itálica gris.",
+   "dur": 15.7,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#19181d",
+    "#060808",
+    "#2c2b38",
+    "#a69e8b",
+    "#dae9da",
+    "#46817b"
+   ],
+   "paleta_pct": [
+    58,
+    20,
+    15,
+    3,
+    2,
+    2
+   ],
+   "cuadros": 33,
+   "carpeta": "plantillas/formatos/editor-13-pantalla"
+  },
+  {
+   "n": "15p",
+   "nombre": "Editor 15 · pantalla",
+   "apodo": "Lienzo amarillo",
+   "familia": "lienzo-amarillo",
+   "origen": 15,
+   "archivo": "plantillas/formatos/_interiores/editor-15/interior.mp4",
+   "carpeta_nombre": "editor-15-pantalla",
+   "detalle": "Vertical amarillo: \"Tiempo\" gigante, \"El tiempo de tu equipo es caro\" con un velocímetro cuya aguja gira, equipo de personitas en un marco, \"Lo que la IA hace\" con notas flotantes, contador \"3 en segundos\" y hexágonos con íconos que se conectan; mascota negra abajo.",
+   "dur": 12.5,
+   "cortes": 1,
+   "ritmo": 0.08,
+   "paleta": [
+    "#dca304",
+    "#f0c906",
+    "#241d11",
+    "#6a4f17",
+    "#7f9578",
+    "#e0d094"
+   ],
+   "paleta_pct": [
+    46,
+    27,
+    17,
+    5,
+    3,
+    2
+   ],
+   "cuadros": 27,
+   "carpeta": "plantillas/formatos/editor-15-pantalla"
+  },
+  {
+   "n": "17p",
+   "nombre": "Editor 17 · pantalla",
+   "apodo": "Persona + tarjetas",
+   "familia": "persona-tarjetas-ui",
+   "origen": 17,
+   "archivo": "plantillas/formatos/_interiores/editor-17/interior.mp4",
+   "carpeta_nombre": "editor-17-pantalla",
+   "detalle": "Hombre de traje sentado en estudio blanco; palabras gigantes serif detrás (\"LEGAL\"), frases en serif bold blanca (\"is completely\", \"canceling\"), tarjeta de precio \"Startup Plan $399\" con botón verde que recibe un clic y lista \"You need: call a number / wait on hold / talk to a retention specialist\" con borde rojo neón.",
+   "dur": 13.8,
+   "cortes": 2,
+   "ritmo": 0.14,
+   "paleta": [
+    "#c8c3ca",
+    "#dadce2",
+    "#b6a6ac",
+    "#232427",
+    "#4f4d51",
+    "#976d72"
+   ],
+   "paleta_pct": [
+    26,
+    20,
+    18,
+    18,
+    9,
+    9
+   ],
+   "cuadros": 30,
+   "carpeta": "plantillas/formatos/editor-17-pantalla"
+  },
+  {
+   "n": "25p",
+   "nombre": "Editor 25 · pantalla",
+   "apodo": "Coral con cifras",
+   "familia": "tarjetas-coral-cifras",
+   "origen": 25,
+   "archivo": "plantillas/formatos/_interiores/editor-25/interior.mp4",
+   "carpeta_nombre": "editor-25-pantalla",
+   "detalle": "\"hay empresas que se van a fundir\", cartel CERRADO con globos de notificación, \"por no usar inteligencia artificial\" en coral, chat repetido \"×9 el mismo mensaje\", ventanas de facturas 3D, pantalla dividida vos vs tu competencia, glitch \"se va\", \"+28 negocios\", \"8 países\" con cintas diagonales y celular \"automatizamos tu whatsapp\".",
+   "dur": 25.7,
+   "cortes": 11,
+   "ritmo": 0.43,
+   "paleta": [
+    "#ded8d5",
+    "#51444a",
+    "#211c1f",
+    "#7c6b74",
+    "#a7a4b8",
+    "#e57865"
+   ],
+   "paleta_pct": [
+    23,
+    21,
+    20,
+    16,
+    12,
+    7
+   ],
+   "cuadros": 54,
+   "carpeta": "plantillas/formatos/editor-25-pantalla"
+  },
+  {
+   "n": "29p",
+   "nombre": "Editor 29 · pantalla",
+   "apodo": "Demo con terminal",
+   "familia": "demo-app-terminal",
+   "origen": 29,
+   "archivo": "plantillas/formatos/_interiores/editor-29/interior.mp4",
+   "carpeta_nombre": "editor-29-pantalla",
+   "detalle": "\"Desde el 1 de octubre, la API de WhatsApp cobra\" con celular y QR, ventana \"Wazend\" con botones de macOS, panel oscuro de la app, \"Conecta tu WhatsApp con un QR\", terminal de Claude Code que escribe la integración y celular final con el chat funcionando.",
+   "dur": 25.2,
+   "cortes": 10,
+   "ritmo": 0.4,
+   "paleta": [
+    "#191f28",
+    "#c7d7d5",
+    "#2d3841",
+    "#585c64",
+    "#9fb8b6",
+    "#83827c"
+   ],
+   "paleta_pct": [
+    36,
+    21,
+    13,
+    12,
+    9,
+    9
+   ],
+   "cuadros": 59,
+   "carpeta": "plantillas/formatos/editor-29-pantalla"
+  },
+  {
+   "n": "30p",
+   "nombre": "Editor 30 · pantalla",
+   "apodo": "Comercial Amazon",
+   "familia": "comercial-glow-marca",
+   "origen": 30,
+   "archivo": "plantillas/formatos/_interiores/editor-30/interior.mp4",
+   "carpeta_nombre": "editor-30-pantalla",
+   "detalle": "Fondo negro: un trazo naranja dibuja la sonrisa de Amazon, búsqueda \"wireless headphones\" en un celular con halo, ficha del producto $129.99 y botón \"Buy Now\", mapa 3D isométrico con ruta luminosa \"Arriving today\", caja de Amazon en una mesa con notificación \"Delivered\", \"Everything you love\", \"From A to Z.\" y logo.",
+   "dur": 19.3,
+   "cortes": 4,
+   "ritmo": 0.21,
+   "paleta": [
+    "#232123",
+    "#403832",
+    "#755428",
+    "#6a7169",
+    "#e0a60b",
+    "#d9dac8"
+   ],
+   "paleta_pct": [
+    42,
+    36,
+    9,
+    6,
+    4,
+    3
+   ],
+   "cuadros": 42,
+   "carpeta": "plantillas/formatos/editor-30-pantalla"
+  },
+  {
+   "n": "31p",
+   "nombre": "Editor 31 · pantalla",
+   "apodo": "Comercial Shopify",
+   "familia": "comercial-glow-marca",
+   "origen": 31,
+   "archivo": "plantillas/formatos/_interiores/editor-31/interior.mp4",
+   "carpeta_nombre": "editor-31-pantalla",
+   "detalle": "Negro con halo verde: logo de Shopify, celular con apps, listas de productos, tablero \"Live View\" con $0.00 que sube, \"Sell what you make\", \"and hear your first sale\" con notificación de pedido, logo final y crédito.",
+   "dur": 22.7,
+   "cortes": 0,
+   "ritmo": 0.0,
+   "paleta": [
+    "#0d1211",
+    "#273f21",
+    "#2aa5b3",
+    "#776e6e",
+    "#cebfc9",
+    "#b6c720"
+   ],
+   "paleta_pct": [
+    81,
+    9,
+    3,
+    3,
+    3,
+    1
+   ],
+   "cuadros": 46,
+   "carpeta": "plantillas/formatos/editor-31-pantalla"
+  },
+  {
+   "n": "32p",
+   "nombre": "Editor 32 · pantalla",
+   "apodo": "Comercial Higgsfield",
+   "familia": "comercial-glow-marca",
+   "origen": 32,
+   "archivo": "plantillas/formatos/_interiores/editor-32/interior.mp4",
+   "carpeta_nombre": "editor-32-pantalla",
+   "detalle": "Imágenes generadas (mujer con ropa lima en paisaje verde, hombre en calle naranja), interfaz de Higgsfield en tarjetas de cristal (Extend Video, cámaras y lentes), carrusel 3D de tomas, \"Become an AI Director.\" con \"AI Director\" en lima, logo con halo lima.",
+   "dur": 20.1,
+   "cortes": 16,
+   "ritmo": 0.8,
+   "paleta": [
+    "#162021",
+    "#4b5939",
+    "#eef2e4",
+    "#8ab610",
+    "#979b88",
+    "#dc941e"
+   ],
+   "paleta_pct": [
+    37,
+    25,
+    13,
+    10,
+    8,
+    7
+   ],
+   "cuadros": 55,
+   "carpeta": "plantillas/formatos/editor-32-pantalla"
+  },
+  {
+   "n": "40p",
+   "nombre": "Editor 40 · pantalla",
+   "apodo": "Keynote AirPods",
+   "familia": "keynote-apple",
+   "origen": 40,
+   "archivo": "plantillas/formatos/_interiores/editor-40/interior.mp4",
+   "carpeta_nombre": "editor-40-pantalla",
+   "detalle": "Degradado radial azul-verde-crema con \"All new AirPods Pro 3\", estuche que se abre en 3D sobre fondo marfil, \"Rebuilt from the ground up\", audífono que gira y se alinea con las almohadillas de tallas, \"Fit, finally figured out.\"",
+   "dur": 7.1,
+   "cortes": 2,
+   "ritmo": 0.28,
+   "paleta": [
+    "#d0c09e",
+    "#323635",
+    "#baab8f",
+    "#5cbcbc",
+    "#676960",
+    "#2873b8"
+   ],
+   "paleta_pct": [
+    38,
+    25,
+    23,
+    6,
+    5,
+    4
+   ],
+   "cuadros": 17,
+   "carpeta": "plantillas/formatos/editor-40-pantalla"
+  }
+ ]
+}

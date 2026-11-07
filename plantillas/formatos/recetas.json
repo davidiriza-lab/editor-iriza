@@ -1,0 +1,139 @@
+{
+ "_nota": "Cómo se construye cada familia con las herramientas del sistema. Rutas relativas a la raíz del sistema de edición (ver GUIA-FORMATOS.md). guias.py lo combina con formatos.json para escribir GUIA.md en cada formato.",
+ "pantalla-filmada": {
+  "necesitas": ["Una toma REAL de una laptop o monitor, de 6–30 s, en celular vertical, con la pantalla en blanco o apagada (o una imagen de Higgsfield de una laptop en el ambiente deseado: cuarto oscuro, escritorio con plantas o ventana con ciudad)", "El video que va DENTRO de la pantalla: hazlo con el formato interior correspondiente (p. ej. Editor 1 · pantalla, Editor 30 · pantalla)", "Texto de la etiqueta fija de arriba (p. ej. \"Video hecho 100% con Opus 5.5\")"],
+  "pasos": ["Haz primero el video interior (horizontal 1920x1080, salvo que la pantalla sea vertical) con su propia guía y rénderalo", "Marca las 4 esquinas de la pantalla en la toma: en estilo-cine la escena `laptop` recibe `img` (toma o imagen) y `pantalla` (4 esquinas en px) y pega el video interior en perspectiva", "Si la cámara se mueve, sigue la pantalla cuadro por cuadro: `plantillas/formatos/pantalla_interior.py` ya resuelve el seguimiento (homografía con puntos fuera de la pantalla); usa la misma lógica a la inversa para pegar", "Agrega la etiqueta fija arriba (píldora negra o texto blanco bold) dentro de la zona segura (y ≥ 262)", "Suma reflejo/brillo leve sobre la pantalla para que no se vea pegada", "Audio: voz en off o música del video interior"],
+  "evitar": ["Que el video interior se vea plano o sin perspectiva (debe seguir la pantalla)", "Cortes: es un solo plano largo", "Tapar la pantalla con el texto"]},
+ "doc-cinetico": {
+  "necesitas": ["Guion corto (1–3 frases) con una cifra fuerte", "Voz (ElevenLabs o la persona) para sincronizar palabra por palabra"],
+  "pasos": ["Proyecto de estilo-cine con `\"lienzo\": {\"w\": 1920, \"h\": 1080}` y fondo papel `#e3dfd3`", "Frase principal en sans negra gigante entrando letra por letra; la palabra clave en serif itálica azul", "Objeto 3D del tema (escena `moneda` o billetes con Three.js en `cine.js`) que se apila desde arriba con rebote", "Cifra gigante arriba a la derecha con fundido; subtítulo chico abajo palabra por palabra con la palabra clave en verde/morado", "Un solo plano sin cortes (6–10 s)", "Si va dentro de una laptop, úsalo como video interior del formato Pantalla Filmada"],
+  "evitar": ["Más de una idea por toma", "Colores saturados: es papel neutro con un solo acento"]},
+ "ui-orbita-oscura": {
+  "necesitas": ["Capturas o mockups de las interfaces (chat, tablero, teclado)", "Fotos verticales de personas/creadores (propias o de Higgsfield)", "Logo de la plataforma (SVG)"],
+  "pasos": ["estilo-cine horizontal, fondo `#1b1626` con viñeta morada", "Escena `chat` para la conversación de WhatsApp y `tarjetas` para el tablero; teclado y contadores con `contador`", "Anillo de fotos que orbita alrededor del logo: Three.js en `cine.js` (no existe como escena: agrégala como `orbita` con N tarjetas en círculo)", "Texto blanco bold centrado arriba, palabras clave en lila `#b48cff`, frases secundarias en serif itálica gris", "Tachado rojo animado sobre la tarjeta del problema", "Sin cortes: todo se transforma en un solo plano"],
+  "evitar": ["Fondos planos sin viñeta", "Cortes secos entre escenas"]},
+ "lienzo-amarillo": {
+  "necesitas": ["Guion con 4–6 ideas simples (tiempo, equipo, IA, resultado)", "Íconos de línea (SVG) y una mascota/personaje (Higgsfield, solo imagen)"],
+  "pasos": ["estilo-cine vertical con fondo amarillo `#f1b80c`", "Palabra gigante condensada que entra con desenfoque; frases en sans negra mediana; remate en serif itálica", "Metáforas con íconos: velocímetro con aguja que gira, personas en un marco, hexágonos con íconos que se duplican y se conectan", "Contador circular con `contador` (\"3 en segundos\")", "Mascota fija abajo a la derecha que reacciona", "Transiciones con desenfoque y zoom (`trans: zoom`)"],
+  "evitar": ["Fotografía: aquí todo es ícono de línea negro", "Más de 2 colores además del amarillo"]},
+ "persona-tarjetas-ui": {
+  "necesitas": ["Video de la persona a cámara en fondo claro", "Las tarjetas que ilustran (precio, lista de pasos, comparación)"],
+  "pasos": ["Corte y subtítulos con el editor de testimoniales: `editor-testimoniales/editor/editar.py <p> plan → armar → terminar`", "Tarjetas de interfaz hechas en código (escenas `interfaz`/`tarjetas` de estilo-cine renderizadas con fondo transparente) puestas encima del corte", "Palabras gigantes serif semitransparentes detrás de la persona: usa la máscara de persona (`estilo-cine/preparar.py`) y grupos `\"detras\": true`", "Una tarjeta puede tapar a la persona por completo con zoom (eso hace de corte)", "Cursor que da clic en el botón verde", "Revisión final: `revisar_final.py` (texto nunca sobre la cara salvo la tarjeta que la tapa a propósito)"],
+  "evitar": ["Tarjetas que tapen la boca mientras habla", "Más de 2 cortes reales"]},
+ "tarjetas-coral-cifras": {
+  "necesitas": ["Guion de problema → solución → prueba social con cifras", "Datos reales (número de negocios, países)"],
+  "pasos": ["estilo-cine horizontal; paleta coral `#f26b5b`, gris `#2a2a2e`, blanco hueso `#f2f0ec`", "Problema: cartel/escena con globos de notificación; chat repetido \"×9 el mismo mensaje\" con `chat`", "Pantalla dividida \"vos vs tu competencia\": dos escenas `chat` lado a lado con etiquetas píldora", "Glitch de texto en la palabra de pérdida (`trans: glitch`)", "Cifras gigantes con `contador`; cintas de texto diagonales que corren (agregar a `cine.js` si no existe: banda rotada con texto en loop)", "Cierre con mockup de celular (`telefonos`) y CTA", "Ritmo rápido: un cambio cada ~2 s con efectos pop/whoosh"],
+  "evitar": ["Cifras inventadas", "Texto largo: máximo 6 palabras por pantalla"]},
+ "demo-app-terminal": {
+  "necesitas": ["La app real (capturas o grabación de pantalla)", "Los comandos reales que corre Claude Code"],
+  "pasos": ["Grabación de pantalla con el motor de Metodología (`estilo-cine/metodo_corte.py`, `metodo_zoom.py` para zoom al cursor)", "Escenas en código: `claudecode`/`vscode` para la terminal que escribe sola, `telefonos` para el celular con el chat/QR", "Ventana de la app con botones de macOS y logo; panel oscuro con estadísticas", "Texto blanco bold con palabra clave en rojo; un texto corto por paso", "Zoom a la ventana y cursor que da clic en cada paso"],
+  "evitar": ["Pasos que no existen en la app real", "Mostrar llaves o datos privados en la terminal"]},
+ "comercial-glow-marca": {
+  "necesitas": ["Logo de la marca (SVG) y su color", "Objeto o interfaz protagonista (producto 3D, app, mapa)", "Eslogan corto"],
+  "pasos": ["estilo-cine en modo `codigo` (Three.js) con fondo `#050505` y halos/luces del color de la marca", "Apertura: trazo de luz que dibuja el logo (logos extruidos de `logos`)", "Escenas: celular o interfaz flotando con halo (`telefonos`/`interfaz`), mapa 3D isométrico con ruta luminosa o carrusel de tomas, objeto 3D (caja/producto)", "Transiciones de cámara que viaja con desenfoque de movimiento (`trans: zoom`/`pan`)", "Textos muy cortos en sans blanca, una palabra en el color de la marca", "Cierre: eslogan + logo con halo", "Música de comercial + efectos de luz"],
+  "evitar": ["Fondos que no sean casi negros", "Más de un color de acento", "Usar la marca real en un anuncio sin permiso: para recrearla como ejercicio está bien, para publicar usa la tuya"]},
+ "keynote-apple": {
+  "necesitas": ["Producto en 3D (modelo o imágenes de Higgsfield desde varios ángulos)", "3–4 frases muy cortas"],
+  "pasos": ["Sigue `plantillas/estilo-apple/ESTILO.md` (desglose cuadro a cuadro)", "Apertura: degradado radial azul-verde-crema que pulsa con el nombre del producto en sans fina", "Producto al centro sobre marfil `#e9e4da`, girando lento; se abre o se despieza", "Frases en gris pequeño centrado entre escenas", "Música minimalista; 7–15 s"],
+  "evitar": ["Texto grande o en negritas", "Colores fuertes fuera de la apertura"]},
+ "tutorial-flechas": {
+  "necesitas": ["Grabación de pantalla de cada paso de la herramienta"],
+  "pasos": ["Motor de Metodología: `estilo-cine/metodo_corte.py` + `metodo_zoom.py` (zoom al cursor) + `metodo.mjs`", "Flechas rojas curvas dibujadas a mano y recuadros rojos en cada clic (capa SVG; si no existe en metodo.mjs, agrégala)", "Fondo de cuadrícula alrededor de la captura", "Texto del paso abajo, corto"],
+  "evitar": ["Pasos de más: solo los clics necesarios"]},
+ "mundo-voxel": {
+  "necesitas": ["Personajes (imágenes de Higgsfield, solo imágenes) o modelos 3D simples"],
+  "pasos": ["Three.js en estilo-cine: personajes con RoundedBox y caras, escenario simple (tribunal, oficina, riel)", "Una acción por idea del guion", "Texto palabra por palabra arriba"],
+  "evitar": ["Videos de Higgsfield (caros): animar con código"]},
+ "mascota-marfil": {
+  "necesitas": ["Mascota (imagen de Higgsfield recortada)"],
+  "pasos": ["Fondo marfil liso en estilo-cine", "Mascota recortada que interactúa con íconos, celular (`telefonos`) y tarjetas (`tarjetas`)", "Texto negro palabra por palabra"],
+  "evitar": ["Fondos con textura"]},
+ "split-explicador": {
+  "necesitas": ["Video de la persona hablando"],
+  "pasos": ["Mitad de arriba (40–45 %): gráfico que cambia con cada idea, hecho en estilo-cine con lienzo horizontal", "Mitad de abajo: la persona (corte con `metodo_corte.py` o el editor de testimoniales)", "Armar con `estilo-cine/doble.mjs` (doble pantalla)", "Subtítulo en la unión de las dos mitades"],
+  "evitar": ["Que el subtítulo tape la cara"]},
+ "montaje-relampago": {
+  "necesitas": ["Video de la persona + B-roll y capturas"],
+  "pasos": ["Hook en split: titular serif arriba, persona abajo (`doble.mjs`)", "Luego Cine Pro con cortes cada 0.5–1 s alternando persona, B-roll, capturas, titular pixel", "Efectos de golpe en cada corte"],
+  "evitar": ["Planos de más de 1.5 s después del hook"]},
+ "brutalista-neon": {
+  "necesitas": ["Guion de frases cortas"],
+  "pasos": ["estilo-cine con fuente condensada en mayúsculas (Anton/Bebas Neue incluidas)", "Franja negra arriba con titular; una palabra verde neón tachada", "Pantallas negras con una palabra itálica por golpe"],
+  "evitar": ["Más de dos colores (negro + verde neón)"]},
+ "tipografia-roja": {
+  "necesitas": ["Video de la persona"],
+  "pasos": ["Máscara de persona con `estilo-cine/preparar.py`", "Texto en curva y arcos alrededor de la persona, silueta rellena de rojo, papel rasgado que revela imágenes", "Collage de recortes de la cara"],
+  "evitar": ["Texto sobre la boca"]},
+ "raw-vs-editado": {
+  "necesitas": ["El crudo y la versión editada con los mismos cortes"],
+  "pasos": ["Alternar crudo (etiqueta \"Raw\") y editado (\"Edited\") cada frase", "O en doble pantalla con `estilo-cine/doble.mjs original.mov panel.mp4 salida.mp4 --etiqueta \"X · SIN TOCAR\"`"],
+  "evitar": ["Que el crudo y el editado se desfasen"]},
+ "comercial-producto": {
+  "necesitas": ["Capturas reales de la app", "Fondos por nicho (Higgsfield, solo imágenes)"],
+  "pasos": ["estilo-cine sin persona: mockups de celular/tablet en código (`telefonos`) con la app real", "Fondos cinematográficos o mundo 3D", "Titulares grandes, uno por escena"],
+  "evitar": ["Mockups con apps inventadas"]},
+ "testimonio-cinematico": {
+  "necesitas": ["Testimonio en estudio de color, cuerpo completo"],
+  "pasos": ["Corte y subtítulos con `editor-testimoniales/editor/editar.py`", "Palabra gigante en degradado sobre el pecho (capa de tipografía de estilo-cine con máscara)", "Íconos 3D tipo emoji; cierre con B-roll emotivo (`broll_auto`)"],
+  "evitar": ["Texto sobre la cara (la revisión final lo marca)"]},
+ "acento-amarillo": {
+  "necesitas": ["Video de la persona + capturas"],
+  "pasos": ["Cine Pro con capturas a pantalla completa", "Palabra clave en amarillo con fuente manuscrita o serif itálica"],
+  "evitar": ["Más de una palabra resaltada por frase"]},
+ "franja-cinemascope": {
+  "necesitas": ["Animación en panorámico"],
+  "pasos": ["estilo-cine con lienzo panorámico (`\"lienzo\"`) dentro de un fondo negro vertical", "Toda la animación vive en la franja central"],
+  "evitar": ["Elementos fuera de la franja"]},
+ "ui-minimal": {
+  "necesitas": ["Interfaces reales a recrear"],
+  "pasos": ["Interfaces en código (escena `interfaz` de Cine Pro 3D) sin fondo", "Fondo liso negro con brillo azul o blanco/gris", "Cursor que hace clic"],
+  "evitar": ["Ruido visual alrededor de la interfaz"]},
+ "tarjetas-anthropic": {
+  "necesitas": ["Cifras reales"],
+  "pasos": ["Fondo carbón en estilo-cine", "Tarjetas oscuras (`tarjetas`) que aparecen una por una con `contador`", "Titular serif con palabra itálica naranja subrayada a mano"],
+  "evitar": ["Más de 4 tarjetas a la vez"]},
+ "recorte-collage": {
+  "necesitas": ["Video de la persona"],
+  "pasos": ["Máscara de persona (`estilo-cine/preparar.py`, visual `persona` con `fondo: \"estilo\"`)", "Fondos que cambian con cada idea: cuadrícula, papel arrugado, fotos, papel rasgado (Higgsfield o código)"],
+  "evitar": ["Cambiar el fondo de la persona cuando la plantilla es Cine Pro (va con su fondo real): este formato es aparte"]},
+ "vidrio-toma-real": {
+  "necesitas": ["Toma real ambiental (persona en la laptop, sin hablar)"],
+  "pasos": ["estilo-cine sobre la toma real", "Tarjetas de vidrio esmerilado numeradas (blur de fondo + borde claro) que aparecen con cada punto"],
+  "evitar": ["Tarjetas opacas"]},
+ "escritorio-3d": {
+  "necesitas": ["Entrevista/podcast + objetos (Higgsfield, solo imágenes)"],
+  "pasos": ["Corte de la entrevista", "Cortes a una mesa beige vista desde arriba con objetos 3D recortados y animados por código"],
+  "evitar": ["Videos de Higgsfield"]},
+ "poster-editorial": {
+  "necesitas": ["Una imagen IA fotorrealista por frase (Higgsfield, GPT Image)"],
+  "pasos": ["`estilo-cine/gen_hf.py` para las imágenes (solo imágenes)", "Cada frase = un póster: imagen + tipografía de revista en estilo-cine", "Transición de página entre pósters"],
+  "evitar": ["Más de una frase por póster"]},
+ "pasos-numerados": {
+  "necesitas": ["Guion en pasos"],
+  "pasos": ["\"Paso 1/2/3\" gigante rojo-naranja arriba", "Mockups de tablet/celular (`telefonos`) y tarjetas de fotos que se abren en abanico"],
+  "evitar": ["Más de 5 pasos"]},
+ "ugc-pantalla": {
+  "necesitas": ["Selfie hablando + toma del celular apuntando al monitor"],
+  "pasos": ["Solo corte + subtítulos (editor de anuncios o de testimoniales)", "Look casero: sin gráficos"],
+  "evitar": ["Pulirlo de más"]},
+ "podcast-verde": {
+  "necesitas": ["Clip de podcast"],
+  "pasos": ["Clip en blanco y negro (ffmpeg `hue=s=0`)", "Interrupciones con pantallas verde bosque y una palabra gigante (estilo-cine)"],
+  "evitar": ["Color en el clip"]},
+ "bola-de-luz": {
+  "necesitas": ["Guion corto"],
+  "pasos": ["Three.js en estilo-cine: esfera roja que rebota y proyecta un cono de luz que revela el texto", "Cierre con texturas 3D y partículas"],
+  "evitar": ["Iluminar todo el texto a la vez"]},
+ "showreel-cinematico": {
+  "necesitas": ["Video de la persona (o voz)"],
+  "pasos": ["Plantilla Cine Pro (ya existe): tipografía cinética gris/negra sobre marfil o negro", "Escenas 3D elegantes y oscuras (`ojo`, puerta con haz de luz, balanza, túnel)"],
+  "evitar": ["Colores saturados"]},
+ "duelo-pantallas": {
+  "necesitas": ["La misma petición en las dos herramientas"],
+  "pasos": ["Dos interfaces en código apiladas (escenas `interfaz`/`chat` duplicadas)", "La petición se escribe en las dos a la vez y luego aparece cada resultado"],
+  "evitar": ["Resultados inventados: usa los reales"]},
+ "pizarra-pro": {
+  "necesitas": ["Esquema de la idea (nodos y conexiones)"],
+  "pasos": ["Organigrama animado en estilo-cine", "Fondo blanco con cuadrícula fina; íconos en círculos oscuros unidos con líneas punteadas que se dibujan", "Anillos azules con \"?\", círculo que se rompe en pedazos, termómetro que sube"],
+  "evitar": ["Colores fuera de negro, azul y blanco"]}
+}

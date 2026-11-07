@@ -1,0 +1,32 @@
+# nunca subir llaves ni configuración personal
+.env
+*.key
+config/kit.json
+# dependencias (las instala instalar.sh)
+.venv/
+node_modules/
+bin/segmentar
+estilo-cine/sfx/*.mp3
+estilo-cine/sfx/*.wav
+# proyectos de video (pesados y personales); solo se versiona el demo
+proyectos/*
+!proyectos/demo/
+proyectos/demo/salida/
+proyectos/demo/cuadros*/
+proyectos/demo/mascaras/
+**/salida/
+**/__pycache__/
+.DS_Store
+# herramientas que crean los instaladores (Mac: swiftc · Windows/Linux: envoltorios de plataforma/*.py) y modelos que se bajan solos
+bin/
+editor-testimoniales/editor/bin/
+plataforma/modelos/
+
+# Referencias de formatos (en disco, no en git)
+plantillas/formatos/*/hoja.jpg
+plantillas/formatos/*/paleta.png
+plantillas/formatos/*/cuadros/
+editor-testimoniales/editor/.venv
+editor-testimoniales/editor/sfx/
+plantillas/muestrario.html
+

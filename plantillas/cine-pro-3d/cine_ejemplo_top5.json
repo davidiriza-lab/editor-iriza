@@ -1,0 +1,647 @@
+{
+ "handle": "@tu_usuario",
+ "fps": "24000/1001",
+ "cola": 0.5,
+ "voz": "corte/cam.mov",
+ "salida": "<tu carpeta de contenido>/Replica viral/Top/Video editado - C8251.mp4",
+ "persona": {
+  "cuadros": "cuadros_pro",
+  "mascaras": "mascaras",
+  "crudos": "cuadros",
+  "n": 2007,
+  "fondo": "real",
+  "bajar": 0,
+  "zoomAlt": 1.05
+ },
+ "cortes": [
+  3.63,
+  5.96,
+  60.48
+ ],
+ "musica": {
+  "archivo": "../../estilo-cine/sfx/musica_mecha.mp3",
+  "desde": 0.0,
+  "vol": 0.3,
+  "vol_drop": 0.3,
+  "drop": 999,
+  "ducking": {
+   "threshold": 0.05,
+   "ratio": 3
+  }
+ },
+ "marcas": {
+  "impacto": -9,
+  "tap": -9
+ },
+ "sfx_auto": true,
+ "sfx": [
+  {
+   "f": "../../estilo-cine/sfx/listo.mp3",
+   "en": 11.7,
+   "pico": 0.05,
+   "vol": 0.35
+  },
+  {
+   "f": "../../estilo-cine/sfx/listo.mp3",
+   "en": 25.6,
+   "pico": 0.05,
+   "vol": 0.35
+  },
+  {
+   "f": "../../estilo-cine/sfx/listo.mp3",
+   "en": 38.4,
+   "pico": 0.05,
+   "vol": 0.35
+  },
+  {
+   "f": "../../estilo-cine/sfx/listo.mp3",
+   "en": 50.0,
+   "pico": 0.05,
+   "vol": 0.35
+  },
+  {
+   "f": "../../estilo-cine/sfx/listo.mp3",
+   "en": 63.2,
+   "pico": 0.05,
+   "vol": 0.35
+  },
+  {
+   "f": "../../estilo-cine/sfx/listo.mp3",
+   "en": 65.9,
+   "pico": 0.05,
+   "vol": 0.35
+  },
+  {
+   "f": "../../estilo-cine/sfx/moneda.mp3",
+   "en": 10.62,
+   "pico": 0.1,
+   "vol": 0.35
+  },
+  {
+   "f": "../../estilo-cine/sfx/glitch_pulso.mp3",
+   "en": 61.46,
+   "pico": 0.05,
+   "vol": 0.3
+  },
+  {
+   "f": "../../estilo-cine/sfx/rec.mp3",
+   "en": 28.34,
+   "pico": 0.05,
+   "vol": 0.3
+  },
+  {
+   "f": "../../estilo-cine/sfx/listo.mp3",
+   "en": 83.15,
+   "pico": 0.05,
+   "vol": 0.4
+  }
+ ],
+ "logos": {
+  "notebooklm": "logos/notebooklm.png",
+  "higgsfield": "logos/higgsfield.png",
+  "vscode": "logos/vscode.png",
+  "napkin": "logos/napkin.png",
+  "elevenlabs": "logos/elevenlabs.png",
+  "powerpoint": "logos/powerpoint.png",
+  "canva": "logos/canva.png",
+  "premiere": "logos/premiere.png"
+ },
+ "top5": {
+  "veces": [
+   [
+    0.5,
+    10.95
+   ],
+   [
+    76.3,
+    80.6
+   ]
+  ],
+  "slots": [
+   {
+    "en": 11.5,
+    "logo": "notebooklm"
+   },
+   {
+    "en": 25.5,
+    "logo": "higgsfield"
+   },
+   {
+    "en": 38.3,
+    "logo": "vscode"
+   },
+   {
+    "en": 49.9,
+    "logo": "napkin"
+   },
+   {
+    "en": 63.2,
+    "logo": "heygen"
+   }
+  ]
+ },
+ "escenas": [
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "crono": {
+    "en": 8.2,
+    "fin": 9.5,
+    "y": 1000,
+    "texto": "te ahorras horas"
+   },
+   "grupos": [
+    {
+     "y": 0.745,
+     "lineas": [
+      "-Te voy a enseñar las",
+      "top 5 herramientas"
+     ]
+    },
+    {
+     "y": 0.745,
+     "lineas": [
+      "-que toda persona debería estar utilizando",
+      "inteligencia artificial"
+     ]
+    },
+    {
+     "y": 0.745,
+     "lineas": [
+      "-en este",
+      "*2026."
+     ]
+    },
+    {
+     "y": 0.745,
+     "lineas": [
+      "-Estas 5 herramientas te van a ayudar tanto a",
+      "ahorrar muchísimo tiempo"
+     ]
+    },
+    {
+     "y": 0.745,
+     "lineas": [
+      "-como a ganar muchísimo",
+      "*dinero."
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "icono3d",
+   "tema": "oscuro",
+   "trans": "quemado",
+   "icono3d": {
+    "nombre": "NotebookLM",
+    "logos": [
+     {
+      "n": "notebooklm",
+      "en": 11.12
+     }
+    ]
+   },
+   "grupos": [
+    {
+     "y": 0.5,
+     "lineas": [
+      "Y| la| primera| es| NotebookLM.|"
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "interfaz",
+   "tema": "claro",
+   "trans": "whip",
+   "ui": {
+    "tipo": "notebooklm",
+    "en": 12.98,
+    "fin": 99,
+    "youtube": 16.85,
+    "pregunta": 18.32,
+    "respuesta": 19.8,
+    "audio": 21.78,
+    "pdf": 23.12
+   },
+   "grupos": [
+    {
+     "y": 0.775,
+     "lineas": [
+      "-Esta herramienta básicamente te va a ayudar a",
+      "aprender lo que tú quieras."
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-Literal, le puedes meter un video y le puedes hacer",
+      "preguntas"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-de lo que tú quieras en base a ese",
+      "video."
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-Puedes meterle un video y hacer un",
+      "*podcast",
+      "-de eso."
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-Puedes meterle un",
+      "PDF",
+      "-o cualquier otro tipo de contenido."
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "icono3d",
+   "tema": "oscuro",
+   "trans": "quemado",
+   "icono3d": {
+    "nombre": "Higgsfield",
+    "logos": [
+     {
+      "n": "higgsfield",
+      "en": 25.06
+     }
+    ]
+   },
+   "grupos": [
+    {
+     "y": 0.5,
+     "lineas": [
+      "La| segunda| es| Higgsfield,|"
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "interfaz",
+   "tema": "oscuro",
+   "trans": "whip",
+   "ui": {
+    "tipo": "higgsfield",
+    "en": 26.46,
+    "fin": 99,
+    "escribe": 26.8,
+    "generar": 28.34,
+    "referencia": 31.52,
+    "listos": [
+     30.8,
+     33.0,
+     34.9,
+     36.3
+    ]
+   },
+   "grupos": [
+    {
+     "y": 0.775,
+     "lineas": [
+      "-básicamente es una herramienta que te ayuda a",
+      "generar un video con IA"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-que parte de tu",
+      "imaginación,"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-puedes agregarle",
+      "videos de referencia,"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-puedes",
+      "cambiar el fondo",
+      "-de cualquier otro video,"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-puedes hacer una",
+      "infinidad",
+      "-de cosas visuales con esta herramienta."
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "icono3d",
+   "tema": "oscuro",
+   "trans": "quemado",
+   "icono3d": {
+    "nombre": "VS Code",
+    "logos": [
+     {
+      "n": "vscode",
+      "en": 37.8
+     }
+    ]
+   },
+   "grupos": [
+    {
+     "y": 0.5,
+     "lineas": [
+      "La| tercera| es| Visual| Studio| Code.|"
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "interfaz",
+   "tema": "oscuro",
+   "trans": "whip",
+   "ui": {
+    "tipo": "claudecode",
+    "en": 39.74,
+    "fin": 99,
+    "claude": 40.3,
+    "pedido": 42.78,
+    "respuesta": 44.5,
+    "codex": 43.94
+   },
+   "grupos": [
+    {
+     "y": 0.775,
+     "lineas": [
+      "-Si bien es para",
+      "programar como tal,"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-aquí puedes poner",
+      "Claude Code,"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-puedes poner",
+      "Codex,"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-puedes poner una infinidad de",
+      "herramientas con IA"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-que hoy en día se están utilizando y que están en",
+      "revolución en el mercado."
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "icono3d",
+   "tema": "oscuro",
+   "trans": "quemado",
+   "icono3d": {
+    "nombre": "Napkin AI",
+    "logos": [
+     {
+      "n": "napkin",
+      "en": 49.4
+     }
+    ]
+   },
+   "grupos": [
+    {
+     "y": 0.5,
+     "lineas": [
+      "La| cuarta| es| Napkin| IA.|"
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "interfaz",
+   "tema": "claro",
+   "trans": "whip",
+   "ui": {
+    "tipo": "napkin",
+    "en": 51.16,
+    "fin": 99,
+    "selecciona": 52.5,
+    "rayo": 53.2,
+    "diagrama": 53.7
+   },
+   "grupos": [
+    {
+     "y": 0.775,
+     "lineas": [
+      "-Es una herramienta muy poderosa para",
+      "convertir cualquier texto",
+      "*en visuales."
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "apps": {
+    "en": 59.0,
+    "tacha": 61.46,
+    "fin": 62.4,
+    "x": 0.5,
+    "y": 0.62,
+    "logos": [
+     "powerpoint",
+     "canva",
+     "premiere"
+    ]
+   },
+   "grupos": [
+    {
+     "y": 0.745,
+     "lineas": [
+      "-De esta forma, cualquier cosa que te tomaba antes",
+      "horas"
+     ]
+    },
+    {
+     "y": 0.745,
+     "lineas": [
+      "-hacerla en",
+      "PowerPoint,",
+      "-en Canva o en programas de edición,"
+     ]
+    },
+    {
+     "y": 0.745,
+     "lineas": [
+      "-ahora lo puedes hacer",
+      "*al instante."
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "icono3d",
+   "tema": "oscuro",
+   "trans": "quemado",
+   "icono3d": {
+    "nombre": "HeyGen y\nElevenLabs",
+    "logos": [
+     {
+      "n": "heygen",
+      "en": 62.62
+     },
+     {
+      "n": "elevenlabs",
+      "en": 65.3
+     }
+    ]
+   },
+   "grupos": [
+    {
+     "y": 0.5,
+     "lineas": [
+      "Y| la| quinta| son| aplicaciones| como| HeyGen| y| como| Eleven| Labs.|"
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "interfaz",
+   "tema": "claro",
+   "trans": "whip",
+   "ui": {
+    "tipo": "heygen",
+    "en": 66.34,
+    "fin": 99,
+    "sube": 67.4,
+    "creando": 68.1,
+    "listo": 70.24
+   },
+   "grupos": [
+    {
+     "y": 0.775,
+     "lineas": [
+      "-Si eres creador de contenido,",
+      "debes entender esto."
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-Estas herramientas te permiten",
+      "crear avatars|avatares de ti mismo"
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "interfaz",
+   "tema": "claro",
+   "trans": "whip",
+   "ui": {
+    "tipo": "elevenlabs",
+    "en": 71.92,
+    "fin": 99,
+    "escribe": 72.0,
+    "generar": 73.8
+   },
+   "grupos": [
+    {
+     "y": 0.775,
+     "lineas": [
+      "-y de esta manera",
+      "escalar tu marca"
+     ]
+    },
+    {
+     "y": 0.775,
+     "lineas": [
+      "-sin depender",
+      "de tu tiempo."
+     ]
+    }
+   ]
+  },
+  {
+   "visual": "persona",
+   "tema": "claro",
+   "trans": "whip",
+   "cta": {
+    "en": 81.74,
+    "texto": "CLAUDE"
+   },
+   "dm": {
+    "en": 83.1,
+    "texto": "📩 Aquí están mis 5 herramientas 🧰"
+   },
+   "grupos": [
+    {
+     "y": 0.745,
+     "lineas": [
+      "-Ahora, si quieres todas las",
+      "herramientas",
+      "-que yo utilizo para"
+     ]
+    },
+    {
+     "y": 0.745,
+     "lineas": [
+      "-editar mi marca y",
+      "crecer mi marca"
+     ]
+    },
+    {
+     "y": 0.745,
+     "lineas": [
+      "-sin que requiera de mi",
+      "tiempo,"
+     ]
+    },
+    {
+     "y": 0.6,
+     "lineas": [
+      "-coméntame la palabra",
+      "Claude|CLAUDE"
+     ]
+    },
+    {
+     "y": 0.6,
+     "lineas": [
+      "-y te la envío por",
+      "DM."
+     ]
+    }
+   ]
+  }
+ ],
+ "imagenes": {
+  "uiRef": "cuadros_pro/00300.jpg",
+  "uiRes1": "hf/res1c.png",
+  "uiRes2": "hf/res2.png",
+  "uiRes3": "hf/res3.png",
+  "uiRes4": "hf/res4.png"
+ }
+}

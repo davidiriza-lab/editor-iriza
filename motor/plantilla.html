@@ -1,0 +1,249 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: #121518; }
+  :root { --rojo: #e3101e; --fuente: "SF Pro Display", -apple-system, system-ui, "Helvetica Neue", Helvetica, sans-serif; }
+  #stage { position: absolute; inset: 0; overflow: hidden; font-family: var(--fuente); color: #fff; -webkit-font-smoothing: antialiased; }
+  #fondo { position: absolute; inset: 0; background-color: #121518;
+    background-image:
+      linear-gradient(rgba(255,255,255,.075) 2px, transparent 2px),
+      linear-gradient(90deg, rgba(255,255,255,.075) 2px, transparent 2px);
+    background-size: 54px 54px; background-position: -2px -2px; }
+  #grano { position: absolute; inset: 0; opacity: .10; mix-blend-mode: screen; }
+  #vineta { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 45%, transparent 50%, rgba(0,0,0,.5) 100%); }
+  #capa { position: absolute; inset: 0; }
+  .pant { position: absolute; inset: 0; display: none; }
+  .card { position: absolute; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 20px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06); }
+  .card img { position: absolute; left: 0; top: 0; display: block; }
+  .caja { position: absolute; border: 5px solid var(--rojo); border-radius: 3px; }
+  .icono { position: absolute; border-radius: 22%; overflow: hidden; box-shadow: 0 14px 40px rgba(0,0,0,.5); }
+  .icono img { width: 100%; height: 100%; display: block; object-fit: cover; }
+  .icono.letra { background: #fff; color: #111; display: flex; align-items: center; justify-content: center; font-weight: 800; }
+  .gancho { position: absolute; left: 0; top: 0; }
+  .linea { display: flex; align-items: flex-end; gap: .22em; white-space: nowrap; }
+  .linea.chica { font-size: 62px; font-weight: 500; letter-spacing: -.01em; line-height: 1.02; }
+  .linea.grande { font-size: 150px; font-weight: 800; letter-spacing: -.035em; line-height: .9; }
+  .tok { display: inline-block; will-change: filter, opacity, transform; }
+  .tok.emoji { font-family: "Apple Color Emoji"; font-size: 1.6em; line-height: 1; }
+  .linea.grande .tok.emoji { font-size: .8em; }
+  .tok.ico { width: 2.3em; height: 2.3em; border-radius: 22%; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,.45); margin-left: .1em; }
+  .linea.grande .tok.ico { width: .95em; height: .95em; }
+  .tok.ico img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #etiqueta { position: absolute; left: 0; right: 0; text-align: center; font-size: 48px; font-weight: 600; letter-spacing: -.012em; text-shadow: 0 2px 14px rgba(0,0,0,.55); white-space: nowrap; }
+  .cta { position: absolute; left: 0; right: 0; text-align: center; font-size: 104px; font-weight: 800; letter-spacing: -.03em; text-shadow: 0 4px 24px rgba(0,0,0,.6); }
+  #flecha { position: absolute; inset: 0; pointer-events: none; overflow: visible; }
+  #luz { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+  #luz .tinte { position: absolute; inset: 0; background: rgba(28,70,200,.22); mix-blend-mode: screen; }
+  #luz .banda { position: absolute; top: -5%; height: 110%; filter: blur(22px); mix-blend-mode: screen;
+    background: linear-gradient(90deg, transparent, #1f5bff 25%, #7fb0ff 50%, #1f5bff 75%, transparent); }
+  #luz .marco { position: absolute; border: 4px solid rgba(110,165,255,.55); border-radius: 46px; filter: blur(1px); }
+</style></head>
+<body>
+<div id="stage">
+  <div id="fondo"></div><canvas id="grano" width="540" height="960"></canvas><div id="vineta"></div>
+  <div id="capa"></div>
+  <svg id="flecha" width="1080" height="1920" viewBox="0 0 1080 1920"></svg>
+  <div id="etiqueta"></div>
+  <div id="luz"><div class="tinte"></div><div class="banda" id="b1"></div><div class="banda" id="b2"></div><div class="marco"></div></div>
+</div>
+<script>
+// ---------- utilidades ----------
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const easeOut = x => 1 - Math.pow(1 - clamp(x), 3);
+const easeInOut = x => { x = clamp(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+const prog = (t, t0, dur) => clamp((t - t0) / dur);
+let E, W, H, tam = {}, construidas = {};
+
+// grano fijo (semilla determinista para que todos los cuadros sean iguales)
+(function () {
+  const c = document.getElementById('grano'), g = c.getContext('2d'), im = g.createImageData(c.width, c.height);
+  let s = 1234567; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  for (let i = 0; i < im.data.length; i += 4) { const v = rnd() * 255; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; }
+  g.putImageData(im, 0, 0); c.style.width = '1080px'; c.style.height = '1920px';
+})();
+
+async function init(edit) {
+  E = edit; W = E.W; H = E.H;
+  const srcs = new Set();
+  for (const p of E.pantallas) {
+    if (p.img) srcs.add(p.img);
+    for (const l of p.lineas || []) for (const k of l.toks) if (k.img) srcs.add(k.img);
+  }
+  await Promise.all([...srcs].map(src => new Promise(res => {
+    const im = new Image(); im.onload = () => { tam[src] = [im.naturalWidth, im.naturalHeight]; res(); };
+    im.onerror = () => { tam[src] = null; res(); }; im.src = src;
+  })));
+  await document.fonts.ready;
+  return Object.entries(tam).filter(([, v]) => !v).map(([k]) => k);  // imágenes que no cargaron
+}
+
+// ---------- construcción de cada pantalla (una vez) ----------
+function img(src) { const i = document.createElement('img'); i.src = src; return i; }
+
+function layoutCard(p) {
+  const [iw, ih] = tam[p.img] || [800, 600], asp = iw / ih;
+  if (p.tipo === 'scroll') {
+    const vw = (p.ancho || (asp < .8 ? .5 : .88)) * W, s = vw / iw, full = ih * s, vh = Math.min(full, (p.alto || .62) * H);
+    return { w: vw, h: vh, s, full, iw, ih };
+  }
+  const maxW = (p.ancho || (asp >= 1.3 ? .88 : asp >= .8 ? .62 : .5)) * W, maxH = (p.alto || .58) * H;
+  const s = Math.min(maxW / iw, maxH / ih);
+  return { w: iw * s, h: ih * s, s, full: ih * s, iw, ih };
+}
+
+function construir(i) {
+  if (construidas[i]) return construidas[i];
+  const p = E.pantallas[i], el = document.createElement('div'); el.className = 'pant';
+  const o = { el, p, ancla: null, objetivo: null, mov: null };
+  const cy = (p.centro || .45) * H;
+
+  if (p.tipo === 'gancho') {
+    const g = document.createElement('div'); g.className = 'gancho'; el.appendChild(g);
+    o.toks = [];
+    for (const l of p.lineas) {
+      const ln = document.createElement('div'); ln.className = 'linea ' + (l.grande ? 'grande' : 'chica'); g.appendChild(ln);
+      for (const k of l.toks) {
+        let n;
+        if (k.img) { n = document.createElement('span'); n.className = 'tok ico'; n.appendChild(img(k.img)); }
+        else { n = document.createElement('span'); n.className = 'tok' + (k.emoji ? ' emoji' : ''); n.textContent = k.texto; }
+        ln.appendChild(n); o.toks.push({ n, k });
+      }
+    }
+    document.getElementById('capa').appendChild(el); el.style.display = 'block';
+    const r = g.getBoundingClientRect();  // centrar el bloque, texto alineado a la izquierda
+    g.style.left = Math.round((W - r.width) / 2) + 'px'; g.style.top = Math.round((p.centro || .36) * H - r.height / 2) + 'px';
+    el.style.display = 'none'; o.g = g;
+    return (construidas[i] = o);
+  }
+
+  if (p.tipo === 'captura' || p.tipo === 'scroll' || p.tipo === 'portada') {
+    if (p.tipo === 'portada' && !p.ancho) p.ancho = .5;
+    const L = layoutCard(p), card = document.createElement('div'); card.className = 'card';
+    if (p.tipo === 'portada') { card.style.background = 'transparent'; card.style.borderRadius = '6px'; }
+    const x = (W - L.w) / 2, y = Math.max(.17 * H, cy - L.h / 2);
+    Object.assign(card.style, { left: x + 'px', top: y + 'px', width: L.w + 'px', height: L.h + 'px' });
+    const im = img(p.img); im.style.width = L.iw * L.s + 'px'; im.style.height = L.ih * L.s + 'px'; card.appendChild(im);
+    el.appendChild(card); o.card = card; o.im = im; o.L = L; o.rect = { x, y, w: L.w, h: L.h };
+    if (p.caja && p.tipo !== 'scroll') {
+      const [bx, by, bw, bh] = p.caja, c = document.createElement('div'); c.className = 'caja';
+      Object.assign(c.style, { left: bx * L.w - 6 + 'px', top: by * L.h - 6 + 'px', width: bw * L.w + 12 + 'px', height: bh * L.h + 12 + 'px' });
+      card.appendChild(c);
+      o.objetivo = { x: x + (bx + bw * .55) * L.w, y: y + (by + bh) * L.h + 12 };
+    }
+    if (p.tipo === 'portada' && p.cta) {
+      const c = document.createElement('div'); c.className = 'cta'; c.textContent = p.cta; c.style.top = y + L.h + 26 + 'px'; el.appendChild(c); o.cta = c;
+    }
+  } else if (p.tipo === 'logo') {
+    const s = (p.tam || 210), x = (W - s) / 2, y = cy - s / 2 - 40, ic = document.createElement('div');
+    if (p.img && tam[p.img]) { ic.className = 'icono'; ic.appendChild(img(p.img)); }
+    else { ic.className = 'icono letra'; ic.style.fontSize = s * .55 + 'px'; ic.textContent = (p.nombre || '?')[0]; }
+    Object.assign(ic.style, { left: x + 'px', top: y + 'px', width: s + 'px', height: s + 'px' });
+    el.appendChild(ic); o.card = ic; o.rect = { x, y, w: s, h: s };
+    o.objetivo = { x: x + s * .55, y: y + s + 14 };
+  }
+  if (p.flecha === false) o.objetivo = null;
+  document.getElementById('capa').appendChild(el);
+  return (construidas[i] = o);
+}
+
+// ---------- flecha roja (se dibuja) ----------
+let flechaDe = -1, flechaPath, flechaPunta, flechaLen;
+function flecha(o, t) {
+  const svg = document.getElementById('flecha');
+  if (!o || !o.objetivo) { svg.style.display = 'none'; return; }
+  svg.style.display = 'block';
+  if (flechaDe !== o) {
+    flechaDe = o; const { x: tx, y: ty } = o.objetivo, d = Math.min(230, H * .93 - ty);
+    const g = tx - 130 < 40 ? -1 : 1, X = dx => tx + g * dx;  // si no cabe a la izquierda, se espeja
+    svg.innerHTML = `<path id="fp" fill="none" stroke="#e3101e" stroke-width="17" stroke-linecap="round"
+        d="M ${X(-120)} ${ty + d} C ${X(-10)} ${ty + d + 6}, ${X(28)} ${ty + d * .5}, ${X(3)} ${ty + 30}"/>
+      <polygon id="fh" fill="#e3101e" points="${X(-30)},${ty + 50} ${X(2)},${ty} ${X(38)},${ty + 44}"/>`;
+    flechaPath = svg.querySelector('#fp'); flechaPunta = svg.querySelector('#fh'); flechaLen = flechaPath.getTotalLength();
+    flechaPath.style.strokeDasharray = flechaLen;
+  }
+  const a = o.p.inicio + (o.p.entrada === 'estela' ? .12 : .04), k = easeOut(prog(t, a, .15));
+  flechaPath.style.strokeDashoffset = flechaLen * (1 - k);
+  flechaPunta.style.opacity = k > .8 ? 1 : 0;
+  svg.style.filter = k < 1 ? `blur(${(1 - k) * 4}px)` : 'none';
+}
+
+// ---------- animación por cuadro ----------
+function animar(o, t) {
+  const p = o.p;
+  if (p.tipo === 'gancho') {
+    for (const { n, k } of o.toks) {
+      const d = k.img || k.emoji ? .13 : .18, e = easeOut(prog(t, k.t, d));
+      n.style.opacity = e;
+      n.style.filter = e < 1 ? `blur(${(1 - e) * (k.img ? 10 : 16)}px)` : 'none';
+      n.style.transform = k.img || k.emoji ? `scale(${.5 + .5 * e}) rotate(${(1 - e) * -12}deg)` : `scale(${1.06 - .06 * e})`;
+    }
+    const s = prog(t, p.fin - .1, .1);  // salida: se desvanece con desenfoque
+    o.g.style.opacity = 1 - s; o.g.style.filter = s > 0 ? `blur(${s * 12}px)` : 'none';
+    return;
+  }
+  if (o.card) {
+    const ent = p.entrada || (p.tipo === 'logo' ? 'estela' : 'corte'), e = easeOut(prog(t, p.inicio, ent === 'estela' ? .12 : .15));
+    let tf = '', fl = 'none';
+    if (ent === 'estela') { tf = `translate(${(1 - e) * -330}px, ${(1 - e) * -420}px)`; fl = e < 1 ? `blur(${(1 - e) * 6}px)` : 'none'; }
+    if (ent === 'zoom') { tf = `scale(${.86 + .14 * e})`; fl = e < 1 ? `blur(${(1 - e) * 8}px)` : 'none'; o.card.style.opacity = e; }
+    o.card.style.transform = tf; o.card.style.filter = fl;
+    estela(o, ent === 'estela' ? e : 1);
+  }
+  if (p.tipo === 'scroll') {
+    const max = o.L.full - o.L.h; let k;
+    if ((p.mover || 'continuo') === 'saltos') {
+      const paso = p.cada || .5, n = Math.max(1, Math.floor((p.fin - p.inicio - .2) / paso)), i = Math.floor((t - p.inicio) / paso);
+      k = (clamp(i, 0, n) + easeOut(prog(t - p.inicio - i * paso, 0, .08)) * (i < n ? 1 : 0)) / (n + 1);
+    } else k = easeInOut(prog(t, p.inicio + .25, Math.max(.3, p.fin - p.inicio - .5)));
+    o.im.style.transform = `translateY(${-max * k}px)`;
+  }
+  if (o.cta) {
+    const e = easeOut(prog(t, p.ctaT, .16));
+    o.cta.style.opacity = e; o.cta.style.transform = `scale(${.88 + .12 * e})`; o.cta.style.filter = e < 1 ? `blur(${(1 - e) * 10}px)` : 'none';
+  }
+}
+
+// copias que dejan estela al entrar (logo que "vuela")
+function estela(o, e) {
+  if (!o.fantasmas) {
+    o.fantasmas = [];
+    if ((o.p.entrada || (o.p.tipo === 'logo' ? 'estela' : 'corte')) !== 'estela') return;
+    for (let j = 1; j <= 5; j++) { const c = o.card.cloneNode(true); c.style.opacity = 0; o.el.insertBefore(c, o.card); o.fantasmas.push(c); }
+  }
+  o.fantasmas.forEach((c, j) => {
+    const ej = clamp(e - (j + 1) * .12);
+    c.style.transform = `translate(${(1 - ej) * -330}px, ${(1 - ej) * -420}px)`;
+    c.style.opacity = e < 1 ? .28 * (1 - j / 6) : 0; c.style.filter = 'blur(3px) grayscale(.6)';
+  });
+}
+
+// destello de luz azul entre el gancho y los pasos
+function luz(t) {
+  const L = document.getElementById('luz'), p = E.pantallas.find(q => q.luz && t >= q.inicio - .08 && t <= q.inicio + .24);
+  if (!p) { L.style.opacity = 0; return; }
+  const u = prog(t, p.inicio - .08, .32);
+  L.style.opacity = Math.sin(Math.PI * u) * 1.15;
+  Object.assign(document.getElementById('b1').style, { left: (.18 + .22 * u) * W + 'px', width: '200px' });
+  Object.assign(document.getElementById('b2').style, { left: (.66 - .08 * u) * W + 'px', width: '140px' });
+  Object.assign(L.querySelector('.marco').style, { left: W * .5 - 150 + 'px', top: H * .1 + 'px', width: '300px', height: '400px' });
+}
+
+function etiqueta(t, o) {
+  const el = document.getElementById('etiqueta'), e = E.etiquetas.find(x => t >= x.inicio && t < x.fin);
+  if (!e || (o && o.p.tipo === 'gancho')) { el.style.display = 'none'; return; }
+  el.style.display = 'block'; el.textContent = e.texto;
+  const top = o && o.rect ? o.rect.y - 70 : .19 * H;
+  el.style.top = top + 'px';
+}
+
+window.render = function (t) {
+  const i = E.pantallas.findIndex(p => t >= p.inicio && t < p.fin), idx = i < 0 ? (t < E.pantallas[0].inicio ? -1 : E.pantallas.length - 1) : i;
+  for (const k in construidas) construidas[k].el.style.display = 'none';
+  let o = null;
+  if (idx >= 0) { o = construir(idx); o.el.style.display = 'block'; animar(o, t); }
+  flecha(o, t); etiqueta(t, o); luz(t);
+};
+window.init = init;
+</script>
+</body></html>

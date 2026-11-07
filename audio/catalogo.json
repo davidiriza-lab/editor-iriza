@@ -1,0 +1,105 @@
+{
+ "carpeta": "estilo-cine/sfx",
+ "efectos": [
+  {
+   "archivo": "whoosh_rapido.mp3",
+   "titulo_epidemic": "Swooshes, Whoosh, Classic, Dark, Fast 03"
+  },
+  {
+   "archivo": "whoosh_grave.mp3",
+   "titulo_epidemic": "Swooshes, Whoosh, Deep, Low, Cinematic"
+  },
+  {
+   "archivo": "boom.mp3",
+   "titulo_epidemic": "Designed, Boom, Impact, Dark, Cinematic, Low HIt"
+  },
+  {
+   "archivo": "glitch_corto.mp3",
+   "titulo_epidemic": "User Interface, Glitch, Short Circuit 03"
+  },
+  {
+   "archivo": "glitch_pulso.mp3",
+   "titulo_epidemic": "User Interface, Glitch, Digital Pulse"
+  },
+  {
+   "archivo": "listo.mp3",
+   "titulo_epidemic": "User Interface, Alert, Tonal, Soft Digital Confirm"
+  },
+  {
+   "archivo": "moneda.mp3",
+   "titulo_epidemic": "Objects, Coin, Spin And Stop"
+  },
+  {
+   "archivo": "rec.mp3",
+   "titulo_epidemic": "User Interface, Beep, Tape Hand Camera, Old Quick Beep Sign Rising"
+  },
+  {
+   "archivo": "riser.mp3",
+   "titulo_epidemic": "Designed, Riser, Transition, Reverse, Eerie, Fast, Short"
+  },
+  {
+   "archivo": "tic.mp3",
+   "titulo_epidemic": "User Interface, Click, UI Buttons, Bubbly, Option"
+  },
+  {
+   "archivo": "teclear.mp3",
+   "titulo_epidemic": "User Interface, Click, UI Buttons, Type, Zap, UI Buttons"
+  }
+ ],
+ "musica": [
+  {
+   "archivo": "musica_shaking.mp3",
+   "titulo": "Shaking Hands",
+   "artista": "Ava Low",
+   "nota": "electro oscuro con pulsos; la favorita de referencia"
+  },
+  {
+   "archivo": "musica_behold.mp3",
+   "titulo": "And Behold",
+   "artista": "Awlee",
+   "nota": ""
+  },
+  {
+   "archivo": "musica_blush.mp3",
+   "titulo": "Blush Response",
+   "artista": "Hampus Naeselius",
+   "nota": "llena desde ~34 s"
+  },
+  {
+   "archivo": "musica_dox.mp3",
+   "titulo": "DOX",
+   "artista": "Lennon Hutton",
+   "nota": "llena desde el segundo 0"
+  },
+  {
+   "archivo": "musica_iknow.mp3",
+   "titulo": "I Know I Ran",
+   "artista": "Wendel Scherer",
+   "nota": ""
+  },
+  {
+   "archivo": "musica_mecha.mp3",
+   "titulo": "Mecha",
+   "artista": "Enigmanic",
+   "nota": ""
+  },
+  {
+   "archivo": "musica_strangest.mp3",
+   "titulo": "The Strangest Room",
+   "artista": "Valante",
+   "nota": ""
+  },
+  {
+   "archivo": "musica_theories.mp3",
+   "titulo": "Theories",
+   "artista": "Out To The World",
+   "nota": ""
+  },
+  {
+   "archivo": "musica_timescale.mp3",
+   "titulo": "Timescale",
+   "artista": "Guy Copeland",
+   "nota": ""
+  }
+ ]
+}

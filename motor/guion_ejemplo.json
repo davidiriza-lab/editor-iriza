@@ -1,0 +1,15 @@
+{
+  "pantallas": [
+    { "tipo": "gancho", "voz": "Cómo conectar Claude con tu Instagram",
+      "lineas": ["Cómo", "**conectar**", "con tu Instagram {claude@Claude} {instagram@Instagram}"] },
+    { "tipo": "gancho", "voz": "para responder todos tus mensajes.",
+      "lineas": ["para", "**responder**", "todos", "tus mensajes {📩}"] },
+    { "tipo": "texto", "voz": "Paso uno." },
+    { "tipo": "logo", "voz": "Entra a ManyChat.", "img": "manychat" },
+    { "tipo": "captura", "voz": "Ve a configuración.", "img": "capturas/1.png", "caja": [0.0, 0.85, 1.0, 0.08] },
+    { "tipo": "captura", "voz": "Paso dos. Dentro de tu flujo agrega una acción de Claude.", "img": "capturas/2.png", "caja": [0.1, 0.4, 0.8, 0.12] },
+    { "tipo": "scroll", "voz": "Resultado. Respondes a todos las veinticuatro horas.", "img": "capturas/chat.png", "mover": "continuo" },
+    { "tipo": "portada", "voz": "Si quieres el tutorial completo, comenta BOT y te llega por DM.",
+      "img": "capturas/portada.png", "cta": "Comenta “Bot”", "cta_en": "comenta" }
+  ]
+}
