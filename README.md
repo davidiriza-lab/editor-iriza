@@ -58,10 +58,10 @@ cd editor-iriza
 
 Las reglas completas (cortes, audio, estilo y cada receta) están en [`CLAUDE.md`](CLAUDE.md): es lo que Claude lee antes de editar.
 
-## Lo que no viene
+## Lo que no viene aquí
 
 - **Música.** Usa la tuya o la de un catálogo con licencia; `audio/efectos_basicos.py` genera efectos de sonido libres para que todo funcione desde el primer día. Ver [`audio/LEEME.md`](audio/LEEME.md).
-- **Las imágenes de referencia de los formatos.** Son cuadros de videos de otros creadores; las guías describen cada look con palabras y medidas.
+- **Las imágenes de referencia de los formatos** van en un repo aparte, con un muestrario para verlas corriendo: [davidiriza-lab/editor-iriza-referencias](https://github.com/davidiriza-lab/editor-iriza-referencias). Si quieres editor y referencias juntos, clona ese y corre su `./instalar.sh`: baja este editor y le pone todo.
 
 ## Créditos y licencia
 

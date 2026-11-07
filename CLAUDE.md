@@ -20,7 +20,7 @@ Los datos de la persona (nombre, @usuario, carpeta de videos) están en `config/
 | Carpeta | Para qué |
 |---|---|
 | `estilo-cine/` | **Motor principal**: `cine.js` (escenas, texto, 3D, interfaces), `render.mjs`, `metodo_corte.py`, `transcribir.py`, `quitar_tramos.py`, `preparar.py`, `piel.py`, `prep4k.py`, `volumen.mjs`, reacción (`reac_*.py`), doble pantalla (`doble.mjs`), tutorial cámara+pantalla (`metodo*.{py,mjs}`). Ver su README. |
-| `plantillas/` | `cine-pro/`, `cine-pro-3d/` (receta + `cine_base.json`), `estilo-apple/`, `lista-herramientas/`, `anuncio-por-frases/` y `formatos/<formato>/` (61 formatos con `GUIA.md` y `ESTILO.md`). Las imágenes de referencia de cada formato (`hoja.jpg`, `cuadros/`) no vienen en el repo porque son cuadros de videos de otros creadores: la guía describe el look con palabras y medidas. |
+| `plantillas/` | `cine-pro/`, `cine-pro-3d/` (receta + `cine_base.json`), `estilo-apple/`, `lista-herramientas/`, `anuncio-por-frases/` y `formatos/<formato>/` (61 formatos con `GUIA.md` y `ESTILO.md`). Las imágenes de referencia de cada formato (`hoja.jpg`, `paleta.png`, `cuadros/`) viven en https://github.com/davidiriza-lab/editor-iriza-referencias (su `./instalar.sh <este repo>` las copia aquí; están en `.gitignore`). Si no están, la `GUIA.md` describe el look con palabras y medidas. |
 | `editor-anuncios/` | Anuncios con retomas: zoom con cara, subtítulos, transiciones, cues y `estilos.js`. `palabras_a_words.py` convierte el JSON de `whisper-cli -oj -ml 1 -sow` al `words.json` que pide `prepare.py`. `verificar_finales.sh <proyectos…>` revisa duración, LUFS, fluidez y palabras perdidas. |
 | `editor-testimoniales/` | Testimoniales y anuncios a cámara. Ver su README. |
 | `motor/` + `video` | Reels sin cara con voz de ElevenLabs. |
@@ -86,7 +86,7 @@ Está completa en `plantillas/anuncio-por-frases/`; cópiala como base para cual
 ## Plantillas con nombre
 - **Cine Pro**: reel estilo cine con la persona y su fondo real, texto palabra por palabra, escenas 3D, textura de película.
 - **Cine Pro 3D**: Cine Pro + ventana "Top N" naranja con candados, un bloque 3D por herramienta e interfaz de cada herramienta a pantalla completa. Receta: `plantillas/cine-pro-3d/ESTILO.md`.
-- **Formatos (61)**: Editor 1–50, Pizarra Pro y 10 "Editor N · pantalla". Son recetas, no plantillas que corren solas: cada `GUIA.md` dice qué es y cómo armarlo con los motores. Para elegir, abre primero `plantillas/formatos/GUIA-FORMATOS.md`.
+- **Formatos (61)**: Editor 1–50, Pizarra Pro y 10 "Editor N · pantalla". Son recetas, no plantillas que corren solas: cada `GUIA.md` dice qué es y cómo armarlo con los motores. Para elegir, abre primero `plantillas/formatos/GUIA-FORMATOS.md` y, si están las referencias, mira `hoja.jpg`.
 
 ## Calidad de salida: Redes (1080) o 4K
 Por defecto **Redes**. Solo si la persona pide 4K: editar todo en la copia de 1080 y al final `prep4k.py` + `render.mjs --perfil 4k` (por bloques, HEVC por hardware, prioridad baja). Si la cámara no es 4K, avisar que saldrá escalado.
