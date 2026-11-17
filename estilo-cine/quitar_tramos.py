@@ -8,8 +8,10 @@ Imprime el mapa de tiempos (para mover escenas de cine.json).
 """
 import sys, os, json, shutil, subprocess, time
 from fractions import Fraction
+from comun import fps_nativo
 
-base = sys.argv[1]; FPS = Fraction(24000, 1001)
+base = sys.argv[1]
+FPS = Fraction(fps_nativo(os.path.join(base, 'corte', 'cam.mov')))   # los fps reales del corte (antes 23.976 fijo: en proyectos a 24 o 30 quitaba cuadros equivocados)
 R = sorted(tuple(map(float, a.split('-'))) for a in sys.argv[2:])
 RF = [(round(a * FPS), round(b * FPS)) for a, b in R]  # cuadros [ia, ib) (índice desde 0)
 run = lambda *a: subprocess.run(*a, check=True)

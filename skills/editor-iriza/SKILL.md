@@ -11,3 +11,5 @@ description: "Editor de video a cámara con Claude Code: reels, anuncios, testim
 4. Salida por defecto **Redes (1080)**; **4K** solo si la persona lo pide (`prep4k.py` + `render.mjs --perfil 4k`).
 5. Primero el plan con la lista de posibles errores; no se edita ni se publica nada sin aprobación.
 6. Testimoniales, entrevistas y anuncios a cámara con guion: seguir `editor-testimoniales/README.md`.
+7. Antes de enseñar un video: `.venv/bin/python estilo-cine/revisar.py proyectos/<nombre>` (sin ✓ no se entrega), el agente `critico-video` y `python3 estilo-cine/entrega.py verificar "<video final>"`.
+8. Un render a la vez y con aviso si va a tardar más de 10 minutos. Al terminar, `python3 estilo-cine/limpiar.py proyectos/<nombre>`.

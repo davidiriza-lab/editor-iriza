@@ -1,7 +1,8 @@
 """Pasa los tiempos de voz/palabras.json del corte anterior (corte/mapa_v1.json + voz/palabras_v1.json) al corte nuevo
 (corte/mapa.json) por tiempo de origen, sin volver a transcribir: las palabras y sus índices quedan idénticos.
 Uso: python3 proyectos/<proyecto>/remapear.py <clave>"""
-import sys, json, bisect
+import sys, json, bisect, os
+B = os.path.relpath(os.path.dirname(os.path.abspath(__file__)))   # carpeta del proyecto (copia de esta plantilla); correr desde la raíz del repo
 P = f'{B}/{sys.argv[1]}'
 v1 = json.load(open(f'{P}/corte/mapa_v1.json'))['piezas']; v2 = json.load(open(f'{P}/corte/mapa.json'))['piezas']; W = json.load(open(f'{P}/voz/palabras_v1.json'))
 def acum(pz):
@@ -11,7 +12,6 @@ def acum(pz):
 T1, T2 = acum(v1), acum(v2)
 # armar.py mueve el inicio de las palabras que cruzan un corte; se recuperan los inicios originales de transcripcion.txt
 import re, os
-B = os.path.relpath(os.path.dirname(os.path.abspath(__file__)))   # carpeta del proyecto (copia de esta plantilla); correr desde la raíz del repo
 if os.path.exists(f'{P}/transcripcion.txt'):
     lin = next((l for l in open(f'{P}/transcripcion.txt').read().splitlines() if l.startswith('0:')), '')
     orig = re.findall(r'(\d+):\S+@(\d+\.\d+)', lin)

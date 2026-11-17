@@ -639,6 +639,22 @@ function renderMoneda(s, t, lt) {
 // CAPAS COMUNES
 // =====================================================================
 function papel(t) {
+  if (E.paleta === 'blanca') {
+    g.fillStyle = '#ffffff'; g.fillRect(0, 0, W, H);
+    for (const [x, y, r, c] of [[.15, .05, 720, 'rgba(23,217,75,.13)'], [.9, .08, 640, 'rgba(40,150,251,.12)'], [.5, .0, 520, 'rgba(255,208,0,.06)']]) { const gr = g.createRadialGradient(x * W, y * H, 0, x * W, y * H, r * (1 + Math.sin(t * .7 + x * 7) * .03)); gr.addColorStop(0, c); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
+    g.save(); g.lineWidth = 1.2; const cel = 72;
+    for (let y = 0; y < H * .55; y += cel) { g.strokeStyle = `rgba(29,29,31,${.045 * clamp(1 - y / (H * .55))})`; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+    for (let x = (W / 2) % cel; x < W; x += cel) { const gr = g.createLinearGradient(0, 0, 0, H * .55); gr.addColorStop(0, 'rgba(29,29,31,.045)'); gr.addColorStop(1, 'rgba(29,29,31,0)'); g.strokeStyle = gr; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H * .55); g.stroke(); }
+    g.restore(); return;
+  }
+  if (E.paleta === 'seminario') {  // fondo oscuro tipo landing: negro, resplandor y cuadrícula del acento
+    const AC = E.acento || '#19e16d'; g.fillStyle = '#050505'; g.fillRect(0, 0, W, H);
+    for (const [x, y, r, al] of [[.5, .16, 640, .30], [.18, .08, 420, .18], [.82, .12, 460, .2]]) { const gr = g.createRadialGradient(x * W, y * H, 0, x * W, y * H, r * (1 + Math.sin(t * .8 + x * 9) * .04)); gr.addColorStop(0, hexA(AC, al)); gr.addColorStop(1, hexA(AC, 0)); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
+    g.save(); g.lineWidth = 1.5; const cel = 72, off = (t * 10) % cel;
+    for (let y = -cel + off; y < H * .6; y += cel) { g.strokeStyle = hexA(AC, .12 * clamp(1 - y / (H * .6))); g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+    for (let x = (W / 2) % cel; x < W; x += cel) { const gr = g.createLinearGradient(0, 0, 0, H * .6); gr.addColorStop(0, hexA(AC, .12)); gr.addColorStop(1, hexA(AC, 0)); g.strokeStyle = gr; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H * .6); g.stroke(); }
+    g.restore(); return;
+  }
   const gr = g.createRadialGradient(W * .5, H * .45, 0, W * .5, H * .5, H * .7);
   gr.addColorStop(0, '#f1eee7'); gr.addColorStop(.6, '#e3dfd5'); gr.addColorStop(1, '#c9c4b8');
   g.fillStyle = gr; g.fillRect(0, 0, W, H);
@@ -646,7 +662,7 @@ function papel(t) {
 function lineasVerticales(t, lt) {
   g.save();
   const k = eOut(clamp(lt / .4));
-  g.fillStyle = '#1b1b1b'; g.fillRect(W * .81, 0, 6, H * .14 * k + 40);
+  g.fillStyle = E.paleta === 'seminario' ? hexA(E.acento || '#19e16d', .55) : E.paleta === 'blanca' ? 'rgba(29,29,31,.18)' : '#1b1b1b'; g.fillRect(W * .81, 0, 6, H * .14 * k + 40);
   g.fillStyle = 'rgba(30,30,30,.55)'; g.fillRect(W * .07, H * (1 - .12 * k), 4, H * .2);
   g.translate(W * .055, H * .78); g.rotate(-Math.PI / 2); g.fillStyle = 'rgba(40,40,40,.65)'; g.font = `500 30px ${FONT}`;
   g.fillText(E.handle || '', 0, 0);
@@ -696,7 +712,7 @@ function layout() {
     gp.estrecho = gp.y * H > ZS.botonesDesde - 120;
     const LIM = gp.lim ?? (gp.estrecho ? ZS.derecha - ZS.lado - 40 : 940);
     let y = 0, maxw = 0;
-    for (const ln of gp.lineas) {
+    for (const [li, ln] of gp.lineas.entries()) {
       const st = EST[ln.estilo];
       let tam = st.tam * TS;
       const fl = fuenteLinea(ln);
@@ -705,7 +721,12 @@ function layout() {
       if (gp.maxTam && ln.estilo !== 'chico') tam = Math.min(tam, gp.maxTam);
       let w = mide(tam); if (w > LIM) { tam *= LIM / w; w = mide(tam); }
       ln.tam = tam; ln.w = w; maxw = Math.max(maxw, w);
-      y += tam * (ln.estilo === 'chico' ? 1.0 : .9); ln.base = y; y += tam * .1;
+      const prev = li > 0 ? gp.lineas[li - 1] : null;
+      if (E.apretado && prev && prev.estilo === 'chico' && ln.estilo !== 'chico') {
+        // como la referencia (Editor 49): la palabra grande va pegada bajo la línea chica, según su altura real (minúsculas sin hueco)
+        const asc = g.measureText(ln.palabras.map(p => p.txt).join(' ')).actualBoundingBoxAscent;
+        y = prev.base + tam * (ln.estilo === 'resalte' ? (E.apretado.juntaResalte ?? .2) : (E.apretado.junta ?? .03)) + asc; ln.base = y; y += tam * .12;
+      } else { y += tam * (ln.estilo === 'chico' ? 1.0 : .9); ln.base = y; y += tam * .1; }
       let x = 0; g.font = `${st.peso} ${tam}px ${fl}`; g.letterSpacing = `${st.esp * tam / st.tam}px`;
       const sp = g.measureText(' ').width;
       for (const p of ln.palabras) { p.x = x; p.w = g.measureText(p.txt).width; x += p.w + sp; }
@@ -714,9 +735,243 @@ function layout() {
   }
   g.letterSpacing = '0px';
 }
+// ===== E.pop (11-nov-2026, corrección: "subtítulos simples y feos") — subtítulo palabra por palabra con rebote:
+// MAYÚSCULAS en negrita con borde oscuro; la palabra que se dice se pinta de acento y crece; las palabras clave llevan marcatextos.
+// E.pop = { size, color, activo, borde, clave: {fondo, color}, maxw }
+const _nPop = w => w.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9ñ]/g, '');
+// ===== E.pop.modo 'escalon' (11-nov-2026, se eligió Barlow Condensed Black Italic): línea chica blanca arriba y la palabra
+// clave GRANDE debajo; si es palabra de resalte va sobre una barra de acento inclinada (sigue la itálica). Palabra que se dice = acento.
+// ===== Animaciones explicativas (11-nov-2026, corrección: "intercala más animaciones explicativas") =====
+// escena.explica = { tipo: 'pastel'|'chat'|'personas'|'barras'|'contador'|'red'|'engranes', en, fin, titulo, ... }
+// Panel esmerilado sobre la toma (desenfoca y aclara el video) con una infografía grande; los subtítulos siguen encima.
+// escena.fechaHero = { en, logo, hl, jueves, hora, linea, gratis, dia?, horaTexto?, zona?, nombre?, caras?, carasTexto? } — pantalla de fecha diseñada (sin tarjeta de ajustes).
+const XB = `"Barlow Italic", ${FONT}`, XI = `"Inter", ${FONT}`, XV = () => E.acento || '#17D94B', XT = '#1D1D1F', XG = '#6E6E73';
+function esmerilado(k, claro = .74) {
+  if (k <= 0) return; g.save(); g.globalAlpha = k; g.filter = 'blur(22px)'; g.drawImage(g.canvas, 0, 0, W, H); g.filter = 'none';
+  g.fillStyle = `rgba(245,245,247,${claro})`; g.fillRect(0, 0, W, H); g.restore();
+}
+function xTitulo(txt, y, k, sz = 92, color = XT) {
+  if (!txt) return; g.save(); g.globalAlpha = k; g.font = `900 ${sz}px ${XB}`; const lim = W - 2 * ZS.lado - 80, tw = g.measureText(txt.toUpperCase()).width; if (tw > lim) { sz *= lim / tw; g.font = `900 ${sz}px ${XB}`; } g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+  g.fillStyle = color; g.fillText(txt.toUpperCase(), W / 2, y + (1 - k) * 30); g.restore();
+}
+function xTexto(txt, x, y, sz, color = XT, peso = 600, al = 'center', fam = XI) { g.font = `${peso} ${sz}px ${fam}`; g.textAlign = al; g.textBaseline = 'middle'; g.fillStyle = color; g.fillText(txt, x, y); }
+function xPersona(x, y, s, color) { g.fillStyle = color; g.beginPath(); g.arc(x, y - s * .55, s * .28, 0, 7); g.fill(); g.beginPath(); g.roundRect(x - s * .42, y - s * .2, s * .84, s * .78, [s * .4, s * .4, s * .08, s * .08]); g.fill(); }
+function xEngrane(x, y, r, ang, color, label) {
+  g.save(); g.translate(x, y); g.rotate(ang); g.fillStyle = color; g.beginPath();
+  for (let i = 0; i < 24; i++) { const a = i / 24 * Math.PI * 2, rr = i % 2 ? r : r * .82; g.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); }
+  g.closePath(); g.fill(); g.fillStyle = 'rgba(245,245,247,1)'; g.beginPath(); g.arc(0, 0, r * .42, 0, 7); g.fill(); g.restore();
+  if (label) xTexto(label, x, y, Math.round(r * .26), XT, 800, 'center', XB);
+}
+function explica(s, t) {
+  const X = s.explica; if (!X || t < X.en - .05 || t > X.fin + .35) return;
+  const ki = eOut4(clamp((t - X.en) / .35)), ko = eInOut(clamp((t - X.fin) / .3)), k = ki * (1 - ko), lt = t - X.en;
+  esmerilado(k, X.claro ?? .74);
+  g.save(); g.globalAlpha = k; const sc = .94 + .06 * ki; g.translate(W / 2, H * .42); g.scale(sc, sc); g.translate(-W / 2, -H * .42);
+  xTitulo(X.titulo, 330, ki);
+  const T = X.tipo, en = (v, d = .3) => eOut4(clamp((t - v) / d));
+  if (T === 'pastel') {   // tu rebanada del mercado se la come la competencia
+    const cx = W / 2, cy = 820, r = 300, kc = eInOut(clamp((t - X.come) / 1.4)), yo = lerp(X.de ?? .55, X.a ?? .12, kc), ka = en(X.en + .1, .6);
+    g.fillStyle = XT; g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, r * ka, -Math.PI / 2 + yo * Math.PI * 2, Math.PI * 1.5); g.closePath(); g.fill();
+    g.fillStyle = XV(); g.beginPath(); g.moveTo(cx, cy); g.arc(cx, cy, (r + 18 * (1 - kc)) * ka, -Math.PI / 2, -Math.PI / 2 + yo * Math.PI * 2); g.closePath(); g.fill();
+    g.fillStyle = 'rgba(245,245,247,1)'; g.beginPath(); g.arc(cx, cy, r * .46 * ka, 0, 7); g.fill();
+    xTexto(`${Math.round(yo * 100)}%`, cx, cy - 10, 96, XT, 900, 'center', XB); xTexto(X.yo || 'Tú', cx, cy + 62, 40, XG, 700);
+    g.fillStyle = XV(); g.fillRect(170, 1180, 46, 46); xTexto(X.yo || 'Tú', 236, 1203, 44, XT, 700, 'left');
+    g.fillStyle = XT; g.fillRect(520, 1180, 46, 46); xTexto(X.otro || 'Tu competencia', 586, 1203, 44, XT, 700, 'left');
+  } else if (T === 'chat') {   // conversación grande y legible (cliente / tú / IA)
+    const bx = 120, bw = W - 240; let y = 450;
+    g.font = `600 52px ${XI}`; let alto = 0;   // la caja mide lo que miden los mensajes (sin hueco abajo)
+    for (const m of X.mensajes) { let l = '', nl = 1; for (const w of m.t.split(' ')) { const q = l ? l + ' ' + w : w; if (g.measureText(q).width > bw * .68 && l) { nl++; l = w; } else l = q; } alto += 44 + nl * 64 + 26; }
+    const hb = Math.min(860, 170 + alto);
+    g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.12)'; g.shadowBlur = 40; g.beginPath(); g.roundRect(bx - 30, 400, bw + 60, hb, 44); g.fill(); g.shadowColor = 'transparent';
+    xTexto(X.app || 'Chat', bx + 10, 455, 44, XT, 800, 'left'); g.fillStyle = 'rgba(0,0,0,.08)'; g.fillRect(bx - 30, 500, bw + 60, 2); y = 540;
+    for (const m of X.mensajes) {
+      const km = en(m.en, .28); if (km <= 0) continue;
+      const mio = m.de !== 'cliente', ia = m.de === 'ia', tipeo = ia && t < m.en + .5;
+      let txt = m.t; if (ia && !tipeo) { const n = Math.ceil(clamp((t - m.en - .5) / Math.max(.6, txt.length * .028)) * txt.length); txt = txt.slice(0, n); }
+      g.font = `600 52px ${XI}`; const lineas = []; let l = ''; for (const w of (tipeo ? '•••' : (ia ? m.t : txt)).split(' ')) { const q = l ? l + ' ' + w : w; if (g.measureText(q).width > bw * .68 && l) { lineas.push(l); l = w; } else l = q; } lineas.push(l);
+      const vis = ia && !tipeo ? txt : null, h = 44 + lineas.length * 64, w = Math.min(bw * .78, Math.max(...lineas.map(z => g.measureText(z).width)) + 60);
+      const x = mio ? bx + bw - w : bx; g.save(); g.globalAlpha = km; g.translate(0, (1 - km) * 30);
+      g.fillStyle = mio ? (ia ? XT : XV()) : '#F0F0F2'; g.beginPath(); g.roundRect(x, y, w, h, 34); g.fill();
+      g.fillStyle = mio ? (ia ? '#fff' : '#0d1a10') : XT; g.textAlign = 'left'; g.textBaseline = 'middle';
+      if (tipeo) { for (let d = 0; d < 3; d++) { g.globalAlpha = km * (.35 + .65 * Math.abs(Math.sin((t * 6) - d * .7))); g.beginPath(); g.arc(x + 44 + d * 30, y + h / 2, 9, 0, 7); g.fill(); } }
+      else { let c = 0; lineas.forEach((z, i) => { let zz = z; if (vis != null) { const rest = vis.length - c; zz = rest <= 0 ? '' : z.slice(0, rest); c += z.length + 1; } g.fillText(zz, x + 32, y + 54 + i * 64); }); }
+      g.restore(); y += h + 26;
+    }
+  } else if (T === 'personas') {   // grupos de figuras que aparecen con su etiqueta
+    X.grupos.forEach((gr, i) => {
+      const kg = en(gr.en, .35), y = 760 + i * 380, n = gr.n || 3, s0 = gr.chico ? 120 : 170;
+      for (let j = 0; j < n; j++) { const kj = eOut4(clamp((t - gr.en - j * .08) / .3)); if (kj <= 0) continue; g.save(); g.globalAlpha = kj; xPersona(W / 2 + (j - (n - 1) / 2) * s0 * 1.25, y + (1 - kj) * 40, s0 * kj, j === Math.floor(n / 2) ? XV() : XT); g.restore(); }
+      g.globalAlpha = kg; xTexto(gr.etiqueta, W / 2, y + s0 * .85, 64, XT, 900, 'center', XB); g.globalAlpha = 1;
+    });
+  } else if (T === 'barras') {   // ventas de la semana que suben y bajan
+    const v = X.valores, n = v.length, x0 = 150, w = (W - 300) / n, base = 1150, hmax = 620;
+    v.forEach((val, i) => { const kb = eOut4(clamp((t - X.en - .15 - i * .1) / .45)), h = hmax * val * kb, x = x0 + i * w + w * .14, bw = w * .72;
+      g.fillStyle = val >= (X.umbral ?? .5) ? XV() : '#C9C9CE'; g.beginPath(); g.roundRect(x, base - h, bw, h, [16, 16, 4, 4]); g.fill();
+      xTexto(X.etiquetas[i], x + bw / 2, base + 50, 46, XG, 800, 'center', XB); });
+    g.fillStyle = XT; g.fillRect(x0, base, W - 300, 5);
+  } else if (T === 'contador') {   // cifras que crecen: $1 → $2 → $10 (cada paso en su palabra)
+    const P = X.pasos, i = P.findLastIndex(p => t >= p.en - .05); if (i >= 0) {
+      const p = P[i], kp = eOut4(clamp((t - p.en + .05) / .3)), sz = (p.size || 300) * (.8 + .2 * easeBack(clamp((t - p.en + .05) / .25)));
+      g.save(); g.font = `900 ${sz}px ${XB}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillStyle = XV(); g.shadowColor = 'rgba(23,217,75,.35)'; g.shadowBlur = 50; g.fillText(p.v, W / 2, 800); g.restore();
+      if (p.nota) { g.globalAlpha = kp; xTexto(p.nota, W / 2, 1050, 96, XT, 900, 'center', XB); g.globalAlpha = 1; }
+      P.forEach((q, j) => { const on = j <= i; g.fillStyle = on ? XV() : '#D2D2D7'; g.beginPath(); g.roundRect(W / 2 - P.length * 60 + j * 120 + 10, 1150, 100, 18, 9); g.fill(); });
+    }
+  } else if (T === 'red') {   // tus conocidos: los nodos se apagan uno por uno
+    const cx = W / 2, cy = 820, n = X.n || 8, R = 330;
+    for (let j = 0; j < n; j++) { const a = j / n * Math.PI * 2 - Math.PI / 2, x = cx + Math.cos(a) * R, y = cy + Math.sin(a) * R, kn = en(X.en + .1 + j * .05, .3),
+        off = X.apaga ? eOut4(clamp((t - (X.apaga[0] + (X.apaga[1] - X.apaga[0]) * j / n)) / .3)) : 0;
+      g.strokeStyle = `rgba(29,29,31,${.35 * (1 - off) + .06})`; g.lineWidth = 6; g.setLineDash(off > .5 ? [10, 14] : []); g.beginPath(); g.moveTo(cx, cy); g.lineTo(lerp(cx, x, kn), lerp(cy, y, kn)); g.stroke(); g.setLineDash([]);
+      g.globalAlpha = kn; xPersona(x, y + 30, 110, off > .5 ? '#C9C9CE' : XT); g.globalAlpha = 1; }
+    g.fillStyle = XV(); g.beginPath(); g.arc(cx, cy, 120, 0, 7); g.fill(); xTexto(X.centro || 'TÚ', cx, cy, 70, '#0d1a10', 900, 'center', XB);
+  } else if (T === 'lista') {   // renglones grandes que entran en su palabra; se tachan (dolores) o se encienden (soluciones)
+    const it = X.items, y0 = X.y0 ?? 520, paso = X.paso ?? 160;
+    it.forEach((r, i) => { const kr = en(r.en, .32); if (kr <= 0) return; const y = y0 + i * paso, kt = r.tacha != null ? eOut4(clamp((t - r.tacha) / .28)) : 0;
+      g.save(); g.globalAlpha = kr * (1 - kt * .45); g.translate((1 - kr) * -60, 0);
+      g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.08)'; g.shadowBlur = 30; g.beginPath(); g.roundRect(110, y - 62, W - 220, 124, 30); g.fill(); g.shadowColor = 'transparent';
+      g.font = `900 ${X.tam ?? 70}px ${XB}`; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillStyle = XT; const tw = g.measureText(r.t.toUpperCase()).width; g.fillText(r.t.toUpperCase(), 160, y + 4);
+      if (kt > 0) { g.globalAlpha = kr; g.strokeStyle = '#E5322D'; g.lineWidth = 12; g.lineCap = 'round'; g.beginPath(); g.moveTo(150, y + 6); g.lineTo(150 + (tw + 24) * kt, y - 4); g.stroke(); }
+      if (r.on != null) interruptor(W - 300, y - 40, 136, 80, eOut4(clamp((t - r.on) / .25)));
+      g.restore(); });
+  } else if (T === 'engranes') {   // sistema automatizado: engranes que encajan y giran
+    const kg = en(X.en + .1, .5), rot = lt * 1.3;
+    xEngrane(W / 2 - 230, 760, 190 * kg, rot, XV(), kg > .8 ? X.etiquetas?.[0] : ''); xEngrane(W / 2 + 175, 640, 150 * kg, -rot * 1.27 + .12, XT, ''); xEngrane(W / 2 + 140, 1000, 130 * kg, -rot * 1.46, '#C9C9CE', '');
+    if (kg > .8) { g.save(); g.globalAlpha = clamp((kg - .8) * 5); xTexto(X.etiquetas?.[1] || '', W / 2 + 175, 640, 40, '#fff', 800, 'center', XB); xTexto(X.etiquetas?.[2] || '', W / 2 + 140, 1000, 36, XT, 800, 'center', XB); g.restore(); }
+  }
+  g.restore();
+}
+function fechaHero(s, t) {
+  // v2 (11-nov, corrección: "espacios vacíos raros y mucho tiempo sin nada en movimiento"): dos tiempos y movimiento constante.
+  const F = s.fechaHero; if (!F || t < F.en - .05) return;
+  const k = eOut4(clamp((t - F.en) / .4)), en = (v, d = .3) => eOut4(clamp((t - v) / d)), lt = t - F.en;
+  esmerilado(k, .8);
+  g.save(); g.globalAlpha = k;
+  // ambiente: puntos de los colores del toldo que suben despacio (nunca queda quieta)
+  const COL = ['#FFD000', '#2896FB', XV()];
+  for (let i = 0; i < 26; i++) { const sp = 40 + hash(i * 7.1) * 70, x = hash(i * 3.7) * W, y = H + 60 - ((hash(i * 1.9) * H + lt * sp) % (H + 120)), r = 6 + hash(i * 5.3) * 14;
+    g.globalAlpha = k * (.18 + .22 * hash(i * 2.2)); g.fillStyle = COL[i % 3]; g.beginPath(); g.arc(x + Math.sin(lt * .8 + i) * 18, y, r, 0, 7); g.fill(); }
+  g.globalAlpha = k;
+  // logo: grande al centro → pequeño arriba cuando entra la fecha
+  const kt = eInOut(clamp((t - (F.jueves - .35)) / .55));
+  if (IMG[F.logo]) { const im = IMG[F.logo], w = lerp(680, 470, kt), h = w * im.height / im.width, y = lerp(300, 270, kt), x = (W - w) / 2;
+    const kr = eOut(clamp(lt / 1.1)), resp = 1 + .012 * Math.sin(lt * 2.2);   // revelado de arriba hacia abajo + respiración
+    g.save(); g.beginPath(); g.rect(0, y - 40, W, (h + 80) * kr); g.clip(); g.translate(W / 2, y + h / 2); g.scale(resp, resp); g.translate(-W / 2, -(y + h / 2));
+    g.drawImage(im, x, y + (1 - kr) * 26, w, h); g.restore();
+    if (F.hl && IMG[F.hl]) { g.globalAlpha = k * en(F.en + .7, .4); presentadoPor(IMG[F.hl], y + h + lerp(56, 40, kt), lerp(54, 44, kt)); g.globalAlpha = k; } }
+  // celular "en vivo" mientras dice "en línea, desde tu celular" (sale cuando entra la fecha)
+  const kp = en(Math.min(F.en + .9, F.linea - .15), .45) * (1 - eInOut(clamp((t - (F.jueves - .35)) / .4)));
+  if (kp > 0) { const pw = 360, ph = 500, px = (W - pw) / 2, py = 1030 + (1 - kp) * 500;
+    g.save(); g.globalAlpha = k * clamp(kp * 1.4); g.shadowColor = 'rgba(0,0,0,.25)'; g.shadowBlur = 50; g.fillStyle = XT; g.beginPath(); g.roundRect(px, py, pw, ph, 56); g.fill(); g.shadowColor = 'transparent';
+    g.fillStyle = '#0f1512'; g.beginPath(); g.roundRect(px + 16, py + 16, pw - 32, ph - 32, 42); g.fill();
+    if (IMG.c0) { const r = 100, cx = W / 2, cy = py + 190; g.save(); g.beginPath(); g.arc(cx, cy, r, 0, 7); g.clip(); g.drawImage(IMG.c0, cx - r, cy - r, r * 2, r * 2); g.restore();
+      g.strokeStyle = XV(); g.lineWidth = 8; g.beginPath(); g.arc(cx, cy, r + 10 + 6 * Math.sin(lt * 5), 0, 7); g.stroke(); }
+    const pul = .5 + .5 * Math.sin(lt * 6); g.fillStyle = '#E5322D'; g.beginPath(); g.roundRect(W / 2 - 110, py + 330, 220, 64, 32); g.fill();
+    g.fillStyle = `rgba(255,255,255,${.6 + .4 * pul})`; g.beginPath(); g.arc(W / 2 - 70, py + 362, 11, 0, 7); g.fill(); xTexto('EN VIVO', W / 2 + 18, py + 364, 38, '#fff', 900, 'center', XB);
+    xTexto(F.nombre || E.nombre || '', W / 2, py + 440, 34, '#fff', 700); g.restore(); }
+  // fecha
+  const kj = en(F.jueves, .35), kh = en(F.hora, .35);
+  if (kj > 0) { g.save(); g.beginPath(); g.rect(0, 860, W, 160); g.clip(); g.font = `900 122px ${XB}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillStyle = XT;
+    g.fillText(F.dia || 'PRÓXIMO JUEVES', W / 2, 990 + (1 - kj) * 150); g.restore(); }
+  if (kh > 0) { const bw = 540, bh = 180, x = (W - bw) / 2, y = 1025, sw = ((lt * .5) % 1.6) / 1.6;
+    g.save(); g.translate(x, y); g.transform(1, 0, -.18, 1, 0, 0); g.fillStyle = XV(); g.fillRect(0, 0, bw * kh, bh);
+    if (kh > .99) { const gr = g.createLinearGradient(bw * sw - 120, 0, bw * sw + 120, 0); gr.addColorStop(0, 'rgba(255,255,255,0)'); gr.addColorStop(.5, 'rgba(255,255,255,.35)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); g.fillStyle = gr; g.fillRect(0, 0, bw, bh); }
+    g.restore(); g.globalAlpha = k * clamp(kh * 2 - .5); g.font = `900 160px ${XB}`; g.textAlign = 'center'; g.textBaseline = 'alphabetic'; g.fillStyle = '#0d1a10';
+    const pop = 1 + .08 * (1 - eOut(clamp((t - F.hora - .15) / .3))); g.save(); g.translate(W / 2, y + 100); g.scale(pop, pop); g.fillText(F.horaTexto || '8:00 PM', 0, 52); g.restore();
+    g.globalAlpha = k * en(F.hora + .25); xTexto(F.zona ?? 'Hora del centro de México', W / 2, 1250, 38, XG, 600); g.globalAlpha = k; }
+  // píldoras (entran con la fecha y se encienden en su palabra)
+  let cx = W / 2 - 290;
+  [['En línea', F.linea], ['Gratis', F.gratis]].forEach(([txt, tt], i) => { const w = i ? 270 : 290, kk = eOut4(clamp((t - F.jueves - .2 - i * .12) / .35)); if (kk <= 0) { cx += w + 20; return; }
+    g.globalAlpha = k * kk; const y = 1310 + (1 - kk) * 30, on = eOut4(clamp((t - Math.max(tt, F.jueves + .4) - .1) / .25)), bump = 1 + .06 * Math.sin(Math.PI * clamp((t - Math.max(tt, F.jueves + .4) - .1) / .3));
+    g.save(); g.translate(cx + w / 2, y + 48); g.scale(bump, bump); g.translate(-(cx + w / 2), -(y + 48));
+    g.fillStyle = '#fff'; g.beginPath(); g.roundRect(cx, y, w, 96, 48); g.fill(); interruptor(cx + w - 118, y + 18, 96, 60, on); xTexto(txt, cx + 34, y + 48, 38, XT, 700, 'left'); g.restore(); cx += w + 20; });
+  // caras + texto (carasTexto) abajo, con el "gratis"
+  const tf = Math.max(F.jueves + .6, Math.min(F.gratis, F.hora + .6)), kf = en(tf + .1, .4);
+  if (kf > 0 && F.caras) { const n = F.caras.length, r = 48, x0 = W / 2 - 340, y = 1462;
+    F.caras.forEach((c, i) => { const ki = eOut4(clamp((t - tf - .1 - i * .07) / .3)); if (!IMG[c] || ki <= 0) return; const x = x0 + i * r * 1.55 + r;
+      g.save(); g.globalAlpha = k * ki; g.translate(x, y + (1 - ki) * 30); g.beginPath(); g.arc(0, 0, r, 0, 7); g.fillStyle = '#fff'; g.fill(); g.beginPath(); g.arc(0, 0, r - 5, 0, 7); g.clip(); g.drawImage(IMG[c], -r, -r, r * 2, r * 2); g.restore(); });
+    g.globalAlpha = k * kf; xTexto(F.carasTexto || '', x0 + n * r * 1.55 + 36, y, 44, XT, 900, 'left', XB); }
+  g.restore();
+}
+let ESC_ACT = null;   // escena que se está dibujando (para saber si hay panel claro detrás del subtítulo)
+const panelClaro = t => { const X = ESC_ACT && ESC_ACT.explica; return !!X && t >= X.en + .1 && t <= X.fin + .15; };
+function dibujaEscalon(gp, t) {
+  const P = E.pop, sal = clamp((t - (gp.fin - .1)) / .12); if (sal >= 1) return;
+  const fam = `"${P.fuente || 'Barlow Italic'}", ${FONT}`, maxw = P.maxw ?? (ZS.derecha - ZS.lado - 50), kSal = 1 - eInOut(sal);
+  const L = gp.lineas.filter(l => l.palabras.length).map(l => ({ ...l, gr: l.estilo !== 'chico', bar: l.estilo === 'resalte' }));
+  if (!L.length) return;
+  g.save(); g.letterSpacing = '0px';
+  const todas = L.flatMap(l => l.palabras);
+  for (const l of L) {
+    l.sz = l.gr ? (P.grande ?? 132) : (P.chica ?? 74);
+    const mide = () => { g.font = `900 ${l.sz}px ${fam}`; l.ws = l.palabras.map(p => g.measureText(p.txt.toUpperCase()).width); l.esp = l.sz * .2; l.w = l.ws.reduce((a, b) => a + b, 0) + l.esp * (l.ws.length - 1) + (l.bar ? l.sz * .5 : 0); };
+    mide(); while (l.w > maxw && l.sz > 40) { l.sz -= 4; mide(); }
+    l.h = l.sz * (l.bar ? 1.08 : .98);
+  }
+  const gap = 10, tot = L.reduce((a, l) => a + l.h, 0) + gap * (L.length - 1); let y = H * gp.y - tot / 2;
+  for (const l of L) {
+    const cy = y + l.h / 2, x0 = W / 2 - l.w / 2;
+    if (l.bar) {   // barra inclinada que barre de izquierda a derecha al entrar la palabra
+      const kb = eOut4(clamp((t - (l.palabras[0].a - .08)) / .22));
+      if (kb > 0) { g.save(); g.globalAlpha = kSal; g.translate(x0, cy); g.transform(1, 0, -.18, 1, 0, 0); g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowOffsetY = 9; g.shadowBlur = 0;
+        g.fillStyle = (P.clave && P.clave.fondo) || E.acento || '#17D94B'; g.fillRect(0, -l.h / 2, l.w * kb, l.h); g.restore(); }
+    }
+    let x = x0 + (l.bar ? l.sz * .25 : 0);
+    l.palabras.forEach((p, i) => {
+      const w = l.ws[i], k = clamp((t - (p.a - .06)) / .16);
+      if (k > 0) {
+        const j = todas.indexOf(p), sig = todas[j + 1] ? todas[j + 1].a : gp.fin, dice = t >= p.a - .03 && t < sig - .02;
+        const sc = (.86 + .14 * easeBack(k)) * (.94 + .06 * kSal);
+        g.save(); g.translate(x + w / 2, cy + (1 - eOut(k)) * l.sz * .35); g.scale(sc, sc); g.globalAlpha = clamp(k * 3) * kSal;
+        g.font = `900 ${l.sz}px ${fam}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+        const txt = p.txt.toUpperCase();
+        if (l.bar) { g.fillStyle = (P.clave && P.clave.color) || '#0d1a10'; }
+        else if (gp.tinta || panelClaro(t)) { g.fillStyle = dice ? '#0f9e3a' : '#1D1D1F'; }   // sobre panel claro: letra tinta, la palabra que se dice en verde oscuro
+        else { g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowOffsetY = l.sz * .06; g.shadowBlur = l.sz * .18; g.fillStyle = dice ? (P.activo || E.acento || '#17D94B') : (P.color || '#fff'); }
+        g.fillText(txt, 0, l.sz * .04);
+        if (!l.bar && !gp.tinta && !panelClaro(t)) { g.shadowColor = 'transparent'; g.fillText(txt, 0, l.sz * .04); }
+        g.restore();
+      }
+      x += w + l.esp;
+    });
+    y += l.h + gap;
+  }
+  g.restore();
+}
+function dibujaPop(gp, t) {
+  const P = E.pop, pal = gp.lineas.flatMap(l => l.palabras); if (!pal.length) return;
+  const sal = clamp((t - (gp.fin - .1)) / .12); if (sal >= 1) return;
+  const fam = `"${P.fuente || 'Inter'}", ${FONT}`, maxw = P.maxw ?? (ZS.derecha - ZS.lado - 60), clave = new Set((gp.resaltar || []).map(_nPop));
+  let sz = P.size ?? 96; g.save(); g.letterSpacing = '-1px';
+  const mide = () => { g.font = `900 ${sz}px ${fam}`; return pal.map(p => g.measureText(p.txt.toUpperCase()).width); };
+  let ws = mide(); while (Math.max(...ws) > maxw && sz > 50) { sz -= 4; ws = mide(); }
+  const esp = sz * .4, lh = sz * 1.1, filas = [[]]; let ac = 0;
+  pal.forEach((p, i) => { const w = ws[i]; if (ac && ac + esp + w > maxw) { filas.push([]); ac = 0; } filas.at(-1).push(i); ac += (ac ? esp : 0) + w; });
+  const cy = H * gp.y, y0 = cy - (filas.length - 1) * lh / 2, cx = W / 2;
+  const kSal = 1 - eInOut(sal);
+  filas.forEach((fila, r) => {
+    const tw = fila.reduce((a, i, j) => a + ws[i] + (j ? esp : 0), 0); let x = cx - tw / 2; const y = y0 + r * lh;
+    for (const i of fila) {
+      const p = pal[i], w = ws[i], k = clamp((t - (p.a - .06)) / .17); if (k <= 0) { x += w + esp; continue; }
+      const sig = pal[i + 1] ? pal[i + 1].a : gp.fin, dice = t >= p.a - .03 && t < sig - .02;
+      const kd = dice ? eOut(clamp((t - p.a + .03) / .1)) : 0, sc = easeBack(k) * (1 + .06 * kd) * (.92 + .08 * kSal);
+      const esClave = clave.has(_nPop(p.txt)), txt = p.txt.toUpperCase();
+      g.save(); g.translate(x + w / 2, y); g.scale(sc, sc); g.rotate((1 - k) * (i % 2 ? .08 : -.08)); g.globalAlpha = clamp(k * 2.5) * kSal;
+      g.font = `900 ${sz}px ${fam}`; g.textAlign = 'center'; g.textBaseline = 'middle';
+      if (esClave) { const kb = eOut4(clamp((t - p.a + .02) / .2)); g.fillStyle = (P.clave && P.clave.fondo) || E.acento || '#17D94B'; g.beginPath(); g.roundRect(-w / 2 - sz * .18, -sz * .62, (w + sz * .36) * kb, sz * 1.18, sz * .2); g.fill(); }
+      g.lineJoin = 'round'; g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = sz * .3; g.shadowOffsetY = sz * .06;
+      if (!esClave) { g.strokeStyle = P.borde || 'rgba(0,0,0,.92)'; g.lineWidth = sz * .16; g.strokeText(txt, 0, 2); }
+      g.shadowColor = 'transparent';
+      g.fillStyle = esClave ? ((P.clave && P.clave.color) || E.acentoTexto || '#1D1D1F') : (dice ? (P.activo || E.acento || '#17D94B') : (P.color || '#ffffff'));
+      g.fillText(txt, 0, 2); g.restore();
+      x += w + esp;
+    }
+  });
+  g.restore(); g.letterSpacing = '0px';
+}
 function dibujaGrupo(gp, t, tema) {
   if (t < gp.ini - .1 || t > gp.fin + .02) return;
-  if (E.subtitulo && !gp.detras) return dibujaEtiqueta(gp, t);
+  if (E.pop && E.pop.modo === 'escalon' && !gp.detras) return dibujaEscalon(gp, t);
+  if (E.pop && !gp.detras) return dibujaPop(gp, t);
+  if ((E.subtitulo || gp.etiqueta) && !gp.detras) return dibujaEtiqueta(gp, t);  // gp.etiqueta: subtítulo en etiqueta solo en ese grupo
   const salida = clamp((t - (gp.fin - .16)) / .16), vida = t - gp.ini;
   const cx = gp.x != null ? gp.x * W : gp.estrecho ? (ZS.lado + ZS.derecha) / 2 : W / 2;
   const ox = Math.max(ZS.lado + 10, cx - gp.ancho / 2);
@@ -747,7 +1002,7 @@ function dibujaGrupo(gp, t, tema) {
         g.globalAlpha = a * (r === 0 ? 1 : .18 * (1 - k));
         g.filter = `blur(${(blur + r * 3).toFixed(1)}px)`;
         if (ln.estilo === 'contorno') {
-          g.strokeStyle = '#f0c35a'; g.lineWidth = 3; g.shadowColor = 'rgba(255,190,80,.8)'; g.shadowBlur = 24; g.strokeText(p.txt, x, y + r * 10);
+          g.strokeStyle = E.contorno || '#f0c35a'; g.lineWidth = 3; g.shadowColor = E.contorno ? hexA(E.contorno, .8) : 'rgba(255,190,80,.8)'; g.shadowBlur = 24; g.strokeText(p.txt, x, y + r * 10);
         } else {
           g.fillStyle = ln.estilo === 'resalte' ? (E.acentoTexto || '#111') : color;
           if (gp.sombra) { g.shadowColor = tema === 'claro' ? 'rgba(236,232,224,.9)' : 'rgba(0,0,0,.85)'; g.shadowBlur = 34; }
@@ -795,10 +1050,14 @@ function efectos(t, tema) {
   for (const s of E.escenas) if (s.desintegrar) {
     const d = t - s.desintegrar; if (d > -.05 && d < .4) { const k = 1 - clamp(d / .4); f.glitch = Math.max(f.glitch, k * .8); f.rgb += k * 30; }
   }
+  for (const s of E.escenas) for (const q of (s.imp && s.imp.golpes) || []) {   // sacudida de cámara en los golpes (impacto)
+    const d = t - q.en; if (d > -.01 && d < .45) { const k = (1 - d / .45) * (q.k ?? 1); f.px += (hash(t * 91 + 1) - .5) * .02 * k; f.py += (hash(t * 77 + 2) - .5) * .02 * k; f.zoom += .05 * k * Math.exp(-d * 8); f.rgb += 16 * k; }
+  }
   const di = t - E.marca.impacto;
   if (di > -.02 && di < .5) { const k = 1 - clamp(di / .45); f.flash = Math.max(f.flash, k * .55); f.rgb += k * 22; const s2 = k * .01; f.px += (hash(t * 71) - .5) * s2; f.py += (hash(t * 53) - .5) * s2; f.zoom += k * .04; }
   const dt = t - E.marca.tap;
   if (dt > 0 && dt < .3) { const k = 1 - dt / .3; f.rgb += k * 10; f.zoom += k * .02; }
+  if (E.suave) { f.glitch = 0; f.flash = 0; f.leak = 0; f.dark = 0; f.rgb = Math.min(f.rgb, E.suave.rgb ?? 6); f.zoomBlur = Math.min(f.zoomBlur, E.suave.blur ?? .45); f.dx *= E.suave.barrido ?? .5; f.dy *= E.suave.barrido ?? .5; f.grain = E.suave.grano ?? .04; f.vig = E.suave.vig ?? .3; }
   if (E.limpio) { f.glitch = 0; f.flash = 0; f.leak = 0; f.dark = 0; f.zoomBlur = Math.min(f.zoomBlur, .08); f.dx *= .1; f.dy *= .1; f.rgb = .3; f.zoom = 1; f.px = 0; f.py = 0; f.grain = E.limpio.grano ?? .016; f.vig = E.limpio.vig ?? .08; }
   return f;
 }
@@ -872,6 +1131,7 @@ async function renderPersonaReal(s, t, lt) {
   const baj = E.persona.bajar, z = (s.sinZoom ? 1 : zoomCorte(t)) * emp, ax = W * .5, ay = H * .3 + baj;  // "bajar": te recorre hacia abajo para dejar aire arriba (tarjeta fija)
   const enc = encuadreCara(s, t, z) || s.encuadre || {};
   const cam = () => { g.translate(ax + (enc.dx || 0), ay + (enc.dy || 0)); g.scale(z * (enc.z || 1), z * (enc.z || 1)); g.translate(-ax, -ay); };
+  CAMP = { ax, ay, dx: enc.dx || 0, dy: enc.dy || 0, Z: z * (enc.z || 1) };   // para ubicar la cara en pantalla (impacto)
   const bn = s.bn != null ? clamp((t - s.bn) / .5) : 0, filtroBN = bn > 0 ? `grayscale(${bn.toFixed(2)}) contrast(${(1 + bn * .12).toFixed(2)})` : 'none';
   if (E.persona.fondoImg && IMG.fondoPersona) {  // fondo nuevo: estudio → textos/ventana detrás → tú recortado
     g.save(); cam(); const bi = IMG.fondoPersona, sc = Math.max(W / bi.width, H / bi.height) * (1.02 + Math.sin(t * .15) * .01);
@@ -899,12 +1159,13 @@ async function renderPersonaReal(s, t, lt) {
     etiqueta('DESPUÉS', Math.max(xd + 150, Math.min(ZS.derecha - 130, xd + 150)), ZS.arriba + 60, false);
   }
   if (s.ventanas) ventanas(s, t);
-  const gig = (s.gigantes || []).filter(x => t >= x.en - .03 && t <= x.fin); const hayDetras = gig.length > 0 || s.grupos.some(gp => gp.detras && t >= gp.ini - .1 && t <= gp.fin + .02), rej = !!top5Activa(t);
+  const gig = (s.gigantes || []).filter(x => t >= x.en - .03 && t <= x.fin); const hayDetras = gig.length > 0 || impActivoDetras(s, t) || s.grupos.some(gp => gp.detras && t >= gp.ini - .1 && t <= gp.fin + .02), rej = !!top5Activa(t);
   const extra = (s.rejilla && t <= s.rejilla[1] + .5) || (s.lluvia && t >= s.lluvia.en && t <= s.lluvia.fin + .6);
   if (s.ventanas || hayDetras || rej || extra) {
     if (rej) rejillaTop5(t);
     if (s.rejilla) rejillaVentana(t, s.rejilla[0], s.rejilla[1]);
     if (s.lluvia) lluviaLogos(s, t);
+    impDetras(s, t);
     for (const x of gig) dibujaGigante(x, t);
     for (const gp of s.grupos) if (gp.detras) dibujaGrupo(gp, t, s.temaDetras || temaTexto(s));
     gt.setTransform(1, 0, 0, 1, 0, 0); gt.globalCompositeOperation = 'source-over'; gt.clearRect(0, 0, W, H);
@@ -912,6 +1173,7 @@ async function renderPersonaReal(s, t, lt) {
     gt.globalCompositeOperation = 'source-in'; gt.drawImage(f, 0, baj, W, H); gt.globalCompositeOperation = 'source-over';
     g.save(); cam(); g.filter = filtroBN; g.drawImage(tmp, 0, 0); g.restore();
   }
+  impFrente(s, t, f, m, cam);
   if (s.cta) comentario(s, t);
   if (s.visor) visorCamara(t, lt);
   if (s.dm) mensajeDirecto(s, t);
@@ -938,30 +1200,32 @@ function ventanas(s, t) {
 
 const PROMPT = 'Analiza este video de Instagram y dime exactamente cómo está editado: ritmo de cortes, tipografía, transiciones, efectos, música y color. Guarda ese estilo como plantilla y, cuando te mande uno de mis videos, edítalo exactamente igual sin que tenga que instalar nada.';
 function renderPrompt(s, t, lt) {
+  const PO = s.prompt || {}, TXT = PO.texto || PROMPT, FAM = PO.fuente ? `"${PO.fuente}", ${FONT}` : FONT;
   papel(t); lineasVerticales(t, lt);
   const k = eOut(clamp(lt / .45)), dur = s.fin - s.ini;
   const x = ZS.lado + 10, w = ZS.derecha - ZS.lado - 20, y = 560 + (1 - k) * 120, h = 900;
   g.save(); g.globalAlpha = k;
   g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 60; g.shadowOffsetY = 26;
-  g.fillStyle = '#121212'; g.beginPath(); g.roundRect(x, y, w, h, 34); g.fill(); g.shadowColor = 'transparent';
-  g.fillStyle = '#d97757'; g.beginPath(); g.arc(x + 70, y + 72, 24, 0, 7); g.fill();
-  g.fillStyle = '#f2f2f2'; g.font = `700 40px ${FONT}`; g.textBaseline = 'middle'; g.fillText('Claude', x + 112, y + 74);
-  g.fillStyle = '#2a2a2a'; g.fillRect(x + 40, y + 128, w - 80, 2);
-  const n = Math.floor(PROMPT.length * clamp((lt - .25) / (dur - .3)) ** .9), visibles = 78;
-  g.font = `500 37px Menlo, monospace`; g.textBaseline = 'alphabetic';
+  g.fillStyle = PO.claro ? '#ffffff' : '#121212'; if (PO.claro) { g.shadowColor = 'rgba(0,0,0,.10)'; g.shadowBlur = 50; } g.beginPath(); g.roundRect(x, y, w, h, 34); g.fill(); g.shadowColor = 'transparent';
+  if (PO.borde) { g.strokeStyle = PO.borde; g.lineWidth = 2; g.beginPath(); g.roundRect(x, y, w, h, 34); g.stroke(); }
+  g.fillStyle = PO.punto || '#d97757'; g.beginPath(); g.arc(x + 70, y + 72, 24, 0, 7); g.fill();
+  g.fillStyle = PO.claro ? '#1D1D1F' : '#f2f2f2'; g.font = `700 40px ${FAM}`; g.textBaseline = 'middle'; g.fillText(PO.titulo || 'Claude', x + 112, y + 74);
+  g.fillStyle = PO.claro ? 'rgba(0,0,0,.08)' : '#2a2a2a'; g.fillRect(x + 40, y + 128, w - 80, 2);
+  const n = Math.floor(TXT.length * clamp((lt - .25) / ((PO.escribeEn ?? dur) - .3)) ** .9), visibles = PO.nitido ? 1e9 : 78;
+  g.font = PO.fuente ? `500 44px ${FAM}` : `500 37px Menlo, monospace`; g.textBaseline = 'alphabetic';
   let linea = '', ly = y + 196, cuenta = 0;
   const pinta = (txt, yy, desde) => { // primeras letras nítidas, el resto borroso (el prompt completo se pide por DM)
-    g.filter = desde >= visibles ? 'blur(7px)' : 'none'; g.fillStyle = '#ececec'; g.fillText(txt, x + 44, yy);
+    g.filter = desde >= visibles ? 'blur(7px)' : 'none'; g.fillStyle = PO.claro ? '#1D1D1F' : '#ececec'; g.fillText(txt, x + 44, yy);
   };
-  for (const pal of PROMPT.slice(0, n).split(' ')) {
-    if (g.measureText(linea + pal).width > w - 88) { pinta(linea, ly, cuenta - linea.length); ly += 54; linea = ''; }
+  for (const pal of TXT.slice(0, n).split(' ')) {
+    if (g.measureText(linea + pal).width > w - 88) { pinta(linea, ly, cuenta - linea.length); ly += (s.prompt && s.prompt.fuente) ? 64 : 54; linea = ''; }
     linea += pal + ' '; cuenta += pal.length + 1;
   }
   pinta(linea, ly, cuenta - linea.length);
   g.filter = 'none';
-  if (Math.floor(lt * 3) % 2 === 0) { g.fillStyle = '#d97757'; g.fillRect(x + 44 + g.measureText(linea).width, ly - 32, 18, 40); }
+  if (Math.floor(lt * 3) % 2 === 0) { g.fillStyle = PO.punto || '#d97757'; g.fillRect(x + 44 + g.measureText(linea).width, ly - 32, 18, 40); }
   const lk = eOut(prog(lt, dur * .55, dur * .55 + .3));
-  if (lk > 0) { g.globalAlpha = k * lk; g.fillStyle = '#f3e300'; g.beginPath(); g.roundRect(x + w / 2 - 230, y + h - 110, 460, 76, 38); g.fill();
+  if (lk > 0 && !PO.sinCta) { g.globalAlpha = k * lk; g.fillStyle = '#f3e300'; g.beginPath(); g.roundRect(x + w / 2 - 230, y + h - 110, 460, 76, 38); g.fill();
     g.fillStyle = '#111'; g.font = `700 36px ${FONT}`; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('🔒 Comenta VIDEO', x + w / 2, y + h - 71); g.textAlign = 'left'; }
   g.restore();
 }
@@ -2347,7 +2611,7 @@ function renderVSCode(s, t, lt) {
   // terminal
   const ty = y + 520; g.fillStyle = '#181818'; g.fillRect(x + 90, ty, w - 90, h - 520); g.fillStyle = '#ccc'; g.font = `600 22px ${FONT}`; g.fillText('TERMINAL', x + 110, ty + 34);
   g.font = `500 30px Menlo, monospace`; const cmd = 'claude', n = Math.floor(cmd.length * clamp((t - V.escribe) / .5));
-  g.fillStyle = '#4ec9b0'; g.fillText('david@mac ~ %', x + 110, ty + 90); g.fillStyle = '#fff'; g.fillText(cmd.slice(0, n) + (Math.floor(t * 3) % 2 ? '▌' : ''), x + 360, ty + 90);
+  g.fillStyle = '#4ec9b0'; g.fillText('tu@mac ~ %', x + 110, ty + 90); g.fillStyle = '#fff'; g.fillText(cmd.slice(0, n) + (Math.floor(t * 3) % 2 ? '▌' : ''), x + 360, ty + 90);
   const kb = clamp((t - V.banner) / .45);
   if (kb > 0) {  // banner pixeleado de Claude Code dentro de la terminal
     const esc = 7, pw = 96, ph = 46; PX.width = pw; PX.height = ph; px.clearRect(0, 0, pw, ph); px.font = `900 20px Menlo, monospace`; px.textBaseline = 'top';
@@ -2549,7 +2813,7 @@ function uiClaudeCode(U, t) {
     g.fillStyle = '#ddd'; g.fillText(n, tx + 36, y + 49); g.restore(); tx += tw + 6; });
   g.fillStyle = '#9d9d9d'; g.font = `600 18px ${FONT}`; g.fillText('TERMINAL', x + 28, y + 106);
   g.font = `500 25px Menlo, monospace`; let ly = y + 150;
-  g.fillStyle = '#4ec9b0'; g.fillText('david@mac ~ %', x + 28, ly); g.fillStyle = '#fff'; g.fillText(escribe('claude', t, U.claude, 9), x + 230, ly);
+  g.fillStyle = '#4ec9b0'; g.fillText('tu@mac ~ %', x + 28, ly); g.fillStyle = '#fff'; g.fillText(escribe('claude', t, U.claude, 9), x + 230, ly);
   const kb = clamp((t - U.claude - .8) / .4);
   if (kb > 0) {  // mini banner + caja de entrada estilo Claude Code
     const esc2 = 4, pw = 96, ph = 46; PX.width = pw; PX.height = ph; px.clearRect(0, 0, pw, ph); px.font = `900 20px Menlo, monospace`; px.textBaseline = 'top';
@@ -2691,10 +2955,11 @@ const CARBON = '#171B19', MARFIL = '#f4f0e8';
 function chipDatos(s, t) {
   const D = s.datos; if (!D || t < D.en - .05 || t > D.fin + .3) return;
   const k = eOut4(clamp((t - D.en) / .4)), ko = eInOut(clamp((t - D.fin) / .3)), a = k * (1 - ko); if (a <= 0) return;
-  const chipF = E.limpio ? 36 : 30; g.save(); g.globalAlpha = a; g.font = `700 ${chipF}px ${FONT}`; g.letterSpacing = '1px';
+  const chipF = D.tam ?? (E.limpio ? 36 : 30), famD = D.fuente ? `"${D.fuente}", ${FONT}` : FONT; g.save(); g.globalAlpha = a; g.font = `${D.peso ?? 700} ${chipF}px ${famD}`; g.letterSpacing = D.esp ?? '1px';
   const tw = g.measureText(D.texto).width, w = tw + 84, h = E.limpio ? 76 : 62, x = D.centro ? (W - w) / 2 : (D.x ?? ZS.lado) - (1 - k) * 60, y = D.y ?? ZS.arriba + 6;
   g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 24; g.shadowOffsetY = 8;
-  g.fillStyle = 'rgba(23,27,25,.88)'; g.beginPath(); g.roundRect(x, y, w, h, 31); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = D.fondo || 'rgba(23,27,25,.88)'; g.beginPath(); g.roundRect(x, y, w, h, D.radio ?? 31); g.fill(); g.shadowColor = 'transparent';
+  if (D.borde) { g.strokeStyle = D.borde === true ? hexA(E.acento || '#19e16d', .55) : D.borde; g.lineWidth = 2; g.stroke(); }
   g.fillStyle = ACENTO(); g.beginPath(); g.arc(x + 30, y + h / 2, 8, 0, 7); g.fill();
   g.fillStyle = MARFIL; g.textBaseline = 'middle'; g.fillText(D.texto, x + 54, y + h / 2 + 1); g.restore(); g.letterSpacing = '0px';
 }
@@ -2730,7 +2995,7 @@ function tachados(s, t) {
 // (la tarjeta crece al entrar cada renglón). items:[{t, en, tacha?, oro?}], y = borde de arriba, x?: centro
 function listaLimpia(T, t) {
   const ko = eInOut(clamp((t - T.fin) / .3)), sz = T.tam ?? 60, lh = sz * 1.5, padX = 44, padY = 26, fam = `"${T.fuente || 'Playfair Bold Italic'}", ${FONT}`;
-  g.save(); g.font = `400 ${sz}px ${fam}`; g.letterSpacing = '0px';
+  g.save(); g.font = `${T.peso ?? 400} ${sz}px ${fam}`; g.letterSpacing = '0px';
   const tw = Math.max(...T.items.map(it => g.measureText(it.t).width)), w = tw + padX * 2 + 46, x0 = (T.x ?? W / 2) - w / 2, y0 = T.y ?? 1000;
   const ks = T.items.map(it => eOut4(clamp((t - it.en + .03) / .3))), vis = ks.reduce((a, k) => a + k, 0);
   if (vis <= 0) { g.restore(); return; }
@@ -2833,6 +3098,167 @@ function renderCierre(s, t, lt) {
   g.restore();
 }
 
+
+// ===================== Identidad clara (10-nov-2026): blanco, Inter, verde, interruptor de iPhone =====================
+const DG = { tinta: '#1D1D1F', gris: '#F5F5F7', grisT: '#6E6E73', verde: '#17D94B', azul: '#2896FB', amarillo: '#FFD000', filete: 'rgba(0,0,0,.08)' };
+const famDG = () => `"Inter", ${FONT}`;
+// interruptor tipo iPhone: k = 0 apagado → 1 encendido
+function interruptor(x, y, w, h, k) {
+  g.save(); g.fillStyle = k > 0 ? `rgb(${Math.round(lerp(229, 23, k))},${Math.round(lerp(229, 217, k))},${Math.round(lerp(234, 75, k))})` : '#E5E5EA';
+  g.beginPath(); g.roundRect(x, y, w, h, h / 2); g.fill();
+  const r = h / 2 - 5, cx = lerp(x + h / 2, x + w - h / 2, eInOut(k));
+  g.shadowColor = 'rgba(0,0,0,.22)'; g.shadowBlur = 10; g.shadowOffsetY = 3; g.fillStyle = '#fff'; g.beginPath(); g.arc(cx, y + h / 2, r, 0, 7); g.fill(); g.restore();
+}
+// escena.logoImg = { img (clave de cfg.imagenes), y, w, x?, en? } — logo grande (nunca chico: el toldo pierde sus gajos)
+function logoEscena(s, t) {
+  const L = s.logoImg; if (!L || !IMG[L.img]) return; const im = IMG[L.img], w = L.w, h = w * im.height / im.width, k = L.en != null ? eOut4(clamp((t - L.en) / .35)) : 1;
+  g.save(); g.globalAlpha = k;
+  if (L.banda) { g.shadowColor = 'rgba(0,0,0,.12)'; g.shadowBlur = 30; g.shadowOffsetY = 8; g.fillStyle = '#fff'; g.fillRect(0, L.y - (L.banda.arriba ?? 30), W, h + (L.banda.arriba ?? 30) + (L.banda.abajo ?? 30)); g.shadowColor = 'transparent'; }   // franja blanca: el toldo nunca va sobre video
+  g.drawImage(im, L.x ?? (W - w) / 2, L.y + (1 - k) * 18, w, h);
+  if (L.hl && IMG[L.hl]) presentadoPor(IMG[L.hl], L.y + h + (L.hlGap ?? 46), L.hlTam ?? 52);   // "Presentado por <logo>" bajo el logo (opcional)
+  g.restore();
+}
+function presentadoPor(hl, cy, hh) {
+  const F = famDG(), w = hl.width * hh / hl.height; g.save(); g.font = `500 ${Math.round(hh * .66)}px ${F}`; const tw = g.measureText('Presentado por ').width, x0 = W / 2 - (tw + w) / 2;
+  g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillStyle = DG.grisT; g.fillText('Presentado por ', x0, cy); g.drawImage(hl, x0 + tw, cy - hh / 2, w, hh); g.restore();
+}
+// escena.interruptores = { y, x?, w?, titulo?, items:[{t, en, on?}], fin? } — tarjeta de ajustes con filas que se encienden
+function interruptoresCard(s, t) {
+  const C = s.interruptores; if (!C || t < (C.en ?? C.items[0].en) - .1 || (C.fin != null && t > C.fin + .3)) return;
+  const w = C.w ?? 860, x = C.x ?? (W - w) / 2, fh = C.alto ?? 116, cab = C.titulo ? 92 : 24;
+  const vis = C.items.map(it => eOut4(clamp((t - it.en + .03) / .32))), n = vis.reduce((a, k) => a + k, 0); if (n <= 0) return;
+  const ko = C.fin != null ? eInOut(clamp((t - C.fin) / .3)) : 0, h = cab + fh * Math.max(n, vis[0]) + 24;
+  g.save(); g.globalAlpha = 1 - ko;
+  g.shadowColor = 'rgba(0,0,0,.08)'; g.shadowBlur = 40; g.shadowOffsetY = 12; g.fillStyle = '#fff'; g.beginPath(); g.roundRect(x, C.y, w, h, 30); g.fill(); g.shadowColor = 'transparent';
+  g.strokeStyle = DG.filete; g.lineWidth = 2; g.stroke();
+  g.save(); g.beginPath(); g.roundRect(x, C.y, w, h, 30); g.clip();
+  if (C.titulo) { g.fillStyle = DG.grisT; g.font = `600 30px ${famDG()}`; g.letterSpacing = '1px'; g.textBaseline = 'middle'; g.fillText(C.titulo, x + 44, C.y + 54); g.letterSpacing = '0px'; }
+  C.items.forEach((it, i) => {
+    const k = vis[i]; if (k <= 0) return; const yy = C.y + cab + i * fh + (1 - k) * 18, kon = it.on != null ? clamp((t - it.on) / .35) : 0;
+    g.globalAlpha = (1 - ko) * k;
+    if (i > 0) { g.fillStyle = DG.filete; g.fillRect(x + 44, yy, w - 88, 2); }
+    g.fillStyle = kon > .5 ? DG.tinta : (it.on != null ? '#A1A1A6' : DG.tinta); g.font = `600 ${C.size ?? 42}px ${famDG()}`; g.letterSpacing = '-0.5px'; g.textBaseline = 'middle';
+    g.fillText(it.t, x + 44, yy + fh / 2); g.letterSpacing = '0px';
+    interruptor(x + w - 44 - 128, yy + fh / 2 - 38, 128, 76, kon);
+  });
+  g.restore(); g.restore();
+}
+// visual 'splitClaro': panel gris arriba (s.panel fracción, .44) y la toma real abajo (cubre; s.foco = centro vertical de la toma 0–1)
+async function renderSplitClaro(s, t, lt) {
+  const ph = Math.round((s.panel ?? .44) * H), [f] = await personaCuadro(t);
+  g.fillStyle = DG.gris; g.fillRect(0, 0, W, ph);
+  g.save(); g.lineWidth = 1.2; for (let y = 0; y < ph; y += 72) { g.strokeStyle = 'rgba(29,29,31,.04)'; g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); } for (let x = (W / 2) % 72; x < W; x += 72) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, ph); g.stroke(); } g.restore();
+  const hb = H - ph, z = (s.sinZoom ? 1 : zoomCorte(t)), sh = hb / z, sy = clamp((s.foco ?? .42) * H - sh / 2, 0, H - sh), sw = W / z, sx = (W - sw) / 2;
+  g.drawImage(f, sx * f.width / W, sy * f.height / H, sw * f.width / W, sh * f.height / H, 0, ph, W, hb);
+  const gr = g.createLinearGradient(0, ph, 0, ph + 60); gr.addColorStop(0, 'rgba(0,0,0,.18)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, ph, W, 60);
+}
+// visual 'cierreClaro': héroe de una landing clara. escena.cierre = { logo, hl, kicker:[negro, gris], titulo:[negro, gris], chips:[[{t, tipo}]], cta }
+function renderCierreClaro(s, t, lt) {
+  const C = s.cierre, F = famDG(), paso = (i, d = .09) => eOut4(clamp((lt - i * d) / .45));
+  papel(t); g.textAlign = 'center'; g.textBaseline = 'middle'; let y = C.y ?? 330;
+  const lg = C.logo && IMG[C.logo];
+  if (lg && C.logoAncho) { const w = C.logoAncho, h = w * lg.height / lg.width; g.drawImage(lg, W / 2 - w / 2, y, w, h); y += h + 56; }   // a lo ancho, sin animar: está colgado
+  else { if (lg) { const k = paso(0), h = 66, w = lg.width * h / lg.height; g.save(); g.globalAlpha = k; g.drawImage(lg, W / 2 - w / 2, y - h / 2 + (1 - k) * 16, w, h); g.restore(); } y += 78; }
+  const hl = C.hl && IMG[C.hl];
+  if (hl) { g.save(); g.globalAlpha = paso(1); presentadoPor(hl, y, 54); g.restore(); }
+  y += 92;
+  if (C.kicker) { const k = paso(2); g.save(); g.globalAlpha = k; g.font = `600 33px ${F}`; const [a, b] = C.kicker, wa = g.measureText(a).width, wb = g.measureText(b).width, x0 = W / 2 - (wa + wb) / 2; g.textAlign = 'left'; g.fillStyle = DG.tinta; g.fillText(a, x0, y); g.fillStyle = DG.grisT; g.font = `500 33px ${F}`; g.fillText(b, x0 + wa, y); g.restore(); }
+  y += 120;
+  C.titulo.forEach((l, i) => { const k = paso(3 + i), sz = 112; g.save(); g.globalAlpha = k; g.font = `700 ${sz}px ${F}`; g.letterSpacing = `${-sz * .035}px`; const w = g.measureText(l).width, sw = i === C.titulo.length - 1 ? 150 : 0, x0 = W / 2 - (w + (sw ? sw + 26 : 0)) / 2;
+    g.textAlign = 'left'; g.fillStyle = i === 0 ? DG.tinta : DG.grisT; g.fillText(l, x0, y + (1 - k) * 24); g.letterSpacing = '0px';
+    if (sw) interruptor(x0 + w + 26, y - 42, sw, 84, clamp((lt - .9) / .35));
+    g.restore(); y += 122; });
+  y += 50;
+  const filas = C.chips || []; filas.forEach((fila, r) => { const ch = 92, gap = 18; g.font = `600 34px ${F}`;
+    const ws = fila.map(c => g.measureText(c.t).width + (c.tipo === 'gratis' || c.tipo === 'linea' || c.tipo === 'hora' ? 110 : 64)), tot = ws.reduce((a, b) => a + b, 0) + gap * (fila.length - 1); let x = W / 2 - tot / 2;
+    fila.forEach((c, j) => { const k = paso(5 + r + j * .5); g.save(); g.globalAlpha = k; const yy = y + (1 - k) * 18, lleno = c.tipo === 'gratis';
+      g.fillStyle = lleno ? DG.verde : '#fff'; g.beginPath(); g.roundRect(x, yy - ch / 2, ws[j], ch, 18); g.fill(); if (!lleno) { g.strokeStyle = DG.filete; g.lineWidth = 2; g.stroke(); }
+      let tx = x + ws[j] / 2; if (c.tipo === 'linea') { g.fillStyle = '#FF3B30'; g.beginPath(); g.arc(x + 44, yy, 9, 0, 7); g.fill(); tx += 23; }
+      if (c.tipo === 'hora') { g.strokeStyle = DG.azul; g.lineWidth = 4; g.beginPath(); g.arc(x + 46, yy, 15, 0, 7); g.moveTo(x + 46, yy); g.lineTo(x + 46, yy - 9); g.moveTo(x + 46, yy); g.lineTo(x + 53, yy + 4); g.stroke(); tx += 23; }
+      if (c.tipo === 'gratis') { g.strokeStyle = DG.tinta; g.lineWidth = 3.5; g.beginPath(); g.roundRect(x + 30, yy - 14, 34, 28, 5); g.moveTo(x + 47, yy - 14); g.lineTo(x + 47, yy + 14); g.stroke(); tx += 23; }
+      g.fillStyle = DG.tinta; g.textAlign = 'center'; g.fillText(c.t, tx, yy + 1); g.restore(); x += ws[j] + gap; });
+    y += ch + 18; });
+  if (C.caras && C.caras.length) {   // caras reales (anfitriones y alumnos) en círculos encimados + texto
+    y += 40; const R = 54, paso2 = 78, imgs = C.caras.map(n => IMG[n]).filter(Boolean), tot = paso2 * (imgs.length - 1) + 2 * R;
+    g.font = `600 32px ${F}`; const tx = C.carasTexto || '', tw = tx ? g.measureText(tx).width + 26 : 0, x0 = W / 2 - (tot + tw) / 2;
+    imgs.forEach((im, j) => { const k = paso(6 + j * .35), cx = x0 + R + j * paso2; g.save(); g.globalAlpha = k; g.translate(0, (1 - k) * 14);
+      g.beginPath(); g.arc(cx, y, R + 5, 0, 7); g.fillStyle = '#fff'; g.fill(); g.beginPath(); g.arc(cx, y, R, 0, 7); g.clip(); g.drawImage(im, cx - R, y - R, 2 * R, 2 * R); g.restore(); });
+    if (tx) { const k = paso(7.5); g.save(); g.globalAlpha = k; g.textAlign = 'left'; g.fillStyle = DG.tinta; g.fillText(tx, x0 + tot + 26, y + 1); g.restore(); }
+    y += R + 40;
+  }
+  y += 50;
+  if (C.cta) { const k = paso(8), pul = 1 + Math.sin(lt * 4) * .015; g.save(); g.globalAlpha = k; g.font = `600 40px ${F}`; const tw = g.measureText(C.cta).width, bw = Math.min(720, tw + 190), bh = 120, bx = W / 2 - bw / 2, by = y + (1 - k) * 24;
+    g.translate(W / 2, by + bh / 2); g.scale(pul, pul); g.translate(-W / 2, -(by + bh / 2));
+    g.shadowColor = 'rgba(0,0,0,.18)'; g.shadowBlur = 30; g.shadowOffsetY = 10; g.fillStyle = DG.tinta; g.beginPath(); g.roundRect(bx, by, bw, bh, bh / 2); g.fill(); g.shadowColor = 'transparent';
+    g.fillStyle = '#fff'; g.textAlign = 'left'; g.fillText(C.cta, bx + 56, by + bh / 2 + 1);
+    const cx = bx + bw - 62, cy = by + bh / 2; g.fillStyle = 'rgba(255,255,255,.14)'; g.beginPath(); g.arc(cx, cy, 30, 0, 7); g.fill(); g.strokeStyle = '#fff'; g.lineWidth = 4.5; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(cx - 11, cy); g.lineTo(cx + 11, cy); g.moveTo(cx + 2, cy - 9); g.lineTo(cx + 11, cy); g.lineTo(cx + 2, cy + 9); g.stroke(); g.restore(); }
+}
+
+// visual 'cierreOscuro' (10-nov-2026, identidad oscura tipo landing): fondo #050505 con resplandor y cuadrícula
+// del acento, logo arriba, línea chica, titular Outfit 800 con {palabras} en acento y subrayado luminoso, chips con borde
+// del acento y botón píldora. escena.cierre = { logo (clave de cfg.imagenes), kicker:[normal, acento], titulo:[..],
+// chips:[..] (filas de hasta 3), cta, fuente? }. Todo dentro de la zona segura.
+function renderCierreOscuro(s, t, lt) {
+  const C = s.cierre, AC = E.acento || '#19e16d', fam = `"${C.fuente || 'Outfit'}", ${FONT}`;
+  const paso = (i, d = .1) => eOut4(clamp((lt - i * d) / .5));
+  g.fillStyle = '#050505'; g.fillRect(0, 0, W, H);
+  // resplandores arriba (respiran despacio)
+  for (const [x, y, r, al] of [[.5, .2, 620, .34], [.22, .1, 420, .22], [.8, .14, 460, .24]]) {
+    const rr = r * (1 + Math.sin(t * .8 + x * 9) * .04), gr = g.createRadialGradient(x * W, y * H, 0, x * W, y * H, rr);
+    gr.addColorStop(0, hexA(AC, al)); gr.addColorStop(1, hexA(AC, 0)); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  }
+  // cuadrícula que se desvanece hacia abajo
+  g.save(); g.lineWidth = 1.5; const cel = 72, off = (lt * 10) % cel;
+  for (let y = -cel + off; y < H * .62; y += cel) { g.strokeStyle = hexA(AC, .13 * clamp(1 - y / (H * .62))); g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+  for (let x = (W / 2) % cel; x < W; x += cel) { const gr = g.createLinearGradient(0, 0, 0, H * .62); gr.addColorStop(0, hexA(AC, .13)); gr.addColorStop(1, hexA(AC, 0)); g.strokeStyle = gr; g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H * .62); g.stroke(); }
+  g.restore();
+  // puntitos de luz
+  for (let i = 0; i < 9; i++) { const px = ((i * 337) % 900 + 90), py = 300 + ((i * 211) % 700) + Math.sin(t * .9 + i) * 10, a = .5 + .5 * Math.sin(t * 1.7 + i * 2);
+    g.save(); g.globalAlpha = .35 + .5 * a; g.shadowColor = AC; g.shadowBlur = 16; g.fillStyle = AC; g.beginPath(); g.arc(px, py, 2.5 + (i % 3), 0, 7); g.fill(); g.restore(); }
+  g.textAlign = 'center'; g.textBaseline = 'middle'; let y = C.y ?? 400;
+  // logo
+  const lg = C.logo && IMG[C.logo]; if (lg) { const k = paso(0), h = 104, w = lg.width * h / lg.height; g.save(); g.globalAlpha = .92 * k; g.drawImage(lg, W / 2 - w / 2, y - h / 2 + (1 - k) * 20, w, h); g.restore(); }
+  y += 130;
+  // línea chica: [normal, acento]
+  if (C.kicker) { const k = paso(1); g.save(); g.globalAlpha = k; g.font = `600 38px ${fam}`; const [n1, n2] = C.kicker, w1 = g.measureText(n1).width, w2 = g.measureText(n2 || '').width, x0 = W / 2 - (w1 + w2) / 2;
+    g.textAlign = 'left'; g.fillStyle = AC; g.font = `700 38px ${fam}`; g.fillText(n1, x0, y); g.fillStyle = '#fff'; g.font = `600 38px ${fam}`; g.fillText(n2 || '', x0 + w1, y); g.restore(); }
+  y += 125;
+  // titular con {acento}
+  C.titulo.forEach((l, i) => {
+    const k = paso(2 + i), sz = 118; g.save(); g.globalAlpha = k; g.font = `800 ${sz}px ${fam}`; g.letterSpacing = '-2px';
+    const partes = l.split(/(\{[^}]+\})/).filter(Boolean).map(p => ({ t: p.replace(/[{}]/g, ''), ac: p.startsWith('{') }));
+    const ws = partes.map(p => g.measureText(p.t).width), tot = ws.reduce((a, b) => a + b, 0); let x = W / 2 - tot / 2; const yy = y + (1 - k) * 30;
+    g.textAlign = 'left'; g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 18;
+    partes.forEach((p, j) => {
+      g.fillStyle = p.ac ? AC : '#fff'; g.fillText(p.t, x, yy);
+      if (p.ac) { const kl = eOut4(clamp((lt - .5 - i * .1) / .5)), gr = g.createLinearGradient(x, 0, x + ws[j], 0);
+        gr.addColorStop(0, hexA(AC, 0)); gr.addColorStop(.2, hexA(AC, .85)); gr.addColorStop(.5, AC); gr.addColorStop(.8, hexA(AC, .85)); gr.addColorStop(1, hexA(AC, 0));
+        g.shadowColor = AC; g.shadowBlur = 14; g.fillStyle = gr; g.fillRect(x, yy + sz * .5, ws[j] * kl, 4); g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 18; }
+      x += ws[j];
+    });
+    g.restore(); y += 130;
+  });
+  y += 55;
+  // chips en filas de hasta 3
+  const chips = C.chips || [], filas = Array.isArray(chips[0]) ? chips : chips.reduce((o, c, i) => (i % 3 ? o[o.length - 1].push(c) : o.push([c]), o), []); g.font = `800 34px ${fam}`; g.letterSpacing = '3px';
+  for (let r = 0; r < filas.length; r++) {
+    const fila = filas[r], ws = fila.map(c => g.measureText(c.toUpperCase()).width + 64), gap = 18, tot = ws.reduce((a, b) => a + b, 0) + gap * (fila.length - 1); let x = W / 2 - tot / 2;
+    fila.forEach((c, j) => { const k = paso(4 + r + j * .5); g.save(); g.globalAlpha = k; const yy = y + (1 - k) * 20;
+      g.fillStyle = 'rgba(0,0,0,.6)'; g.beginPath(); g.roundRect(x, yy - 43, ws[j], 86, 18); g.fill(); g.strokeStyle = hexA(AC, .55); g.lineWidth = 2; g.stroke();
+      g.fillStyle = AC; g.textAlign = 'center'; g.font = `800 34px ${fam}`; g.letterSpacing = '3px'; g.fillText(c.toUpperCase(), x + ws[j] / 2 + 1, yy + 2); g.restore(); x += ws[j] + gap; });
+    y += 108;
+  }
+  g.letterSpacing = '0px'; y += 70;
+  // botón píldora
+  if (C.cta) { const k = paso(6), pul = 1 + Math.sin(lt * 4.5) * .018; g.save(); g.globalAlpha = k; let fz = 40; g.letterSpacing = '1px'; const txt = C.cta.toUpperCase(); g.font = `800 ${fz}px ${fam}`; while (g.measureText(txt).width > 720 - 170 && fz > 28) { fz -= 1; g.font = `800 ${fz}px ${fam}`; }
+    const tw = g.measureText(txt).width, bw = Math.min(720, tw + 170), bh = 130, bx = W / 2 - bw / 2, by = y + (1 - k) * 30;
+    g.translate(W / 2, by + bh / 2); g.scale(pul, pul); g.translate(-W / 2, -(by + bh / 2));
+    g.shadowColor = hexA(AC, .55); g.shadowBlur = 50; g.fillStyle = AC; g.beginPath(); g.roundRect(bx, by, bw, bh, bh / 2); g.fill(); g.shadowColor = 'transparent';
+    g.fillStyle = '#000'; g.textAlign = 'center'; g.fillText(txt, W / 2 - 38, by + bh / 2 + 2);
+    const cx = bx + bw - 62, cy = by + bh / 2; g.beginPath(); g.arc(cx, cy, 34, 0, 7); g.fillStyle = 'rgba(0,0,0,.85)'; g.fill();
+    g.strokeStyle = AC; g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(cx - 13, cy); g.lineTo(cx + 13, cy); g.moveTo(cx + 3, cy - 10); g.lineTo(cx + 13, cy); g.lineTo(cx + 3, cy + 10); g.stroke();
+    g.restore(); g.letterSpacing = '0px'; }
+}
 
 // =====================================================================
 // PIZARRA EXPLICATIVA (1-nov-2026): visual 'pizarra'. escena.pizarra = { elementos:[...] }
@@ -2939,13 +3365,13 @@ function renderPizarra(s, t, lt) {
 // Persona + tarjetas, Podcast verde (visual pantalla). Elementos nuevos de pizarra en pzExtra, también usables como
 // escena.capas sobre cualquier visual. cfg.fuenteGrande cambia la línea grande; cfg.subtitulo = {fondo, color} da subtítulos en etiqueta.
 // =====================================================================
-const FUENTES = { Anton: 'anton', 'League Gothic': 'league-gothic', 'DM Serif Display': 'dm-serif-display', 'Instrument Serif': 'instrument-serif', 'Instrument Italic': 'instrument-serif-italic', 'Playfair Italic': 'playfair-italic', 'Playfair Bold Italic': 'playfair-bold-italic', Oswald: 'oswald', 'Bebas Neue': 'bebas-neue' };
+const FUENTES = { Anton: 'anton', 'League Gothic': 'league-gothic', 'DM Serif Display': 'dm-serif-display', 'Instrument Serif': 'instrument-serif', 'Instrument Italic': 'instrument-serif-italic', 'Playfair Italic': 'playfair-italic', 'Playfair Bold Italic': 'playfair-bold-italic', Oswald: 'oswald', 'Bebas Neue': 'bebas-neue', Outfit: 'outfit', Inter: 'inter-var', 'Barlow Italic': 'barlow-cond-italic' };
 async function cargaFuentes() { await Promise.all(Object.entries(FUENTES).map(async ([n, f]) => { try { const ff = new FontFace(n, `url(/fonts/${f}.woff2)`); await ff.load(); document.fonts.add(ff); } catch (e) { console.warn('fuente', n); } })); }
-function fuenteLinea(ln) { return ln.estilo !== 'chico' && E.fuenteGrande ? `"${E.fuenteGrande}", ${FONT}` : FONT; }
+function fuenteLinea(ln) { const f = ln.estilo !== 'chico' ? E.fuenteGrande : E.fuenteChica; return f ? `"${f}", ${FONT}` : FONT; }
 const normTx = x => x.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9ñ]/g, '');
 // Subtítulo por FRASE completa: aparece entera, se queda hasta la siguiente y nunca se parte en pedazos sueltos.
 function dibujaEtiqueta(gp, t) {
-  const S = E.subtitulo, pal = gp.lineas.flatMap(l => l.palabras); if (!pal.length || t < gp.ini - .02) return;
+  const S = gp.etiqueta || E.subtitulo, pal = gp.lineas.flatMap(l => l.palabras); if (!pal.length || t < gp.ini - .02) return;
   const a = clamp((t - gp.ini + .02) / .07) * (1 - clamp((t - (gp.fin - .02)) / .02)); if (a <= 0) return;
   const abajo = gp.y * H > ZS.botonesDesde - 120, maxw = abajo ? 680 : W - 2 * ZS.lado - 60, cx = W / 2;  // centrado en 540 con 680 de ancho: no toca los botones de Instagram (x > 900)
   const fam = S.fuente ? `"${S.fuente}", ${FONT}` : FONT, est = `${S.italica ? 'italic ' : ''}${S.peso || 800}`, tx = p => S.mayus ? p.txt.toUpperCase() : p.txt;
@@ -2993,7 +3419,32 @@ function personaAbajoViejo(f, t, hp, cy) {
   g.save(); g.beginPath(); g.rect(0, hp, W, sh); g.clip(); g.translate(W / 2, ay); g.scale(z, z); g.translate(-W / 2, -ay);
   g.drawImage(f, 0, srcY * f.height / H, f.width, sh * f.height / H, 0, hp, W, sh); g.restore();
 }
+// escena.titulares = [líneas de lineaTitular] sobre cualquier visual; escena.veloArriba = {h, a} degradado oscuro detrás (solo mientras hay titular)
+function titularesVelo(s, t) {
+  const L = s.titulares || []; if (!L.length) return;
+  const V = s.veloArriba; if (V) { const k = Math.max(0, ...L.map(l => (l.fin != null && t > l.fin) ? 0 : eOut4(clamp((t - l.en + .03) / .26)))); if (k > 0) { const h = V.h || 760, gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, `rgba(0,0,0,${(V.a ?? .55) * k})`); gr.addColorStop(.55, `rgba(0,0,0,${(V.a ?? .55) * .55 * k})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.save(); g.fillStyle = gr; g.fillRect(0, 0, W, h); g.restore(); } }
+  for (const l of L) lineaTitular(l, t);
+}
+// titular que sube palabra por palabra detrás de una máscara y se subraya con el acento (l.anim = 'mascara')
+function titularMascara(l, t) {
+  if (t < l.en - .05 || (l.fin != null && t > l.fin + .3)) return;
+  const fam = l.fuente || 'Inter'; let sz = l.size || 100; g.save(); g.font = `${l.peso || 800} ${sz}px "${fam}", ${FONT}`; g.letterSpacing = l.esp || '-2px';
+  const lim = W - 2 * ZS.lado - 100; let tw = g.measureText(l.t).width; if (tw > lim) { sz *= lim / tw; g.font = `${l.peso || 800} ${sz}px "${fam}", ${FONT}`; tw = g.measureText(l.t).width; }
+  const pal = l.t.split(' '), esp = g.measureText(' ').width, ko = l.fin != null ? eInOut(clamp((t - l.fin) / .3)) : 0;
+  let x = W / 2 - tw / 2; g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+  pal.forEach((w, i) => {
+    const ww = g.measureText(w).width, k = eOut4(clamp((t - l.en - i * .075) / .38));
+    g.save(); g.beginPath(); g.rect(x - 20, l.y - sz * 1.05, ww + 40, sz * 1.35); g.clip();
+    g.globalAlpha = 1 - ko; g.fillStyle = l.color || '#fff';
+    if (l.sombra) { g.shadowColor = l.sombra.color || 'rgba(0,0,0,.5)'; g.shadowBlur = l.sombra.blur ?? 26; g.shadowOffsetY = l.sombra.y ?? 4; }
+    g.fillText(w, x, l.y + (1 - k) * sz * 1.15 - ko * sz * 1.1); g.restore();
+    x += ww + esp;
+  });
+  if (l.raya !== false) { const kr = eInOut(clamp((t - l.en - pal.length * .075 - .2) / .4)); if (kr > 0) { g.globalAlpha = 1 - ko; g.fillStyle = l.colorRaya || E.acento || '#17D94B'; g.beginPath(); g.roundRect(W / 2 - tw / 2, l.y + sz * .2, tw * kr, Math.max(8, sz * .09), sz * .05); g.fill(); } }
+  g.restore(); g.letterSpacing = '0px';
+}
 function lineaTitular(l, t) {
+  if (l.anim === 'mascara') return titularMascara(l, t);
   const k = eOut4(clamp((t - l.en + .03) / .26)); if (k <= 0) return; if (l.fin != null && t > l.fin) return;
   const fam = l.fuente || 'Anton', bajo = l.y > 660 || l.bajo, cxT = W / 2; let sz = l.size || 120; g.save(); g.font = `${l.peso || 400} ${sz}px "${fam}", ${FONT}`; g.letterSpacing = l.esp || '1px'; const lim = bajo ? 700 : W - 2 * ZS.lado - 120;
   let w = g.measureText(l.t).width; if (w > lim) { sz *= lim / w; g.font = `${l.peso || 400} ${sz}px "${fam}", ${FONT}`; w = g.measureText(l.t).width; }
@@ -3013,7 +3464,7 @@ async function renderFranja(s, t, lt) {
 function renderGolpe(s, t, lt) {
   g.fillStyle = s.fondo || '#050505'; g.fillRect(0, 0, W, H);
   const P = s.golpes || [], i = P.findLastIndex(p => t >= p.en - .03); if (i < 0) return;
-  const p = P[i], k = eOut4(clamp((t - p.en + .03) / .16)); let sz = p.size || s.size || 170; g.save(); g.font = `italic 800 ${sz}px ${FONT}`; g.letterSpacing = '-4px'; const lim = ZS.derecha - ZS.lado - 80, w = g.measureText(p.t).width; if (w > lim) { sz *= lim / w; g.font = `italic 800 ${sz}px ${FONT}`; }
+  const p = P[i], k = eOut4(clamp((t - p.en + .03) / .16)); let sz = p.size || s.size || 170; const fGolpe = sz2 => `${s.italica === false ? '' : 'italic '}${s.peso ?? 800} ${sz2}px ${s.fuente ? `"${s.fuente}", ` : ''}${FONT}`; g.save(); g.font = fGolpe(sz); g.letterSpacing = s.esp ?? '-4px'; const lim = ZS.derecha - ZS.lado - 80, w = g.measureText(p.t).width; if (w > lim) { sz *= lim / w; g.font = fGolpe(sz); }
   g.translate((ZS.lado + ZS.derecha) / 2, (s.y ?? .46) * H); g.scale(lerp(1.22, 1, k), lerp(1.22, 1, k)); g.globalAlpha = k; g.fillStyle = p.color || '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(p.t, 0, 0); g.restore(); g.letterSpacing = '0px';
 }
 // visual 'pantalla': color liso con rayas finas, textos e inserto opcional de la persona. escena.pantalla = { fondo, fondoImg, empuje, rayas, foco:{color,y,r}, inserto:{x,y,w,h,r,bn,cy}, textos:[{t, en, fin, y, size, fuente, color, degradado}] }
@@ -3027,7 +3478,7 @@ async function renderPantalla(s, t, lt) {
   }
   if (P.foco) { const fy = H * (P.foco.y ?? .48), gr = g.createRadialGradient(W / 2, fy, 0, W / 2, fy, H * (P.foco.r ?? .55)); gr.addColorStop(0, P.foco.color || 'rgba(60,110,160,.35)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
   if (P.rayas) { g.fillStyle = P.rayas; for (let y = 0; y < H; y += 9) g.fillRect(0, y, W, 2); }
-  if (P.inserto) { const [f] = await personaCuadro(t), I = P.inserto, k = eOut4(clamp(lt / .3)), ecI = caraEn(t), sy = clamp((ecI ? ecI.cy / H + .1 : I.cy ?? .3) * H - I.h / 2 * (W / I.w), 0, H - I.h * W / I.w);
+  if (P.inserto) { const [f] = await personaCuadro(t), I = P.inserto, k = I.sinEntrada ? 1 : eOut4(clamp(lt / .3)), ecI = caraEn(t), sy = clamp((ecI ? ecI.cy / H + .1 : I.cy ?? .3) * H - I.h / 2 * (W / I.w), 0, H - I.h * W / I.w);
     g.save(); g.translate(0, (1 - k) * 60); g.globalAlpha = k; g.beginPath(); g.roundRect(I.x, I.y, I.w, I.h, I.r ?? 36); g.clip(); if (I.bn) g.filter = 'grayscale(1) contrast(1.12)'; g.drawImage(f, 0, sy * f.height / H, f.width, (I.h * W / I.w) * f.height / H, I.x, I.y, I.w, I.h); g.filter = 'none'; g.restore(); }
   for (const l of P.textos || []) lineaTitular(l, t);
 }
@@ -3068,7 +3519,7 @@ function pzExtra(e, x, y, t, k, a) {
   }
 }
 
-const VIS = { franja: renderFranja, golpe: renderGolpe, pantalla: renderPantalla, pizarra: renderPizarra, split: renderSplit, broll: renderBroll, editorial: renderEditorial, cierre: renderCierre, logos: renderLogos, silueta: renderSilueta, ojo: renderOjo, telefonos: renderTelefonos, moneda: renderMoneda, persona: renderPersona, prompt: renderPrompt, tripie: renderTripie, laptop: renderLaptop, censurados: renderCensurados, guion: renderGuion, clip: renderClip, contador: renderContador, tarjetas: renderTarjetas, chat: renderChat, herramienta: renderHerramienta, vscode: renderVSCode, napkin: renderNapkin, interfaz: renderInterfaz, icono3d: renderIcono3d };
+const VIS = { franja: renderFranja, golpe: renderGolpe, pantalla: renderPantalla, pizarra: renderPizarra, split: renderSplit, broll: renderBroll, editorial: renderEditorial, cierre: renderCierre, cierreOscuro: renderCierreOscuro, cierreClaro: renderCierreClaro, splitClaro: renderSplitClaro, logos: renderLogos, silueta: renderSilueta, ojo: renderOjo, telefonos: renderTelefonos, moneda: renderMoneda, persona: renderPersona, prompt: renderPrompt, tripie: renderTripie, laptop: renderLaptop, censurados: renderCensurados, guion: renderGuion, clip: renderClip, contador: renderContador, tarjetas: renderTarjetas, chat: renderChat, herramienta: renderHerramienta, vscode: renderVSCode, napkin: renderNapkin, interfaz: renderInterfaz, icono3d: renderIcono3d };
 
 window.init = async (edit) => {
   E = edit; MODO = E.modo;
@@ -3096,6 +3547,7 @@ window.init = async (edit) => {
   for (const s of E.escenas) if (s.items) s.items.forEach(o => { if (!LG.items.includes(o)) { LG.items.push(o); LG.scene.add(o); } });
   setupLogoLights();
   if (!_claudeP) { const txt = await (await fetch('logos/claude.svg')).text(); _claudeP = new Path2D(txt.match(/ d="([^"]+)"/)[1]); }
+  for (const n of ['instagram', 'facebook', 'tiktok', 'youtube', 'whatsapp']) if (!LRED[n]) { try { const txt = await (await fetch(`logos/${n}.svg`)).text(); LRED[n] = new Path2D(txt.match(/ d="([^"]+)"/)[1]); } catch (e) {} }   // logos reales de redes
   buildOjo(); buildTelefonos(); buildMoneda(); buildTripie(); buildLaptop(); buildCensurados();
   for (const s of E.escenas) if (s.icono3d) s.icono3d.logos.forEach(L => { L.obj = buildBloque(L.n); });
   for (const s of E.escenas) if (['persona', 'interfaz', 'split', 'franja'].includes(s.visual)) s.grupos.forEach(gp => { if (!gp.detras) gp.sombra = true; });
@@ -3104,6 +3556,7 @@ window.init = async (edit) => {
 };
 
 window.render = async (t) => {
+  if (g.reset) g.reset();   // seguro: limpia pila de save/clip de cuadros anteriores
   const i = Math.max(0, E.escenas.findLastIndex(s => t >= s.ini));
   const s = E.escenas[i], lt = t - s.ini;
   E._escena = s;
@@ -3111,11 +3564,11 @@ window.render = async (t) => {
   g.fillStyle = s.tema === 'claro' ? '#e6e2d8' : '#040404'; g.fillRect(0, 0, W, H);
   await VIS[s.visual](s, t, lt);
   if (s.pelicula) pelicula(t);
-  tarjetaBio(t); anillos(t); titular(t); letreroPixel(s, t); chipsLista(s, t); chipDatos(s, t); tachados(s, t); comparacion(s, t); cronometro(s, t); selloClaude(s, t); cuentaGrande(s, t); ondaAudio(s, t); appsTachadas(s, t); demoNotebook1(s, t); demoNotebook2(s, t); barraPrompt(s, t); ventanaTop5(t); listaHerramientas(s, t); tecleo(s, t); preguntaIG(s, t);
+  tarjetaBio(t); anillos(t); titular(t); letreroPixel(s, t); chipsLista(s, t); chipDatos(s, t); explica(s, t); impPantalla(s, t); impCapitulo(s.cap, t); fechaHero(s, t); logoEscena(s, t); interruptoresCard(s, t); titularesVelo(s, t); tachados(s, t); comparacion(s, t); cronometro(s, t); selloClaude(s, t); cuentaGrande(s, t); ondaAudio(s, t); appsTachadas(s, t); demoNotebook1(s, t); demoNotebook2(s, t); barraPrompt(s, t); ventanaTop5(t); listaHerramientas(s, t); tecleo(s, t); preguntaIG(s, t);
   for (const e of s.capas || []) pzElemento(e, t);
-  for (const gp of s.grupos) if (!(gp.detras && s.visual === 'persona')) dibujaGrupo(gp, t, temaTexto(s));
+  ESC_ACT = s; for (const gp of s.grupos) if (!(gp.detras && s.visual === 'persona')) dibujaGrupo(gp, t, temaTexto(s));
   iconoHerramienta(s, t); interfaces(s, t);
-  if (!E.limpio) { motas(t, s.tema); quemaduras(t); }
+  if (!E.limpio) { motas(t, s.tema); if (!E.suave) quemaduras(t); }
   const f = efectos(t, s.tema); if (s.vig != null) f.vig = s.vig;
   U.time.value = t; U.rgb.value = f.rgb; U.glitch.value = f.glitch; U.zoomBlur.value = f.zoomBlur; U.dir.value.set(f.dx, f.dy);
   U.flash.value = f.flash; U.grain.value = f.grain; U.vig.value = f.vig; U.dark.value = f.dark; U.zoom.value = f.zoom; U.pan.value.set(f.px, f.py); U.leak.value = f.leak;
@@ -3123,3 +3576,743 @@ window.render = async (t) => {
   R2.render(postScene, postCam);
   return true;
 };
+
+
+// =================== IMPACTO · anuncio único (12-nov-2026) ===================
+// Corrección: "las animaciones están sosas… la estética no está buena… el video no es impactante".
+// Técnica tomada del Editor 5 (silueta rellena, texto en arco alrededor de la persona, golpes con flash) con los colores de la marca.
+// Capas: escena.imp.{grafica, arco, iconos, gigantes} van DETRÁS de la persona (entre el fondo real y su recorte);
+// escena.imp.{jaula, silueta, drop} van DELANTE; escena.pant = corte a pantalla completa; escena.cap = capítulo 01/02/03.
+// escena.imp.golpes = [{en, k}] sacude la cámara. Todo depende solo de t.
+let CAMP = { ax: 540, ay: 576, dx: 0, dy: 0, Z: 1 };
+const KI = { am: '#FFD000', vd: '#17D94B', az: '#2896FB', tn: '#111114', rojo: '#FF4B3E' };
+const fB = (sz, pe = 900) => `${pe} ${sz}px "Barlow Italic", ${FONT}`;
+const aPant = (px, py) => [CAMP.ax + CAMP.dx + (px - CAMP.ax) * CAMP.Z, CAMP.ay + CAMP.dy + (py - CAMP.ay) * CAMP.Z];
+function caraPant(t) { const c = caraEn(t); if (!c || !(c.h > 0) || c.h > 2000) return { x: W / 2, y: H * .33, h: 300 }; const [x, y] = aPant(c.cx, c.cy); return { x, y, h: c.h * CAMP.Z }; }
+const eBack = k => { const c = 1.9; return 1 + (c + 1) * Math.pow(k - 1, 3) + c * Math.pow(k - 1, 2); };
+const vivo = (o, t, pre = .05, post = .4) => !!o && t >= o.en - pre && t <= (o.fin ?? 1e9) + post;
+function impActivoDetras(s, t) { const I = s.imp; return !!I && (impActivoDetras2(s, t) || impActivoDetras3(s, t) || vivo(I.grafica, t) || vivo(I.iconos, t) || (I.gigantes || []).some(x => vivo(x, t))); }
+
+// texto "extruido": capas en tinta desplazadas y la cara del texto encima (se ve 3D sin ser genérico)
+function textoExtruido(txt, x, y, color, prof = 14, sombra = KI.tn, ang = .75) {
+  for (let i = prof; i > 0; i -= 2) { g.fillStyle = sombra; g.fillText(txt, x + i * Math.cos(ang), y + i * Math.sin(ang)); }
+  g.fillStyle = color; g.fillText(txt, x, y);
+}
+
+// ---------- detrás ----------
+function impDetras(s, t) {
+  const I = s.imp; if (!I) return;
+  if (I.grafica) impGrafica(I.grafica, t);
+  for (const x of I.gigantes || []) impGigante(x, t);
+  if (I.iconos) impIconos(I.iconos, t);
+  impDetras2(s, t);
+  impDetras3(s, t);
+}
+// gráfica de ventas que sube y se queda plana en "no ha crecido"
+function impGrafica(G, t) {
+  const k = eOut(clamp((t - G.en) / .45)), so = G.fin != null ? 1 - clamp((t - G.fin) / .35) : 1; if (k <= 0 || so <= 0) return;
+  const x0 = 120, x1 = 960, y0 = 300, y1 = 660; g.save(); g.globalAlpha = k * so;
+  g.strokeStyle = 'rgba(255,255,255,.18)'; g.lineWidth = 2;
+  for (let i = 0; i <= 4; i++) { const y = lerp(y0, y1, i / 4); g.beginPath(); g.moveTo(x0, y); g.lineTo(lerp(x0, x1, clamp((t - G.en - i * .05) / .5)), y); g.stroke(); }
+  g.fillStyle = 'rgba(255,255,255,.55)'; g.font = `700 30px ${FONT}`; g.textAlign = 'left'; g.fillText('TUS VENTAS', x0, y0 - 26);
+  const pts = [[0, .95], [.1, .8], [.2, .66], [.3, .52], [.4, .4], [.5, .37], [.6, .38], [.7, .37], [.8, .38], [.9, .37], [1, .38]];
+  const dib = eInOut(clamp((t - G.en) / 1.5)), plano = G.plano != null ? clamp((t - G.plano) / .3) : 0, n = pts.length - 1;
+  const P = pts.map(([u, v]) => [lerp(x0, x1, u), lerp(y0, y1, v)]), hasta = dib * n;
+  g.lineCap = 'round'; g.lineJoin = 'round';
+  // área bajo la curva
+  g.beginPath(); g.moveTo(P[0][0], y1);
+  for (let i = 0; i <= Math.floor(hasta); i++) g.lineTo(P[i][0], P[i][1]);
+  const fr = hasta - Math.floor(hasta), ie = Math.min(n, Math.floor(hasta) + 1), pe = [lerp(P[Math.floor(hasta)][0], P[ie][0], fr), lerp(P[Math.floor(hasta)][1], P[ie][1], fr)];
+  g.lineTo(pe[0], pe[1]); g.lineTo(pe[0], y1); g.closePath();
+  const ga = g.createLinearGradient(0, y0, 0, y1); ga.addColorStop(0, hexA(KI.vd, .35)); ga.addColorStop(1, hexA(KI.vd, 0)); g.fillStyle = ga; g.fill();
+  // la curva: verde mientras sube, se apaga y se vuelve roja punteada donde se aplana
+  for (let i = 0; i < n && i < hasta; i++) {
+    const a = P[i], b = i + 1 <= hasta ? P[i + 1] : pe, plana = i >= 4;
+    g.strokeStyle = plana && plano > 0 ? KI.rojo : KI.vd; g.lineWidth = 9; g.setLineDash(plana && plano > 0 ? [18, 14] : []);
+    g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke();
+  }
+  g.setLineDash([]);
+  const pul = 1 + .25 * Math.sin(t * 9); g.fillStyle = plano > 0 ? KI.rojo : KI.vd; g.beginPath(); g.arc(pe[0], pe[1], 13 * pul, 0, 7); g.fill();
+  g.strokeStyle = hexA(plano > 0 ? KI.rojo : KI.vd, .35); g.lineWidth = 3; g.beginPath(); g.arc(pe[0], pe[1], 26 + 10 * ((t * 1.6) % 1), 0, 7); g.stroke();
+  if (plano > 0) {   // etiqueta "SIN CRECER" que cae sobre el tramo plano
+    const e = eBack(plano), cx = lerp(P[6][0], P[9][0], .5), cy = P[7][1] - 70;
+    g.save(); g.translate(cx, cy - (1 - e) * 60); g.rotate(-.05); g.globalAlpha *= clamp(plano * 2);
+    g.font = fB(64); const tw = g.measureText('SIN CRECER').width; g.fillStyle = KI.rojo; g.beginPath(); g.roundRect(-tw / 2 - 24, -44, tw + 48, 86, 12); g.fill();
+    g.fillStyle = '#fff'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('SIN CRECER', 0, 2); g.restore();
+  }
+  g.restore();
+}
+// palabra gigante detrás de la persona: golpea (escala 1.4 → 1 con estela), opcional tachado y contorno
+function impGigante(x, t) {
+  if (!vivo(x, t, .02, .3)) return;
+  const k = clamp((t - x.en) / .22), e = eOut4(k), so = x.fin != null ? clamp((t - x.fin) / .25) : 0; if (k <= 0) return;
+  let sz = x.size || 300; g.save(); g.font = fB(sz); g.letterSpacing = x.esp || '0px';
+  const lim = W - 80; let tw = g.measureText(x.t).width; if (tw > lim) { sz *= lim / tw; g.font = fB(sz); tw = g.measureText(x.t).width; }
+  const sc = lerp(1.45, 1, e) * (1 + .015 * Math.sin((t - x.en) * 2)); g.translate(W / 2, x.y); g.rotate(x.rot ?? -.05); g.scale(sc, sc);
+  g.globalAlpha = (1 - so) * clamp(k * 2.5); g.textAlign = 'center'; g.textBaseline = 'middle';
+  if (x.brillo) { g.shadowColor = x.brillo; g.shadowBlur = 60; }
+  if (k < 1) { g.save(); g.globalAlpha *= .3; g.fillStyle = x.color || '#fff'; g.fillText(x.t, 0, 40 * (1 - e)); g.fillText(x.t, 0, 80 * (1 - e)); g.restore(); }
+  if (x.contorno) { g.lineWidth = 6; g.strokeStyle = x.color || '#fff'; g.strokeText(x.t, 0, 0); }
+  else if (x.extruido) { g.shadowBlur = 0; textoExtruido(x.t, 0, 0, x.color || '#fff', 16, x.sombra || KI.tn); }
+  else { g.fillStyle = x.color || '#fff'; g.fillText(x.t, 0, 0); }
+  if (x.tacha != null && t >= x.tacha) {   // tachón que cruza la palabra
+    const kt = eOut(clamp((t - x.tacha) / .2)); g.shadowBlur = 0; g.strokeStyle = x.colorTacha || KI.am; g.lineWidth = sz * .12; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(-tw / 2 - 20, 8); g.lineTo(-tw / 2 - 20 + (tw + 40) * kt, -8); g.stroke();
+  }
+  g.restore(); g.letterSpacing = '0px';
+}
+// texto en arco alrededor de la cabeza (detrás), cada palabra aparece cuando se dice y el arco gira despacio
+function impArco(A, t) {
+  if (!vivo(A, t, .05, .35)) return;
+  const c = caraPant(t), so = A.fin != null ? clamp((t - A.fin) / .3) : 0, r = A.r || c.h * 1.55, cx = c.x, cy = c.y + c.h * .2;
+  let sz = A.size || 120; g.save(); g.font = fB(sz);
+  const span = Math.PI * .95, todo = A.pal.map(p => p.t).join(' '); let tw = g.measureText(todo).width;
+  if (tw > span * r) { sz *= span * r / tw; g.font = fB(sz); tw = g.measureText(todo).width; }
+  const esp = g.measureText(' ').width; let ang = -Math.PI / 2 - (tw / r) / 2 + (t - A.en) * .09;
+  g.textAlign = 'left'; g.textBaseline = 'middle';
+  A.pal.forEach((p, wi) => {
+    const kw = eOut4(clamp((t - p.en) / .22));
+    for (const ch of p.t) {
+      const cw = g.measureText(ch).width, a = ang + (cw / 2) / r;
+      if (kw > 0) {
+        g.save(); g.globalAlpha = kw * (1 - so); g.translate(cx + Math.cos(a) * (r + (1 - kw) * 60), cy + Math.sin(a) * (r + (1 - kw) * 60)); g.rotate(a + Math.PI / 2);
+        g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 16; g.fillStyle = p.color || '#fff'; g.fillText(ch, -cw / 2, 0); g.restore();
+      }
+      ang += cw / r;
+    }
+    ang += esp / r;
+  });
+  g.restore();
+}
+// íconos reconocibles detrás (reloj, cara feliz, familia) que entran en su palabra
+function impIconos(I, t) {
+  const so = I.fin != null ? clamp((t - I.fin) / .3) : 0;
+  for (const it of I.items) {
+    const k = clamp((t - it.en) / .38); if (k <= 0) continue; const e = eBack(k), r = 118 * e, x = it.x, y = it.y ?? 330;
+    g.save(); g.globalAlpha = (1 - so) * clamp(k * 3); g.translate(x, y + Math.sin(t * 2.2 + x) * 6);
+    g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 30; g.shadowOffsetY = 10; g.fillStyle = it.color; g.beginPath(); g.arc(0, 0, r, 0, 7); g.fill(); g.shadowColor = 'transparent';
+    g.strokeStyle = 'rgba(255,255,255,.9)'; g.lineWidth = 6; g.beginPath(); g.arc(0, 0, r + 12, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * eOut(clamp((t - it.en) / .7))); g.stroke();
+    const tinta = it.tinta || KI.tn; g.scale(e, e);
+    if (it.tipo === 'reloj') {
+      g.strokeStyle = tinta; g.lineWidth = 10; g.beginPath(); g.arc(0, 0, 70, 0, 7); g.stroke();
+      for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; g.lineWidth = i % 3 ? 4 : 8; g.beginPath(); g.moveTo(Math.cos(a) * 56, Math.sin(a) * 56); g.lineTo(Math.cos(a) * 66, Math.sin(a) * 66); g.stroke(); }
+      const am = (t - it.en) * 5, ah = (t - it.en) * .5; g.lineCap = 'round';
+      g.lineWidth = 9; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(ah - Math.PI / 2) * 34, Math.sin(ah - Math.PI / 2) * 34); g.stroke();
+      g.lineWidth = 6; g.beginPath(); g.moveTo(0, 0); g.lineTo(Math.cos(am - Math.PI / 2) * 52, Math.sin(am - Math.PI / 2) * 52); g.stroke();
+      g.fillStyle = tinta; g.beginPath(); g.arc(0, 0, 9, 0, 7); g.fill();
+    } else if (it.tipo === 'feliz') {
+      g.strokeStyle = tinta; g.fillStyle = tinta; g.lineWidth = 10; g.lineCap = 'round'; g.beginPath(); g.arc(0, 0, 70, 0, 7); g.stroke();
+      const parp = ((t - it.en) % 2.2) < .1 ? .2 : 1;
+      for (const sx of [-25, 25]) { g.save(); g.translate(sx, -18); g.scale(1, parp); g.beginPath(); g.arc(0, 0, 9, 0, 7); g.fill(); g.restore(); }
+      const son = .55 + .2 * eOut(clamp((t - it.en) / .5)); g.beginPath(); g.arc(0, 4, 38, Math.PI * (.5 - son / 2), Math.PI * (.5 + son / 2)); g.stroke();
+    } else if (it.tipo === 'familia') {   // dos adultos y un niño de la mano, con un corazón arriba
+      g.fillStyle = tinta;
+      const fig = (fx, fy, s) => { g.beginPath(); g.arc(fx, fy - 46 * s, 16 * s, 0, 7); g.fill(); g.beginPath(); g.roundRect(fx - 19 * s, fy - 26 * s, 38 * s, 62 * s, 16 * s); g.fill(); };
+      fig(-40, 22, 1); fig(40, 22, 1); fig(0, 42, .66);
+      g.strokeStyle = tinta; g.lineWidth = 6; g.lineCap = 'round'; g.beginPath(); g.moveTo(-22, 22); g.lineTo(-12, 30); g.moveTo(22, 22); g.lineTo(12, 30); g.stroke();
+      const lat = 1 + .12 * Math.max(0, Math.sin((t - it.en) * 7)); g.save(); g.translate(0, -70); g.scale(lat, lat); g.fillStyle = it.corazon || KI.rojo;
+      g.beginPath(); g.moveTo(0, 12); g.bezierCurveTo(-26, -6, -14, -26, 0, -12); g.bezierCurveTo(14, -26, 26, -6, 0, 12); g.fill(); g.restore();
+    }
+    g.restore();
+    if (it.etiqueta) {   // etiqueta debajo del círculo
+      g.save(); g.globalAlpha = (1 - so) * eOut(clamp((t - it.en - .12) / .3)); g.font = fB(58); g.textAlign = 'center'; g.textBaseline = 'middle';
+      g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 18; g.fillStyle = '#fff'; g.fillText(it.etiqueta, x, y + 175 - (1 - eOut(clamp((t - it.en - .12) / .3))) * 30); g.restore();
+    }
+  }
+}
+
+// ---------- delante ----------
+function impFrente(s, t, f, m, cam) {
+  const I = s.imp; if (!I) return;
+  impFrente2(s, t);
+  impFrente3(s, t);
+  if (I.silueta) impSilueta(I.silueta, t, f, m, cam);
+  if (I.drop) impDrop(I.drop, t, f, m);
+  if (I.jaula) impJaula(I.jaula, t);
+  if (I.arco) impArco(I.arco, t);
+  if (I.boton) impBoton(I.boton, t);
+}
+// barrotes de metal que caen sobre la persona, tiemblan y se rompen
+function barraMetal(x, y0, y1, w) {
+  const gr = g.createLinearGradient(x - w / 2, 0, x + w / 2, 0);
+  gr.addColorStop(0, '#121419'); gr.addColorStop(.25, '#5f6670'); gr.addColorStop(.42, '#f1f4f7'); gr.addColorStop(.58, '#8a929c'); gr.addColorStop(1, '#16181d');
+  g.fillStyle = gr; g.beginPath(); g.roundRect(x - w / 2, y0, w, y1 - y0, w / 2); g.fill();
+}
+function impJaula(J, t) {
+  if (t < J.en - .02) return; const rompe = J.rompe ?? 1e9; if (t > rompe + 1.3) return;
+  const N = 7, bw = 34, xs = Array.from({ length: N }, (_, i) => lerp(64, W - 64, i / (N - 1)));
+  const tiem = J.tiembla != null ? clamp((t - J.tiembla) / Math.max(.1, rompe - J.tiembla)) : 0;
+  g.save();
+  if (t < rompe) {
+    g.fillStyle = `rgba(4,6,10,${.3 * eOut(clamp((t - J.en) / .3))})`; g.fillRect(0, 0, W, H);   // se oscurece dentro de la jaula
+    g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 24; g.shadowOffsetX = 14;
+    xs.forEach((x, i) => {
+      const e = eBack(clamp((t - J.en - i * .022) / .26)), y = -H * (1 - e), sh = tiem > 0 ? Math.sin(t * 73 + i * 2.1) * 9 * tiem * tiem : 0;
+      barraMetal(x + sh, y - 60, y + H + 60, bw);
+    });
+    const kk = eBack(clamp((t - J.en - .14) / .26));
+    for (const yy of [262, 1590]) {   // travesaños
+      const y = yy - H * (1 - kk), gr = g.createLinearGradient(0, y - 15, 0, y + 15);
+      gr.addColorStop(0, '#15171c'); gr.addColorStop(.45, '#e8ecf0'); gr.addColorStop(1, '#1b1d22'); g.fillStyle = gr; g.beginPath(); g.roundRect(30, y - 15, W - 60, 30, 15); g.fill();
+    }
+  } else {   // se rompe: cada barra sale volando en 3 pedazos, con chispas
+    const d = t - rompe;
+    xs.forEach((x, i) => { for (let p = 0; p < 3; p++) {
+      const sd = i * 3 + p + 1, vx = (x - W / 2) * 2.2 + (hash(sd) - .5) * 1100, vy = -600 - hash(sd * 7) * 900;
+      g.save(); g.globalAlpha = 1 - clamp(d / 1.1); g.translate(x + vx * d, (p + .5) * H / 3 + vy * d + 3000 * d * d); g.rotate((hash(sd * 3) - .5) * 10 * d);
+      barraMetal(0, -H / 6 + 20, H / 6 - 20, bw); g.restore(); } });
+    for (let q = 0; q < 70; q++) {
+      const a = hash(q * 5.3) * Math.PI * 2, v = 500 + hash(q * 2.9) * 1500, x = W / 2 + Math.cos(a) * v * d, y = H * .4 + Math.sin(a) * v * d + 1200 * d * d;
+      g.globalAlpha = 1 - clamp(d / .7); g.fillStyle = q % 3 ? '#fff6c8' : KI.am; g.fillRect(x, y, 5, 5 + v * .012);
+    }
+    if (d < .22) { g.globalAlpha = (1 - d / .22) * .85; g.fillStyle = '#fff'; g.fillRect(0, 0, W, H); }
+  }
+  g.restore();
+}
+// silueta rellena de color con "?" gigante en la cara (técnica del Editor 5); el fondo se va a negro
+function impSilueta(S, t, f, m, cam) {
+  if (!vivo(S, t, 0, 0)) return; const k = eOut(clamp((t - S.en) / .12));
+  g.save(); g.globalAlpha = k; g.fillStyle = '#08080b'; g.fillRect(0, 0, W, H); g.restore();
+  const R = recorte(f, m);
+  cl.globalCompositeOperation = 'source-in'; cl.fillStyle = S.color || KI.am; cl.fillRect(0, 0, W, H);
+  cl.globalCompositeOperation = 'source-atop'; cl.fillStyle = 'rgba(0,0,0,.09)';
+  for (let y = 0; y < H; y += 16) for (let x = (y / 16 % 2) * 8; x < W; x += 16) { cl.beginPath(); cl.arc(x, y, 3.2, 0, 7); cl.fill(); }   // semitono
+  cl.globalCompositeOperation = 'source-over';
+  g.save(); g.globalAlpha = k; cam(); g.drawImage(R, 0, E.persona.bajar); g.restore();
+  const c = caraPant(t), e = eBack(clamp((t - S.en) / .32)), sz = c.h * 1.55;
+  g.save(); g.globalAlpha = k; g.translate(c.x, c.y); g.rotate(Math.sin((t - S.en) * 4) * .06); g.scale(e, e); g.font = fB(sz); g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.fillStyle = S.tinta || KI.tn; g.fillText(S.marca || '?', 0, 0); g.restore();
+  for (const L of S.lineas || []) {   // la pregunta, arriba sobre el negro
+    const kl = eOut4(clamp((t - L.en) / .25)); if (kl <= 0) continue; g.save(); g.font = fB(L.size || 120); g.textAlign = 'center'; g.textBaseline = 'middle';
+    let tw = g.measureText(L.t).width; if (tw > W - 90) g.font = fB((L.size || 120) * (W - 90) / tw);
+    g.globalAlpha = kl; g.translate(W / 2, L.y + (1 - kl) * 50); g.rotate(-.04); g.fillStyle = L.color || '#fff'; g.fillText(L.t, 0, 0); g.restore();
+  }
+  g.save(); g.globalAlpha = k * eOut(clamp((t - S.en - .1) / .2)); g.strokeStyle = '#fff'; g.lineWidth = 9; g.lineCap = 'round';   // rayitas de sorpresa
+  for (let i = 0; i < 3; i++) { const a = -1.15 + i * .38, r0 = c.h * 1.0, r1 = c.h * 1.32; g.beginPath(); g.moveTo(c.x + Math.cos(a) * r0, c.y + Math.sin(a) * r0); g.lineTo(c.x + Math.cos(a) * r1, c.y + Math.sin(a) * r1); g.stroke(); }
+  g.restore();
+}
+// golpe de color: fondo del toldo con rayos que giran, palabras gigantes que golpean en su palabra y la persona recortada encima
+function impDrop(D, t, f, m) {
+  if (!vivo(D, t, 0, 0)) return; const d = t - D.en;
+  g.save(); g.fillStyle = D.color; g.fillRect(0, 0, W, H);
+  g.translate(W / 2, H * .45); g.rotate(d * .3); g.fillStyle = D.rayo || 'rgba(255,255,255,.22)';
+  for (let i = 0; i < 16; i++) { g.rotate(Math.PI * 2 / 16); g.beginPath(); g.moveTo(0, 0); g.lineTo(-120, -1700); g.lineTo(120, -1700); g.closePath(); g.fill(); }
+  g.restore();
+  g.save(); g.fillStyle = 'rgba(0,0,0,.07)'; for (let y = 0; y < H; y += 22) for (let x = (y / 22 % 2) * 11; x < W; x += 22) { g.beginPath(); g.arc(x, y, 3, 0, 7); g.fill(); } g.restore();
+  for (const L of D.lineas) {
+    const k = clamp((t - L.en) / .2); if (k <= 0) continue; const e = eOut4(k);
+    let sz = L.size || 240; g.save(); g.font = fB(sz); let tw = g.measureText(L.t).width; if (tw > W - 70) { sz *= (W - 70) / tw; g.font = fB(sz); }
+    g.translate(W / 2 + (L.dx || 0), L.y); g.rotate(L.rot ?? -.06); g.scale(lerp(2.1, 1, e), lerp(2.1, 1, e)); g.textAlign = 'center'; g.textBaseline = 'middle';
+    if (k < 1) { g.globalAlpha = .28 * (1 - e); g.fillStyle = KI.tn; g.fillText(L.t, 0, -50 * (1 - e)); g.globalAlpha = 1; }
+    textoExtruido(L.t, 0, 0, L.color || '#fff', L.prof ?? 18, L.sombra || KI.tn);
+    g.restore();
+  }
+  if (D.slots) for (let i = 0; i < (D.slots.n || 3); i++) {   // casillas vacías ("no tienes tres cosas")
+    const kk = eBack(clamp((t - D.slots.en - i * .12) / .35)); if (kk <= 0) continue; const n = D.slots.n || 3, sx = W / 2 + (i - (n - 1) / 2) * 290, sy = D.slots.y ?? 820;
+    g.save(); g.translate(sx, sy); g.rotate(-.06); g.scale(kk, kk); g.fillStyle = 'rgba(0,0,0,.18)'; g.beginPath(); g.roundRect(-110, -110, 220, 220, 30); g.fill();
+    g.setLineDash([22, 14]); g.strokeStyle = '#fff'; g.lineWidth = 10; g.stroke(); g.setLineDash([]); g.fillStyle = '#fff'; g.font = fB(150); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('?', 0, 8); g.restore();
+  }
+  const R = recorte(f, m), c = caraEn(t), cx = c && c.h > 0 && c.h < 2000 ? c.cx : W / 2, pz = 1 + .09 * Math.exp(-d * 5) * (D.empuje ?? 1), sc = (D.escala || .8) * pz;
+  g.save(); g.translate(W / 2, H + 10); g.scale(sc, sc); g.translate(-cx, -H);
+  g.shadowColor = 'rgba(0,0,0,.4)'; g.shadowBlur = 50; g.shadowOffsetY = 20; g.drawImage(R, 0, 0); g.restore();
+  if (D.boleto) boletoPase(D.boleto, t);
+  for (const L of D.frente || []) {   // palabra que pasa por delante (opcional)
+    const k = clamp((t - L.en) / .2); if (k <= 0) continue; const e = eOut4(k); g.save(); g.font = fB(L.size || 200); g.translate(W / 2, L.y); g.rotate(-.06); g.scale(lerp(2, 1, e), lerp(2, 1, e));
+    g.textAlign = 'center'; g.textBaseline = 'middle'; textoExtruido(L.t, 0, 0, L.color || '#fff', 14, KI.tn); g.restore();
+  }
+  if (d < .2) { g.fillStyle = `rgba(255,255,255,${(1 - d / .2) * .85})`; g.fillRect(0, 0, W, H); }
+}
+
+// ---------- capítulo 01/02/03 (arriba, dentro de la zona segura) ----------
+function impCapitulo(C, t) {
+  if (!C || !vivo(C, t, .05, .35)) return; const so = C.fin != null ? clamp((t - C.fin) / .3) : 0, k = eOut4(clamp((t - C.en) / .35));
+  g.save(); const gr = g.createLinearGradient(0, 0, 0, 720); gr.addColorStop(0, `rgba(0,0,0,${.62 * k * (1 - so)})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, 720);
+  g.globalAlpha = 1 - so; g.textBaseline = 'alphabetic'; g.textAlign = 'left';
+  const nx = 70, ny = 500; g.font = fB(250);
+  g.save(); g.beginPath(); g.rect(0, ny - 225, W, 250); g.clip(); textoExtruido(C.num, nx, ny + (1 - k) * 240, C.color || KI.am, 14, 'rgba(0,0,0,.65)'); g.restore();
+  const nw = g.measureText(C.num).width, tx = nx + nw + 34, lineas = C.t.split('\n'); let sz = C.size || 96; g.font = fB(sz);
+  const mw = Math.max(...lineas.map(l => g.measureText(l).width)); if (mw > W - 70 - tx) { sz *= (W - 70 - tx) / mw; g.font = fB(sz); }
+  const b0 = ny - (lineas.length - 1) * sz * .92 - 8;
+  lineas.forEach((ln, i) => {
+    const kk = eOut4(clamp((t - C.en - .12 - i * .08) / .35)), by = b0 + i * sz * .92;
+    g.save(); g.beginPath(); g.rect(tx - 10, by - sz * .95, W, sz * 1.12); g.clip(); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 20; g.fillText(ln, tx, by + (1 - kk) * sz * 1.1); g.restore();
+  });
+  const lw = eOut4(clamp((t - C.en - .2) / .4)); g.fillStyle = C.color || KI.am; g.fillRect(nx, ny + 22, (W - 140) * lw, 12);
+  g.restore();
+}
+// botón de registro que entra y se presiona en "botón"
+function impBoton(B, t) {
+  if (!vivo(B, t, .05, .3)) return; const k = eBack(clamp((t - B.en) / .35)), d = t - (B.tap ?? 1e9), y = B.y || 1090, so = B.fin != null ? clamp((t - B.fin) / .25) : 0;
+  const pr = d > 0 && d < .25 ? 1 - .06 * Math.sin(d / .25 * Math.PI) : 1, bw = 820, bh = 136;
+  g.save(); g.globalAlpha = clamp(k * 2) * (1 - so); g.translate(W / 2, y + (1 - k) * 160); g.scale(pr, pr);
+  if (d > 0) for (let i = 0; i < 2; i++) { const dd = d - i * .25; if (dd > 0 && dd < .8) { g.strokeStyle = hexA(KI.am, .7 * (1 - dd / .8)); g.lineWidth = 8; g.beginPath(); g.roundRect(-bw / 2 - dd * 120, -bh / 2 - dd * 60, bw + dd * 240, bh + dd * 120, 70); g.stroke(); } }
+  g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 40; g.shadowOffsetY = 14; g.fillStyle = B.color || KI.am; g.beginPath(); g.roundRect(-bw / 2, -bh / 2, bw, bh, bh / 2); g.fill(); g.shadowColor = 'transparent';
+  const br = ((t - B.en) * .7) % 1.6 - .3; const gl = g.createLinearGradient(-bw / 2 + bw * br - 120, 0, -bw / 2 + bw * br + 120, 0); gl.addColorStop(0, 'rgba(255,255,255,0)'); gl.addColorStop(.5, 'rgba(255,255,255,.55)'); gl.addColorStop(1, 'rgba(255,255,255,0)');
+  g.save(); g.beginPath(); g.roundRect(-bw / 2, -bh / 2, bw, bh, bh / 2); g.clip(); g.fillStyle = gl; g.fillRect(-bw / 2, -bh / 2, bw, bh); g.restore();
+  g.fillStyle = B.colorTexto || KI.tn; g.font = fB(64); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(B.t || 'RESERVAR MI LUGAR GRATIS', -20, 4);
+  if (B.flecha) { const fy = bh / 2 + 40 + Math.abs(Math.sin((t - B.en) * 5)) * 26; g.fillStyle = B.colorFlecha || '#fff'; g.beginPath(); g.moveTo(-34, fy); g.lineTo(34, fy); g.lineTo(0, fy + 44); g.closePath(); g.fill(); g.fillRect(-11, fy - 46, 22, 48); }
+  g.beginPath(); g.moveTo(bw / 2 - 74, -16); g.lineTo(bw / 2 - 50, 4); g.lineTo(bw / 2 - 74, 24); g.lineWidth = 9; g.strokeStyle = KI.tn; g.lineCap = 'round'; g.lineJoin = 'round'; g.stroke();
+  g.restore();
+}
+
+// ---------- cortes a pantalla completa ----------
+function telefono(x, y, w, h, rot, cuerpo, pant, isla) {
+  g.save(); g.translate(x, y); g.rotate(rot);
+  g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 60; g.shadowOffsetY = 30; g.fillStyle = cuerpo; g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, w * .14); g.fill(); g.shadowColor = 'transparent';
+  const bz = w * .045; g.fillStyle = pant; g.beginPath(); g.roundRect(-w / 2 + bz, -h / 2 + bz, w - 2 * bz, h - 2 * bz, w * .11); g.fill();
+  g.fillStyle = '#000'; if (isla === 'isla') { g.beginPath(); g.roundRect(-w * .16, -h / 2 + bz + 14, w * .32, 30, 15); g.fill(); }
+  else if (isla === 'punto') { g.beginPath(); g.arc(0, -h / 2 + bz + 26, 11, 0, 7); g.fill(); }
+  const brillo = g.createLinearGradient(-w / 2, -h / 2, w / 2, h / 2); brillo.addColorStop(0, 'rgba(255,255,255,.16)'); brillo.addColorStop(.4, 'rgba(255,255,255,0)'); g.fillStyle = brillo; g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, w * .14); g.fill();
+  g.save(); g.beginPath(); g.roundRect(-w / 2 + bz, -h / 2 + bz, w - 2 * bz, h - 2 * bz, w * .11); g.clip();   // el contenido nunca se sale de la pantalla
+  return () => { g.restore(); g.restore(); };   // el contenido se dibuja en coordenadas del teléfono y luego se cierra
+}
+function envolver(txt, maxw) {
+  const out = []; let ln = '';
+  for (const w of txt.split(' ')) { const pr = ln ? ln + ' ' + w : w; if (ln && g.measureText(pr).width > maxw) { out.push(ln); ln = w; } else ln = pr; }
+  if (ln) out.push(ln); return out;
+}
+function fuenteQueCabe(txt, maxw, sz, peso = 600, fam = FONT) {   // baja el tamaño hasta que la palabra más larga quepa en maxw
+  g.font = `${peso} ${sz}px ${fam}`; const larga = txt.split(' ').reduce((a, b) => g.measureText(b).width > g.measureText(a).width ? b : a, '');
+  while (sz > 12 && g.measureText(larga).width > maxw) { sz -= 1; g.font = `${peso} ${sz}px ${fam}`; } return sz;
+}
+function fondoPantalla(t, c1, c2) {
+  const gr = g.createRadialGradient(W / 2, H * .42, 40, W / 2, H * .5, H * .75); gr.addColorStop(0, c1); gr.addColorStop(1, c2); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.strokeStyle = 'rgba(255,255,255,.05)'; g.lineWidth = 2; for (let x = 0; x <= W; x += 90) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x, H); g.stroke(); } for (let y = (t * 20) % 90; y <= H; y += 90) { g.beginPath(); g.moveTo(0, y); g.lineTo(W, y); g.stroke(); }
+}
+function impPantalla(s, t) {
+  const P = s.pant; if (!P || !vivo(P, t, 0, .3)) return;
+  const kin = eOut4(clamp((t - P.en) / .3)), kout = P.fin != null ? eInOut(clamp((t - P.fin) / .25)) : 0; if (kout >= 1) return;
+  g.save(); g.translate(0, (1 - kin) * H * .55 - kout * H * .55); g.globalAlpha = Math.min(1, kin * 1.6) * (1 - kout);
+  if (P.tipo === 'competencia') pantCompetencia(P, t); else if (P.tipo === 'mercado') pantMercado(P, t); else if (P.tipo === 'celulares') pantCelulares(P, t); else if (P.tipo === 'negocio') pantNegocio(P, t); else if (P.tipo === 'procesos') pantProcesos(P, t); else if (P.tipo === 'antesHoy') pantAntesHoy(P, t);
+  g.restore();
+}
+// TÚ vs TU COMPETENCIA: tu celular sin mensajes, el de ellos lleno de notificaciones de clientes
+function pantCompetencia(P, t) {
+  fondoPantalla(t, '#1a1d26', '#06070a');
+  g.fillStyle = 'rgba(255,255,255,.12)'; g.fillRect(528, 300, 4, 980);
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  g.font = fB(120); g.fillStyle = 'rgba(255,255,255,.55)'; g.fillText('TÚ', 290, 360);
+  g.font = fB(92); g.font = fB(76); textoExtruido('TU COMPETENCIA', 760, 360, KI.am, 8, 'rgba(0,0,0,.6)');
+  // tu celular: pantalla apagada, sin notificaciones
+  let fin = telefono(290, 900, 400, 760, -.04, '#2a2c33', '#101116', 'isla');
+  g.fillStyle = 'rgba(255,255,255,.4)'; g.font = `300 92px ${FONT}`; g.fillText('9:41', 0, -230); g.font = `500 30px ${FONT}`; g.fillText('Sin notificaciones', 0, -150);
+  g.strokeStyle = 'rgba(255,255,255,.25)'; g.lineWidth = 6; g.beginPath(); g.arc(0, 60, 54, Math.PI * 1.1, Math.PI * 1.9); g.stroke(); g.fillStyle = 'rgba(255,255,255,.25)'; g.font = fB(90); g.fillText('0', 0, 90);
+  fin();
+  // celular de la competencia: notificaciones que caen y se apilan
+  fin = telefono(770, 900, 400, 760, .04, '#e9eaee', '#f3f4f7', 'isla'); g.scale(1.05, 1.05);
+  const N = [['IG', 'Instagram', 'karla.mx te envió un mensaje', '#d62976'], ['$', 'Pedido nuevo', '$850 · envío a Puebla', KI.vd], ['TT', 'TikTok', 'Tu video tiene 12.4 mil vistas', '#111'],
+    ['WA', 'WhatsApp', '¿Todavía lo tienes disponible?', '#25D366'], ['$', 'Pedido nuevo', '$1,240 · recoger en tienda', KI.vd], ['IG', 'Instagram', 'A 342 personas les gustó tu reel', '#d62976'], ['$', 'Pedido nuevo', '$560 · pago con tarjeta', KI.vd]];
+  const llegadas = N.map((_, i) => P.en + .28 + i * .3), hay = llegadas.filter(x => t >= x).length;
+  for (let i = 0; i < hay; i++) {
+    const pos = hay - 1 - i, k = eBack(clamp((t - llegadas[i]) / .3)), y = -300 + pos * 112 - (1 - k) * 80; if (y > 340) continue;
+    g.save(); g.globalAlpha = clamp(k * 2) * (y > 260 ? 1 - (y - 260) / 80 : 1); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.15)'; g.shadowBlur = 14; g.beginPath(); g.roundRect(-172, y - 48, 344, 100, 22); g.fill(); g.shadowColor = 'transparent';
+    const [ic, tit, txt, col] = N[i], red = { IG: 'instagram', TT: 'tiktok', WA: 'whatsapp' }[ic];
+    if (red && LRED[red]) { g.save(); g.translate(-128, y); iconoRed(g, LRED, red, 60); g.restore(); } else { g.fillStyle = col; g.beginPath(); g.roundRect(-158, y - 30, 60, 60, 14); g.fill(); g.fillStyle = '#fff'; g.font = fB(30); g.fillText(ic, -128, y + 1); }
+    g.textAlign = 'left'; g.fillStyle = '#111'; g.font = `700 25px ${FONT}`; g.fillText(tit, -86, y - 14); g.fillStyle = '#555'; g.font = `500 21px ${FONT}`;
+    let tz = 21; while (tz > 16 && g.measureText(txt).width > 244) { tz -= 1; g.font = `500 ${tz}px ${FONT}`; } let tx = txt; while (g.measureText(tx).width > 244 && tx.length > 4) tx = tx.slice(0, -2); if (tx !== txt) tx = tx.trim() + '…'; g.fillText(tx, -86, y + 18); g.textAlign = 'center'; g.restore();
+  }
+  fin();
+  // contadores debajo
+  g.font = fB(60); g.fillStyle = 'rgba(255,255,255,.4)'; g.fillText('0 clientes', 290, 450);
+  const cuenta = Math.round(lerp(0, 128, eOut(clamp((t - P.en - .3) / 2)))); g.fillStyle = KI.vd; g.fillText(`+${cuenta} clientes`, 770, 450);
+}
+// el mercado: clientes en medio que caminan todos hacia la tienda de la competencia en "comer"
+function tienda(x, y, w, nombre, colores, encendida) {
+  const h = w * .86; g.save(); g.translate(x, y);
+  g.fillStyle = encendida ? '#f4efe6' : '#3a3c42'; g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, 10); g.fill();
+  const n = 8, sw = w / n; for (let i = 0; i < n; i++) { g.fillStyle = encendida ? colores[i % colores.length] : (i % 2 ? '#55585f' : '#45474d'); g.beginPath(); g.moveTo(-w / 2 - 14 + i * (sw + 28 / n), -h / 2); g.lineTo(-w / 2 - 14 + (i + 1) * (sw + 28 / n), -h / 2); g.lineTo(-w / 2 - 14 + (i + 1) * (sw + 28 / n), -h / 2 + 70); g.arc(-w / 2 - 14 + (i + .5) * (sw + 28 / n), -h / 2 + 70, (sw + 28 / n) / 2, 0, Math.PI); g.closePath(); g.fill(); }
+  g.fillStyle = encendida ? '#ffe9a8' : '#24262b'; g.beginPath(); g.roundRect(-w / 2 + 26, -h / 2 + 130, w * .42, h * .36, 8); g.fill();
+  g.fillStyle = encendida ? '#2b2d33' : '#1b1c20'; g.beginPath(); g.roundRect(w * .1, -h / 2 + 120, w * .3, h - 120, 8); g.fill();
+  if (encendida) { const gl = g.createRadialGradient(0, -h / 2 + 200, 10, 0, -h / 2 + 200, w); gl.addColorStop(0, 'rgba(255,220,120,.35)'); gl.addColorStop(1, 'rgba(255,220,120,0)'); g.fillStyle = gl; g.fillRect(-w, -h, w * 2, h * 2); }
+  g.restore();
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = fB(58); g.fillStyle = encendida ? '#fff' : 'rgba(255,255,255,.45)'; g.fillText(nombre, x, y + h / 2 + 64);
+}
+function pantMercado(P, t) {
+  fondoPantalla(t, '#20242e', '#07080b');
+  const come = P.come ?? (P.en + .8), apaga = clamp((t - come - .5) / .4);
+  const xT = 280, xC = 770, yS = 1000, w = 340;
+  tienda(xT, yS, w, 'TÚ', [], apaga < .5 && Math.sin(t * 40) > -2 ? (apaga > 0 ? Math.sin(t * 60) > 0 : true) : false);
+  tienda(xC, yS, w, 'TU COMPETENCIA', [KI.vd, KI.am, KI.az, '#ffffff'], true);
+  let dentro = 0;
+  for (let i = 0; i < 34; i++) {
+    const hx = 140 + hash(i * 3.1) * 740, hy = 330 + hash(i * 7.7) * 380, sal = come + hash(i * 1.9) * .55, k = eInOut(clamp((t - sal) / .75));
+    const x = lerp(hx, xC + (hash(i) - .5) * 60, k), y = lerp(hy, yS + 40, k) - Math.abs(Math.sin((t + i) * 9)) * 8 * (k > 0 && k < 1 ? 1 : .3);
+    if (k >= 1) { dentro++; continue; }
+    const col = ['#ffffff', '#ffd9b3', KI.am, '#cfe8ff'][i % 4];
+    g.globalAlpha = 1 - clamp((k - .85) / .15); g.fillStyle = col; g.beginPath(); g.arc(x, y - 38, 19, 0, 7); g.fill(); g.beginPath(); g.roundRect(x - 22, y - 15, 44, 60, 18); g.fill(); g.globalAlpha = 1;
+  }
+  g.font = fB(64); g.fillStyle = KI.vd; g.textAlign = 'center'; if (dentro) g.fillText(`+${dentro}`, xC + 60, yS - 250 - Math.sin(t * 8) * 4);
+  g.fillStyle = 'rgba(255,255,255,.5)'; g.font = fB(64); g.fillText('0', xT + 60, yS - 250);
+}
+// celulares distintos con la IA respondiendo adentro
+function pantCelulares(P, t) {
+  fondoPantalla(t, '#0f2350', '#03060f');
+  const T = [
+    { x: 215, y: 860, w: 380, h: 780, rot: -.14, cuerpo: '#e7e7ec', pant: '#ffffff', isla: 'punto', et: 'ANDROID', d: .1 },
+    { x: 840, y: 860, w: 360, h: 740, rot: .14, cuerpo: '#1e5bd8', pant: '#ffffff', isla: 'punto', et: 'CUALQUIERA', d: .2 },
+    { x: 540, y: 800, w: 480, h: 980, rot: 0, cuerpo: '#141418', pant: '#ffffff', isla: 'isla', et: 'IPHONE', d: 0 }];
+  for (const p of T) {
+    const k = eBack(clamp((t - P.en - p.d) / .45)), fy = Math.sin((t + p.x) * 1.8) * 8;
+    const fin = telefono(p.x, p.y + (1 - k) * 900 + fy, p.w, p.h, p.rot * k, p.cuerpo, p.pant, p.isla);
+    const sc = p.w / 400; g.scale(sc, sc);
+    g.fillStyle = '#f2f3f7'; g.fillRect(-182, -360, 364, 90); g.fillStyle = '#111'; g.font = `700 28px ${FONT}`; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText('Asistente IA', -110, -316);
+    const sp = (x, y, r) => { g.fillStyle = KI.az; g.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4, rr = i % 2 ? r * .38 : r; g.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } g.closePath(); g.fill(); };
+    sp(-150, -316, 22);
+    const t0 = P.en + .5 + p.d, preg = '¿Cómo vendo más este mes?', nver = Math.max(0, Math.floor((t - t0) * 30));
+    const IN = 160;   // pantalla útil: x de -160 a 160 (con margen) en coordenadas de un teléfono de 400
+    let yb = -236;
+    if (p.d) {   // celulares de los lados: el del centro los tapa en parte → barras grises en vez de texto (nunca se leen palabras cortadas)
+      const kq = clamp((t - P.en - .5 - p.d) / .5), kr = clamp((t - P.en - 1.5 - p.d) / .8);
+      if (kq > 0) { g.fillStyle = KI.az; g.beginPath(); g.roundRect(IN - 240 * kq, yb, 240 * kq, 74, 24); g.fill(); g.fillStyle = 'rgba(255,255,255,.75)'; g.fillRect(IN - 220 * kq, yb + 22, 170 * kq, 10); g.fillRect(IN - 220 * kq, yb + 42, 110 * kq, 10); }
+      if (kr > 0) { const n = Math.ceil(kr * 5); g.fillStyle = '#eef0f5'; g.beginPath(); g.roundRect(-IN, yb + 100, 280, 40 + n * 34, 24); g.fill(); g.fillStyle = '#c9ccd4'; for (let i = 0; i < n; i++) { g.beginPath(); g.roundRect(-IN + 22, yb + 124 + i * 34, [230, 190, 220, 160, 200][i], 12, 6); g.fill(); } }
+      fin(); continue;
+    }
+    if (nver > 0) {   // pregunta del usuario: burbuja azul a la derecha, ancho máximo 270, el texto se parte en líneas
+      const sz = fuenteQueCabe(preg, 230, 27, 600), L = envolver(preg, 230), lh = sz * 1.25, bw = Math.min(270, Math.max(...L.map(l => g.measureText(l).width)) + 40), bh = L.length * lh + 26;
+      g.fillStyle = KI.az; g.beginPath(); g.roundRect(IN - bw, yb, bw, bh, 24); g.fill();
+      g.fillStyle = '#fff'; g.textAlign = 'left'; g.textBaseline = 'middle'; let quedan = nver;
+      L.forEach((l, i) => { const v = l.slice(0, Math.max(0, quedan)); quedan -= l.length + 1; g.fillText(v, IN - bw + 20, yb + 13 + lh * (i + .5)); });
+      yb += bh + 22;
+    }
+    const resp = ['1. Publica tus productos en redes.', '2. Contesta cada mensaje en segundos.', '3. Haz una oferta por 48 horas.'], tr = t0 + preg.length / 30 + .25;
+    if (t > tr) {   // respuesta de la IA: burbuja gris a la izquierda, ancho 300, alto según las líneas
+      const vis = resp.filter((_, i) => t > tr + i * .35), sz = Math.min(...resp.map(r => fuenteQueCabe(r, 256, 24, 600))); g.font = `600 ${sz}px ${FONT}`;
+      const lh = sz * 1.25, bloques = vis.map(r => envolver(r, 256)), bh = 28 + bloques.reduce((a, L) => a + L.length * lh, 0) + (bloques.length - 1) * 12;
+      g.fillStyle = '#eef0f5'; g.beginPath(); g.roundRect(-IN, yb, 300, bh, 24); g.fill();
+      g.fillStyle = '#111'; g.textAlign = 'left'; g.textBaseline = 'middle'; let yy = yb + 14;
+      bloques.forEach(L => { L.forEach(l => { g.fillText(l, -IN + 22, yy + lh / 2); yy += lh; }); yy += 12; });
+    } else if (t > t0 + preg.length / 30) { for (let i = 0; i < 3; i++) { g.fillStyle = `rgba(0,0,0,${.25 + .25 * Math.sin(t * 10 - i)})`; g.beginPath(); g.arc(-130 + i * 30, yb + 24, 9, 0, 7); g.fill(); } }
+    fin();
+  }
+}
+
+
+// =================== IMPACTO 2 · anuncio "dueños de negocio" (12-nov-2026) ===================
+// Capas nuevas: escena.imp.{precio, saldo, tono} delante · escena.imp.{tiendas, reloj, redes, chip, caras} detrás ·
+// escena.pant tipos 'negocio' y 'procesos'. Mismas reglas: todo depende de t; el texto se mide y nunca se sale de su caja.
+function impDetras2(s, t) {
+  const I = s.imp; if (!I) return;
+  if (I.tiendas) impTiendas(I.tiendas, t);
+  if (I.reloj) impReloj(I.reloj, t);
+  if (I.redes) impRedes(I.redes, t);
+  if (I.chip) impChip(I.chip, t);
+  if (I.caras) impCaras(I.caras, t);
+}
+function impActivoDetras2(s, t) { const I = s.imp; return !!I && (vivo(I.tiendas, t) || vivo(I.reloj, t) || vivo(I.redes, t) || vivo(I.chip, t) || vivo(I.caras, t)); }
+function impFrente2(s, t) {
+  const I = s.imp; if (!I) return;
+  if (I.tono) impTono(I.tono, t);
+  if (I.precio) impPrecio(I.precio, t);
+  if (I.saldo) impSaldo(I.saldo, t);
+}
+const fueraDe = (o, t, d = .3) => o.fin != null ? clamp((t - o.fin) / d) : 0;
+
+// etiqueta de precio colgando de un hilo, se columpia y el número sube
+function impPrecio(P, t) {
+  if (!vivo(P, t, .05, .35)) return; const k = eBack(clamp((t - P.en) / .4)), so = fueraDe(P, t), x = P.x ?? 250, y = P.y ?? 1010;
+  const v = Math.round(lerp(P.de, P.a, eInOut(clamp((t - P.en - .3) / (P.dur ?? 1.4))))), txt = `$${v}`;
+  g.save(); g.globalAlpha = clamp(k * 2) * (1 - so); g.translate(x, y - 220 - (1 - k) * 260); g.rotate(Math.sin((t - P.en) * 3.2) * .14 * Math.exp(-(t - P.en) * .5));
+  g.strokeStyle = 'rgba(255,255,255,.85)'; g.lineWidth = 4; g.beginPath(); g.moveTo(0, -120); g.lineTo(0, 40); g.stroke();
+  g.font = fB(150); const tw = g.measureText('$999').width, w = tw + 100, h = 220;
+  g.translate(0, 40); g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 30; g.shadowOffsetY = 12; g.fillStyle = '#fff4d6';
+  g.beginPath(); g.moveTo(0, 0); g.lineTo(w / 2, 50); g.lineTo(w / 2, 50 + h); g.lineTo(-w / 2, 50 + h); g.lineTo(-w / 2, 50); g.closePath(); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = '#3a2a10'; g.beginPath(); g.arc(0, 34, 10, 0, 7); g.fill();
+  g.fillStyle = KI.rojo; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 0, 50 + h / 2 + 6);
+  const ka = clamp((t - P.en - .4) / .3); if (ka > 0) {   // flecha que sube a un lado
+    g.save(); g.translate(w / 2 + 50, 50 + h / 2 - 20 * Math.sin((t - P.en) * 6)); g.globalAlpha *= ka; g.fillStyle = KI.rojo;
+    g.beginPath(); g.moveTo(0, -60); g.lineTo(34, -12); g.lineTo(12, -12); g.lineTo(12, 50); g.lineTo(-12, 50); g.lineTo(-12, -12); g.lineTo(-34, -12); g.closePath(); g.fill(); g.restore();
+  }
+  g.restore();
+}
+// tienditas que brotan alrededor (la competencia)
+function impTiendas(T, t) {
+  const so = fueraDe(T, t), pos = T.pos || [[170, 520], [910, 520], [120, 860], [960, 860], [330, 330], [750, 330]];
+  pos.forEach(([x, y], i) => {
+    const k = eBack(clamp((t - T.en - i * .13) / .35)); if (k <= 0) return;
+    g.save(); g.globalAlpha = (1 - so) * clamp(k * 3); g.translate(x, y + Math.sin(t * 2 + i) * 5); g.scale(.6 * k, .6 * k);
+    tienda(0, 0, 300, '', [[KI.rojo, '#ffffff'], [KI.am, '#ffffff'], [KI.az, '#ffffff'], [KI.vd, '#ffffff']][i % 4], true); g.restore();
+  });
+}
+// reloj digital gigante detrás: la hora corre del amanecer a la noche, con sol que se vuelve luna
+function impReloj(R, t) {
+  if (!vivo(R, t, .05, .3)) return; const so = fueraDe(R, t), k = eOut4(clamp((t - R.en) / .3)), u = eInOut(clamp((t - R.en) / Math.max(.5, (R.fin ?? R.en + 2) - R.en)));
+  const hora = Math.round(lerp(R.de ?? 6, R.a ?? 23, u)), h12 = ((hora + 11) % 12) + 1, txt = `${h12}:00 ${hora < 12 ? 'AM' : 'PM'}`;
+  g.save(); g.globalAlpha = k * (1 - so); g.font = fB(R.size || 230); g.textAlign = 'center'; g.textBaseline = 'middle';
+  let sz = R.size || 230; const tw = g.measureText(txt).width; if (tw > W - 80) { sz *= (W - 80) / tw; g.font = fB(sz); }
+  g.translate(W / 2, R.y ?? 440); g.rotate(-.04); textoExtruido(txt, 0, 0, '#ffffff', 14, u > .6 ? '#1b2a6b' : '#c2410c');
+  const a = Math.PI * (1 + u), cx = 0, cy = (R.y ?? 440) * 0 + 40, r = 470, sx = cx + Math.cos(a) * r, sy = cy + Math.sin(a) * r * .55 - 120;
+  if (u < .62) { g.fillStyle = '#FFC233'; g.shadowColor = '#FFB000'; g.shadowBlur = 50; g.beginPath(); g.arc(sx, sy, 46, 0, 7); g.fill(); }
+  else { g.shadowColor = '#cfe0ff'; g.shadowBlur = 40; g.fillStyle = '#eef3ff'; g.beginPath(); g.arc(sx, sy, 42, 0, 7); g.fill(); g.shadowBlur = 0; g.fillStyle = '#1b2a6b'; g.beginPath(); g.arc(sx + 18, sy - 10, 36, 0, 7); g.fill(); }
+  g.restore();
+}
+// tono de luz sobre toda la toma (día → noche) mientras corre el reloj
+function impTono(T, t) {
+  if (!vivo(T, t, 0, .3)) return; const so = fueraDe(T, t), u = clamp((t - T.en) / Math.max(.5, (T.fin ?? T.en + 2) - T.en)), k = clamp((t - T.en) / .3) * (1 - so);
+  g.save(); g.globalCompositeOperation = 'soft-light'; g.globalAlpha = .55 * k; g.fillStyle = u < .5 ? '#ff8a3d' : '#1d3fae'; g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'source-over'; g.globalAlpha = .18 * k * clamp((u - .45) * 3); g.fillStyle = '#06103a'; g.fillRect(0, 0, W, H); g.restore();
+}
+// tarjeta de saldo del banco: el número baja y se pone rojo (a fin de mes)
+function impSaldo(S, t) {
+  if (!vivo(S, t, .05, .35)) return; const k = eBack(clamp((t - S.en) / .4)), so = fueraDe(S, t), y = S.y ?? 1010, w = S.w ?? 640, h = S.h ?? 220;
+  const u = eInOut(clamp((t - S.en - .3) / (S.dur ?? 1.6))), v = Math.round(lerp(S.de ?? 12450, S.a ?? 380, u)), txt = '$' + v.toLocaleString('en-US');
+  g.save(); g.globalAlpha = clamp(k * 2) * (1 - so); g.translate(W / 2, y + (1 - k) * 200);
+  g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 40; g.shadowOffsetY = 16; g.fillStyle = 'rgba(14,16,22,.94)'; g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, 34); g.fill(); g.shadowColor = 'transparent';
+  g.strokeStyle = 'rgba(255,255,255,.12)'; g.lineWidth = 2; g.stroke();
+  g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillStyle = 'rgba(255,255,255,.6)'; g.font = `600 30px ${FONT}`; g.fillText('Tu saldo · fin de mes', -w / 2 + 40, -h / 2 + 44);
+  const col = u > .55 ? KI.rojo : '#ffffff'; g.fillStyle = col; let sz = fuenteQueCabe(txt, w * .6, 92, 800); g.font = `800 ${sz}px ${FONT}`; g.fillText(txt, -w / 2 + 40, 30);
+  g.strokeStyle = col; g.lineWidth = 6; g.lineJoin = 'round'; g.beginPath();   // gráfica que cae
+  for (let i = 0; i <= 20; i++) { const xx = w / 2 - 220 + i * 9, f = i / 20; if (f > u + .05) break; const yy = -30 + f * 90 + Math.sin(i * 1.7) * 10; i ? g.lineTo(xx, yy) : g.moveTo(xx, yy); }
+  g.stroke(); g.restore();
+}
+// íconos de redes que giran alrededor de la cabeza (detrás)
+function impRedes(R, t) {
+  if (!vivo(R, t, .05, .3)) return; const so = fueraDe(R, t), c = caraPant(t), k = eOut4(clamp((t - R.en) / .4));
+  const apps = ['instagram', 'facebook', 'tiktok', 'whatsapp', 'youtube'];
+  apps.forEach((n, i) => {
+    const a = (t - R.en) * .9 + i * Math.PI * 2 / apps.length, rx = 420 * k, ry = 170 * k, x = c.x + Math.cos(a) * rx, y = c.y - c.h * .95 + Math.sin(a) * ry, s = (.75 + .25 * Math.sin(a)) * 1.45;
+    g.save(); g.globalAlpha = (1 - so) * k * (.6 + .4 * s / 1.45); g.translate(x, y); g.scale(s, s); g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 24; g.fillStyle = 'rgba(0,0,0,.01)'; g.beginPath(); g.roundRect(-62, -62, 124, 124, 29); g.fill(); g.shadowColor = 'transparent';
+    iconoRed(g, LRED, n, 124); g.restore();
+  });
+}
+// chip de IA brillante detrás, con pistas de circuito y pulsos que viajan
+function impChip(C, t) {
+  if (!vivo(C, t, .05, .3)) return; const so = fueraDe(C, t), k = eBack(clamp((t - C.en) / .45)), x = C.x ?? W / 2, y = C.y ?? 400, s = 230 * k;
+  g.save(); g.globalAlpha = (1 - so) * clamp(k * 2); g.translate(x, y);
+  g.strokeStyle = hexA(KI.az, .7); g.lineWidth = 6; g.lineCap = 'round';
+  for (let i = 0; i < 12; i++) {   // pistas que salen del chip
+    const lado = i % 4, j = Math.floor(i / 4) - 1, L = 260 + hash(i) * 160, p0 = [[j * 70, -s / 2], [s / 2, j * 70], [j * 70, s / 2], [-s / 2, j * 70]][lado], d = [[0, -1], [1, 0], [0, 1], [-1, 0]][lado];
+    const p1 = [p0[0] + d[0] * L * .5, p0[1] + d[1] * L * .5], p2 = [p1[0] + (d[1] ? 60 : 0) * (j || 1), p1[1] + (d[0] ? 60 : 0) * (j || 1)], p3 = [p2[0] + d[0] * L * .5, p2[1] + d[1] * L * .5];
+    g.beginPath(); g.moveTo(...p0); g.lineTo(...p1); g.lineTo(...p2); g.lineTo(...p3); g.stroke();
+    const f = ((t - C.en) * .9 + hash(i * 3)) % 1, q = f < .5 ? [lerp(p0[0], p1[0], f * 2), lerp(p0[1], p1[1], f * 2)] : [lerp(p2[0], p3[0], (f - .5) * 2), lerp(p2[1], p3[1], (f - .5) * 2)];
+    g.fillStyle = '#bfe3ff'; g.shadowColor = KI.az; g.shadowBlur = 20; g.beginPath(); g.arc(q[0], q[1], 8, 0, 7); g.fill(); g.shadowBlur = 0;
+    g.fillStyle = hexA(KI.az, .9); g.beginPath(); g.arc(p3[0], p3[1], 10, 0, 7); g.fill();
+  }
+  g.shadowColor = KI.az; g.shadowBlur = 60 + 20 * Math.sin(t * 4); const gr = g.createLinearGradient(-s / 2, -s / 2, s / 2, s / 2); gr.addColorStop(0, '#1b3c8f'); gr.addColorStop(1, '#0a1840');
+  g.fillStyle = gr; g.beginPath(); g.roundRect(-s / 2, -s / 2, s, s, 30); g.fill(); g.shadowBlur = 0; g.strokeStyle = '#6fb6ff'; g.lineWidth = 6; g.stroke();
+  g.fillStyle = '#ffffff'; g.font = fB(s * .5); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('IA', 0, 6);
+  g.restore();
+}
+// fotos de alumnos reales alrededor de la cabeza + número gigante detrás
+function impCaras(C, t) {
+  if (!vivo(C, t, .05, .3)) return; const so = fueraDe(C, t), c = caraPant(t);
+  if (C.numero && t >= (C.enNum ?? C.en) - .05) { const kn = eOut4(clamp((t - (C.enNum ?? C.en)) / .3)); g.save(); g.globalAlpha = kn * (1 - so); g.font = fB(C.size || 230); g.textAlign = 'center'; g.textBaseline = 'middle';
+    let sz = C.size || 230; const tw = g.measureText(C.numero).width; if (tw > W - 80) { sz *= (W - 80) / tw; g.font = fB(sz); }
+    g.translate(W / 2, C.y ?? 360); g.rotate(-.05); textoExtruido(C.numero, 0, 0, KI.am, 14, KI.tn); g.restore(); }
+  (C.fotos || []).forEach((f, i) => {
+    const img = IMG[f]; if (!img) return; const k = eBack(clamp((t - (C.enFotos ?? C.en) - i * .14) / .4)); if (k <= 0) return;
+    const a = -Math.PI / 2 + (i - ((C.fotos.length - 1) / 2)) * .62, r = c.h * 1.75, R = (C.radio || 82) * k;
+    let x = c.x + Math.cos(a) * r * 1.25, y = c.y + c.h * .25 + Math.sin(a) * r; if (C.pos && C.pos[i]) [x, y] = C.pos[i]; y += Math.sin(t * 2 + i) * 6;
+    g.save(); g.globalAlpha = (1 - so) * clamp(k * 2); g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 24; g.fillStyle = '#fff'; g.beginPath(); g.arc(x, y, R + 8, 0, 7); g.fill(); g.shadowColor = 'transparent';
+    g.beginPath(); g.arc(x, y, R, 0, 7); g.clip(); const sc = Math.max(2 * R / img.width, 2 * R / img.height); g.drawImage(img, x - img.width * sc / 2, y - img.height * sc / 2, img.width * sc, img.height * sc); g.restore();
+  });
+}
+// tu negocio se llena: la gente camina hacia la puerta, la cuenta de mesas sube y cae el sello LLENO
+function pantNegocio(P, t) {
+  fondoPantalla(t, '#1d2433', '#05070b');
+  const lleno = P.lleno ?? (P.en + 1.6), x = W / 2, y = 980;
+  tienda(x, y, 600, '', [[KI.az, '#fff'], [KI.vd, '#fff']].flat(), true);
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.font = fB(84); textoExtruido('TU NEGOCIO', W / 2, 330, '#ffffff', 8, 'rgba(0,0,0,.6)');
+  let dentro = 0;
+  for (let i = 0; i < 26; i++) {
+    const lado = i % 2 ? 1 : -1, sal = P.en + .15 + i * .06, kk = eInOut(clamp((t - sal) / .9)), x0 = W / 2 + lado * (560 + hash(i) * 120), y0 = 1180 + hash(i * 5) * 80;
+    const xx = lerp(x0, x + 90, kk), yy = lerp(y0, y + 150, kk) - Math.abs(Math.sin((t + i) * 9)) * 8 * (kk < 1 ? 1 : 0);
+    if (kk >= 1) { dentro++; continue; }
+    g.fillStyle = ['#ffffff', '#ffd9b3', KI.am, '#cfe8ff'][i % 4]; g.globalAlpha = 1 - clamp((kk - .88) / .12);
+    g.beginPath(); g.arc(xx, yy - 38, 19, 0, 7); g.fill(); g.beginPath(); g.roundRect(xx - 22, yy - 15, 44, 60, 18); g.fill(); g.globalAlpha = 1;
+  }
+  const mesas = Math.min(12, Math.round(dentro * 12 / 26)); g.font = fB(70); g.fillStyle = KI.vd; g.fillText(`MESAS ${mesas}/12`, W / 2, 440);
+  const ks = clamp((t - lleno) / .25); if (ks > 0) {
+    g.save(); g.translate(W / 2 + 150, 700); g.rotate(-.18); g.scale(lerp(2.2, 1, eOut4(ks)), lerp(2.2, 1, eOut4(ks))); g.globalAlpha = clamp(ks * 2);
+    g.font = fB(120); const tw = g.measureText('LLENO').width; g.strokeStyle = KI.rojo; g.lineWidth = 12; g.beginPath(); g.roundRect(-tw / 2 - 30, -78, tw + 60, 156, 18); g.stroke();
+    g.fillStyle = KI.rojo; g.fillText('LLENO', 0, 6); g.restore();
+  }
+}
+// tablet con el tablero del negocio: cada fila se palomea en su palabra
+function pantProcesos(P, t) {
+  fondoPantalla(t, '#14213d', '#04060c');
+  const ki = eBack(clamp((t - P.en) / .45)), w = 820, h = 1000, x = W / 2, y = 800 + (1 - ki) * 600;
+  g.save(); g.translate(x, y); g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 70; g.shadowOffsetY = 30; g.fillStyle = '#16181d'; g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, 56); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = '#f5f6fa'; g.beginPath(); g.roundRect(-w / 2 + 26, -h / 2 + 26, w - 52, h - 52, 36); g.fill();
+  g.save(); g.beginPath(); g.roundRect(-w / 2 + 26, -h / 2 + 26, w - 52, h - 52, 36); g.clip();
+  g.fillStyle = '#111'; g.textAlign = 'left'; g.textBaseline = 'middle'; g.font = `800 50px ${FONT}`; g.fillText('Tu negocio hoy', -w / 2 + 70, -h / 2 + 110);
+  g.fillStyle = '#8a8f9c'; g.font = `500 28px ${FONT}`; g.fillText('Panel automático', -w / 2 + 70, -h / 2 + 160);
+  const filas = P.filas || [];
+  filas.forEach((f, i) => {
+    const ye = -h / 2 + 260 + i * 175, ok = t >= f.en, kk = clamp((t - f.en) / .3), rw = w - 140;
+    g.fillStyle = ok ? hexA(KI.vd, .12 + .1 * (1 - kk)) : '#ffffff'; g.beginPath(); g.roundRect(-rw / 2, ye - 66, rw, 132, 26); g.fill();
+    g.strokeStyle = ok ? KI.vd : '#e3e5eb'; g.lineWidth = 3; g.stroke();
+    g.fillStyle = ok ? KI.vd : '#d5d8e0'; g.beginPath(); g.arc(-rw / 2 + 70, ye, 34, 0, 7); g.fill();
+    if (ok) { g.strokeStyle = '#fff'; g.lineWidth = 8; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo(-rw / 2 + 54, ye); g.lineTo(-rw / 2 + 54 + 12 * kk, ye + 13 * kk); g.lineTo(-rw / 2 + 54 + 12 * kk + 22 * clamp(kk * 2 - 1), ye + 13 * kk - 26 * clamp(kk * 2 - 1)); g.stroke(); }
+    const txt = f.t, maxw = rw - 160 - (f.dato ? 230 : 30); const sz = fuenteQueCabe(txt, maxw, 40, 700); const L = envolver(txt, maxw);
+    g.fillStyle = '#111'; g.textAlign = 'left'; L.slice(0, 2).forEach((l, j) => g.fillText(l, -rw / 2 + 130, ye + (j - (Math.min(2, L.length) - 1) / 2) * sz * 1.15));
+    if (f.dato) { const dv = f.cuenta ? '$' + Math.round(lerp(0, f.cuenta, eOut(clamp((t - f.en) / 1)))).toLocaleString('en-US') : f.dato;
+      g.font = `800 36px ${FONT}`; g.textAlign = 'right'; g.fillStyle = ok ? KI.vd : '#b0b4bf'; g.fillText(dv, rw / 2 - 30, ye); }
+  });
+  g.restore(); g.restore();
+}
+
+// ---------- logos reales de redes ----------
+const LRED = {};
+// íconos reales de redes: glifo oficial (Simple Icons, CC0) + colores de la marca. P = {nombre: Path2D 24x24}
+function iconoRed(g, P, n, s) {   // dibuja centrado en (0,0), tamaño s
+  const r = s * .23, cuadro = (fill) => { g.fillStyle = fill; g.beginPath(); g.roundRect(-s / 2, -s / 2, s, s, r); g.fill(); };
+  const glifo = (color, esc = .62, dx = 0, dy = 0) => { const k = s * esc / 24; g.save(); g.translate(dx - 12 * k, dy - 12 * k); g.scale(k, k); g.fillStyle = color; g.fill(P[n]); g.restore(); };
+  if (n === 'instagram') {
+    const gr = g.createRadialGradient(-s * .25, s * .55, 0, -s * .25, s * .55, s * 1.25);
+    gr.addColorStop(0, '#fdf497'); gr.addColorStop(.12, '#fdf497'); gr.addColorStop(.38, '#fd5949'); gr.addColorStop(.62, '#d6249f'); gr.addColorStop(.92, '#285AEB');
+    cuadro(gr); glifo('#ffffff', .6);
+  } else if (n === 'facebook') { cuadro('#ffffff'); glifo('#0866FF', .78); }
+  else if (n === 'tiktok') { cuadro('#000000'); glifo('#25F4EE', .56, -s * .018, -s * .014); glifo('#FE2C55', .56, s * .018, s * .014); glifo('#ffffff', .56); }
+  else if (n === 'youtube') { cuadro('#ffffff'); glifo('#FF0000', .74); }
+  else if (n === 'whatsapp') { cuadro('#25D366'); glifo('#ffffff', .64); }
+}
+
+
+// =================== IMPACTO 3 · anuncio de autoridad (12-nov-2026) ===================
+// Delante: imp.{foco, nombre, boleto(en drop)} · Detrás: imp.{billetes, cuenta, odometro, logosFila, flechas} · pant 'antesHoy'.
+function impDetras3(s, t) {
+  const I = s.imp; if (!I) return;
+  if (I.billetes) impBilletes(I.billetes, t);
+  if (I.cuenta) impCuenta(I.cuenta, t);
+  if (I.odometro) impOdometro(I.odometro, t);
+  if (I.logosFila) impLogosFila(I.logosFila, t);
+  if (I.flechas) impFlechas(I.flechas, t);
+}
+function impActivoDetras3(s, t) { const I = s.imp; return !!I && (vivo(I.billetes, t) || vivo(I.cuenta, t) || vivo(I.odometro, t) || vivo(I.logosFila, t) || vivo(I.flechas, t)); }
+function impFrente3(s, t) { const I = s.imp; if (!I) return; if (I.foco) impFoco(I.foco, t); if (I.nombre) impNombre(I.nombre, t); }
+
+// billetes que caen detrás + contador de ventas arriba
+function billete(w, color = '#2f9e44') {
+  const h = w * .46; g.fillStyle = color; g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, 6); g.fill();
+  g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 3; g.strokeRect(-w / 2 + 8, -h / 2 + 8, w - 16, h - 16);
+  g.fillStyle = 'rgba(255,255,255,.85)'; g.beginPath(); g.arc(0, 0, h * .28, 0, 7); g.fill(); g.fillStyle = color; g.font = fB(h * .42); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('$', 0, 2);
+}
+function impBilletes(B, t) {
+  if (!vivo(B, t, .05, .4)) return; const so = fueraDe(B, t, .4), d = t - B.en;
+  for (let i = 0; i < 26; i++) {
+    const x = hash(i * 3.3) * W, vel = 380 + hash(i * 7.1) * 420, y = -140 + ((d * vel + hash(i * 1.7) * 900) % 1300), rot = Math.sin(d * 2.5 + i) * .8 + i;
+    g.save(); g.globalAlpha = (1 - so) * clamp(d * 3) * .95; g.translate(x + Math.sin(d * 2 + i) * 40, y); g.rotate(rot); g.scale(1, .55 + .45 * Math.abs(Math.cos(d * 3 + i))); billete(120 + hash(i) * 50); g.restore();
+  }
+  if (B.ventas) { const v = Math.round(lerp(0, B.ventas, eOut(clamp(d / (B.dur ?? 2))))), txt = '$' + v.toLocaleString('en-US');
+    g.save(); g.globalAlpha = (1 - so) * eOut4(clamp(d / .3)); g.font = fB(200); g.textAlign = 'center'; g.textBaseline = 'middle'; let sz = 200; const tw = g.measureText(txt).width; if (tw > W - 90) { sz *= (W - 90) / tw; g.font = fB(sz); }
+    g.translate(W / 2, B.y ?? 400); g.rotate(-.04); textoExtruido(txt, 0, 0, KI.vd, 14, '#0b3d1a'); g.font = fB(56); g.fillStyle = '#fff'; g.fillText('EN VENTAS', 0, -sz * .62); g.restore(); }
+}
+// reflector desde arriba sobre la persona; el resto se oscurece
+function impFoco(F, t) {
+  if (!vivo(F, t, 0, .35)) return; const k = eOut(clamp((t - F.en) / .25)) * (1 - fueraDe(F, t)), c = caraPant(t);
+  g.save(); g.globalAlpha = k;
+  const gr = g.createRadialGradient(c.x, c.y + c.h * .9, c.h * .9, c.x, c.y + c.h * .9, c.h * 3.4); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.82)'); g.fillStyle = gr; g.fillRect(0, 0, W, H);
+  g.globalCompositeOperation = 'screen'; const cono = g.createLinearGradient(0, 0, 0, c.y + c.h); cono.addColorStop(0, 'rgba(255,250,220,.38)'); cono.addColorStop(1, 'rgba(255,250,220,0)'); g.fillStyle = cono;
+  g.beginPath(); g.moveTo(c.x - 60, -20); g.lineTo(c.x + 60, -20); g.lineTo(c.x + c.h * 1.6, c.y + c.h * 1.4); g.lineTo(c.x - c.h * 1.6, c.y + c.h * 1.4); g.closePath(); g.fill();
+  g.restore();
+  for (const L of F.lineas || []) {   // la pregunta, delante del oscurecido (iluminada)
+    const kl = clamp((t - L.en) / .22); if (kl <= 0) continue; const e = eOut4(kl); let sz = L.size || 170; g.save(); g.globalAlpha = 1 - fueraDe(F, t); g.font = fB(sz);
+    const tw = g.measureText(L.t).width; if (tw > W - 90) { sz *= (W - 90) / tw; g.font = fB(sz); }
+    g.translate(W / 2, L.y); g.rotate(-.05); g.scale(lerp(1.6, 1, e), lerp(1.6, 1, e)); g.textAlign = 'center'; g.textBaseline = 'middle'; textoExtruido(L.t, 0, 0, L.color || '#fff', 14, L.sombra || KI.tn); g.restore();
+  }
+}
+// cintillo con el nombre (abajo del rostro, sobre el pecho)
+function impNombre(N, t) {
+  if (!vivo(N, t, .05, .3)) return; const k = eOut4(clamp((t - N.en) / .4)), so = fueraDe(N, t), y = N.y ?? 1080;
+  g.save(); g.globalAlpha = 1 - so; g.font = fB(N.size || 104); const nombre = N.t || (E.nombre || 'TU NOMBRE').toUpperCase(); let tw = g.measureText(nombre).width; const maxw = W - 160; let sz = N.size || 104; if (tw > maxw) { sz *= maxw / tw; g.font = fB(sz); tw = g.measureText(nombre).width; }
+  const x0 = 80; g.save(); g.beginPath(); g.rect(x0 - 20, y - sz, W, sz * 1.25); g.clip(); g.fillStyle = '#fff'; g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 20; g.textAlign = 'left'; g.textBaseline = 'alphabetic'; g.fillText(nombre, x0, y + (1 - k) * sz * 1.2); g.restore();
+  g.fillStyle = N.color || KI.vd; g.fillRect(x0, y + 18, Math.min(tw, maxw) * eOut4(clamp((t - N.en - .15) / .4)), 12);
+  const ks = eOut4(clamp((t - N.en - .3) / .35)); if (ks > 0 && N.sub) { const sub = N.sub; g.font = `700 ${fuenteQueCabe(sub, maxw, 40, 700)}px ${FONT}`; g.globalAlpha = (1 - so) * ks; g.fillStyle = 'rgba(255,255,255,.92)'; g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 14; g.textAlign = 'left'; g.fillText(sub, x0, y + 80); }
+  g.restore();
+}
+// contador gigante detrás (0 → N) con etiqueta
+function impCuenta(C, t) {
+  if (!vivo(C, t, .05, .3)) return; const so = fueraDe(C, t), k = eOut4(clamp((t - C.en) / .3)), v = Math.round(lerp(0, C.a, eOut(clamp((t - C.en) / (C.dur ?? 1.6)))));
+  const txt = (C.pre || '+') + v.toLocaleString('en-US'); g.save(); g.globalAlpha = k * (1 - so); let sz = C.size || 250; g.font = fB(sz); const tw = g.measureText(txt).width; if (tw > W - 90) { sz *= (W - 90) / tw; g.font = fB(sz); }
+  g.textAlign = 'center'; g.textBaseline = 'middle'; g.translate(W / 2, C.y ?? 420); g.rotate(-.04); textoExtruido(txt, 0, 0, C.color || '#ffffff', 14, C.sombra || '#0b3d1a');
+  if (C.etiqueta) { g.font = fB(70); g.fillStyle = C.colorEt || KI.vd; g.fillText(C.etiqueta, 0, -sz * .62); }
+  g.restore();
+}
+// odómetro: la cifra rueda dígito por dígito; edificios (empresas) que suben a los lados
+function impOdometro(O, t) {
+  if (!vivo(O, t, .05, .3)) return; const so = fueraDe(O, t), k = eOut4(clamp((t - O.en) / .3)), u = eOut(clamp((t - O.en) / (O.dur ?? 1.8)));
+  const txt = O.t || '$1,000,000+', sz = O.size || 190; g.save(); g.globalAlpha = k * (1 - so); g.font = fB(sz); let tw = g.measureText(txt).width, esc = tw > W - 90 ? (W - 90) / tw : 1;
+  g.translate(W / 2, O.y ?? 420); g.rotate(-.04); g.scale(esc, esc); g.textAlign = 'left'; g.textBaseline = 'middle';
+  let x = -tw / 2; [...txt].forEach((ch, i) => {
+    const cw = g.measureText(ch).width;
+    if (/\d/.test(ch)) {   // cada dígito rueda y se detiene en su lugar (de izquierda a derecha)
+      const fin = clamp((u - i * .03) / (1 - i * .03 + .001)), vueltas = (1 - fin) * (8 + i), off = (vueltas % 1) * sz, dig = (parseInt(ch) + Math.floor(vueltas)) % 10;
+      g.save(); g.beginPath(); g.rect(x - 4, -sz * .55, cw + 8, sz * 1.1); g.clip();
+      for (const [dd, oy] of [[dig, -off], [(dig + 1) % 10, sz - off]]) { g.fillStyle = '#0b3d1a'; g.fillText(String(dd), x + 9, oy + 9); g.fillStyle = KI.am; g.fillText(String(dd), x, oy); }
+      g.restore();
+    } else { g.fillStyle = '#0b3d1a'; g.fillText(ch, x + 9, 9); g.fillStyle = KI.am; g.fillText(ch, x, 0); }
+    x += cw;
+  });
+  g.restore();
+  for (let i = 0; i < (O.edificios ?? 3); i++) {   // empresas: edificios que suben
+    const ke = eBack(clamp((t - (O.enEdif ?? O.en + .6) - i * .15) / .4)); if (ke <= 0) continue; const bx = [150, 930, 120][i], by = [760, 760, 1000][i], bh = [230, 280, 200][i] * ke, bw = 120;
+    g.save(); g.globalAlpha = 1 - so; g.fillStyle = 'rgba(255,255,255,.92)'; g.beginPath(); g.roundRect(bx - bw / 2, by - bh, bw, bh, 8); g.fill();
+    g.fillStyle = KI.vd; for (let r = 0; r < Math.floor(bh / 42); r++) for (let cI = 0; cI < 3; cI++) g.fillRect(bx - bw / 2 + 14 + cI * 34, by - bh + 16 + r * 42, 22, 24); g.restore();
+  }
+}
+// logos reales en fila que brotan en su palabra
+function impLogosFila(L, t) {
+  if (!vivo(L, t, .05, .3)) return; const so = fueraDe(L, t), n = L.logos.length;
+  L.logos.forEach((it, i) => {
+    const k = eBack(clamp((t - it.en) / .35)); if (k <= 0) return; const x = W / 2 + (i - (n - 1) / 2) * (L.sep || 190), y = (L.y ?? 380) + Math.sin(t * 2.4 + i) * 8;
+    g.save(); g.globalAlpha = (1 - so) * clamp(k * 2); g.translate(x, y); g.scale(k, k); g.rotate(Math.sin(t * 1.6 + i) * .06); g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 26; g.shadowOffsetY = 10;
+    if (it.n === 'ia') { g.fillStyle = '#0a1840'; g.beginPath(); g.roundRect(-75, -75, 150, 150, 34); g.fill(); g.shadowColor = 'transparent'; g.strokeStyle = '#6fb6ff'; g.lineWidth = 6; g.stroke(); g.fillStyle = '#fff'; g.font = fB(78); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('IA', 0, 5); }
+    else { g.fillStyle = 'rgba(0,0,0,.01)'; g.beginPath(); g.roundRect(-75, -75, 150, 150, 34); g.fill(); g.shadowColor = 'transparent'; iconoRed(g, LRED, it.n, 150); }
+    g.restore();
+  });
+}
+// flechas que suben con su etiqueta (más clientes / más ventas)
+function impFlechas(F, t) {
+  if (!vivo(F, t, .05, .3)) return; const so = fueraDe(F, t);
+  F.items.forEach((it, i) => {
+    const k = eOut4(clamp((t - it.en) / .6)); if (k <= 0) return; const x = it.x, base = F.y ?? 760, alto = (it.alto || 420) * k, sw = 52;
+    g.save(); g.globalAlpha = 1 - so; g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 24; g.fillStyle = it.color || KI.vd;
+    g.beginPath(); g.moveTo(x - sw, base); g.lineTo(x - sw, base - alto + 70); g.lineTo(x - 100, base - alto + 70); g.lineTo(x, base - alto - 40); g.lineTo(x + 100, base - alto + 70); g.lineTo(x + sw, base - alto + 70); g.lineTo(x + sw, base); g.closePath(); g.fill();
+    g.shadowColor = 'transparent'; const largo = alto - 90; if (largo > 60) {   // texto vertical dentro del tallo, siempre cabe
+      g.save(); g.beginPath(); g.rect(x - sw, base - alto + 70, sw * 2, alto - 70); g.clip(); g.translate(x, base - 20); g.rotate(-Math.PI / 2);
+      let sz = 64; g.font = fB(sz); while (sz > 26 && (g.measureText(it.t).width > largo || sz > sw * 1.6)) { sz -= 2; g.font = fB(sz); }
+      g.fillStyle = it.colorTexto || KI.tn; g.textAlign = 'left'; g.textBaseline = 'middle'; g.fillText(it.t, 0, 3); g.restore();
+    }
+    g.restore();
+  });
+}
+// boleto "PASE" que entra volando y recibe el sello (dentro del golpe de color). drop.boleto = { en, sello, y?, color?, kicker?, titulo?, fecha? }
+function boletoPase(B, t) {
+  const k = eBack(clamp((t - B.en) / .45)); if (k <= 0) return; const w = 780, h = 330, y = B.y ?? 820;
+  g.save(); g.translate(W / 2 + (1 - k) * 900, y); g.rotate(-.08 + (1 - k) * .6 + Math.sin(t * 2) * .015); g.shadowColor = 'rgba(0,0,0,.45)'; g.shadowBlur = 40; g.shadowOffsetY = 18;
+  g.fillStyle = '#ffffff'; g.beginPath(); g.roundRect(-w / 2, -h / 2, w, h, 26); g.fill(); g.shadowColor = 'transparent';
+  g.fillStyle = B.color || KI.vd; g.beginPath(); g.roundRect(-w / 2, -h / 2, 230, h, [26, 0, 0, 26]); g.fill();
+  g.save(); g.translate(-w / 2 + 115, 0); g.rotate(-Math.PI / 2); g.fillStyle = '#fff'; g.font = fB(96); g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText('PASE', 0, 4); g.restore();
+  g.setLineDash([12, 12]); g.strokeStyle = '#c9ccd4'; g.lineWidth = 4; g.beginPath(); g.moveTo(-w / 2 + 230, -h / 2 + 14); g.lineTo(-w / 2 + 230, h / 2 - 14); g.stroke(); g.setLineDash([]);
+  g.fillStyle = '#111'; g.textAlign = 'left'; g.textBaseline = 'middle'; const tx = -w / 2 + 270, mw = w - 300;
+  const tk = B.kicker || 'SEMINARIO'; g.font = `600 ${fuenteQueCabe(tk, mw, 34, 600)}px ${FONT}`; g.fillStyle = '#6e6e73'; g.fillText(tk, tx, -h / 2 + 70);
+  const t1 = B.titulo || 'Tu evento'; const s1 = fuenteQueCabe(t1, mw, 54, 800); g.font = `800 ${s1}px ${FONT}`; const L = envolver(t1, mw); g.fillStyle = '#111'; L.slice(0, 2).forEach((l, i) => g.fillText(l, tx, -h / 2 + 130 + i * s1 * 1.1));
+  const tf = B.fecha || 'Próximo jueves · 8:00 p. m.'; g.font = `600 ${fuenteQueCabe(tf, mw, 32, 600)}px ${FONT}`; g.fillStyle = '#6e6e73'; g.fillText(tf, tx, h / 2 - 52);
+  const ks = clamp((t - (B.sello ?? B.en + .6)) / .22); if (ks > 0) {   // sello GRATIS
+    g.save(); g.translate(w / 2 - 150, -h / 2 + 30); g.rotate(-.22); const sc = lerp(2.4, 1, eOut4(ks)); g.scale(sc, sc); g.globalAlpha = clamp(ks * 2);
+    g.font = fB(92); const tw = g.measureText('GRATIS').width; g.strokeStyle = KI.rojo; g.lineWidth = 9; g.beginPath(); g.roundRect(-tw / 2 - 22, -58, tw + 44, 116, 14); g.stroke(); g.fillStyle = KI.rojo; g.textAlign = 'center'; g.fillText('GRATIS', 0, 6); g.restore();
+  }
+  g.restore();
+}
+// ANTES / HOY: un caso de antes y después (barniz de uñas → dólares)
+function pantAntesHoy(P, t) {
+  fondoPantalla(t, '#1f2a24', '#050806');
+  const kL = eBack(clamp((t - P.en) / .4)), kR = eBack(clamp((t - (P.hoy ?? P.en + .9)) / .4));
+  g.textAlign = 'center'; g.textBaseline = 'middle';
+  const card = (cx, k, titulo, colorT, dib, linea1, linea2, col2) => {
+    if (k <= 0) return; g.save(); g.translate(cx, 860 + (1 - k) * 500); g.rotate(cx < W / 2 ? -.04 : .04);
+    g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 40; g.fillStyle = '#ffffff'; g.beginPath(); g.roundRect(-230, -380, 460, 760, 36); g.fill(); g.shadowColor = 'transparent';
+    g.fillStyle = colorT; g.beginPath(); g.roundRect(-230, -380, 460, 120, [36, 36, 0, 0]); g.fill(); g.fillStyle = '#fff'; g.font = fB(84); g.fillText(titulo, 0, -318);
+    dib(); g.fillStyle = '#111'; const mw = 400; let s1 = fuenteQueCabe(linea1, mw, 52, 800); g.font = `800 ${s1}px ${FONT}`; envolver(linea1, mw).slice(0, 2).forEach((l, i, a) => g.fillText(l, 0, 190 + (i - (a.length - 1) / 2) * s1 * 1.1));
+    if (linea2) { const s2 = fuenteQueCabe(linea2, mw, 40, 700); g.font = `700 ${s2}px ${FONT}`; g.fillStyle = col2 || '#6e6e73'; g.fillText(linea2, 0, 300); }
+    g.restore();
+  };
+  card(285, kL, 'ANTES', '#8a8f9c', () => {   // barniz de uñas
+    g.fillStyle = '#d6336c'; g.beginPath(); g.roundRect(-70, -110, 140, 170, 26); g.fill(); g.fillStyle = 'rgba(255,255,255,.35)'; g.fillRect(-48, -90, 18, 120);
+    g.fillStyle = '#222'; g.beginPath(); g.roundRect(-34, -200, 68, 96, 10); g.fill(); g.fillStyle = '#444'; g.fillRect(-40, -112, 80, 14);
+  }, P.antes || 'Antes', '', '');
+  card(795, kR, 'HOY', KI.vd, () => {   // fajo de billetes que crece
+    for (let i = 0; i < 6; i++) { g.save(); g.translate(0, 20 - i * 26 * clamp((t - (P.hoy ?? 0) - i * .08) / .3)); g.rotate((i % 2 ? .05 : -.04)); billete(220); g.restore(); }
+  }, P.hoyT || 'Hoy', P.nombre ? `El caso de ${P.nombre}` : '', KI.vd);
+  const kf = clamp((t - (P.hoy ?? P.en + .9) - .2) / .3); if (kf > 0) { g.save(); g.globalAlpha = kf; g.fillStyle = KI.am; g.translate(540, 860); g.beginPath(); g.moveTo(-36, -30); g.lineTo(20, -30); g.lineTo(20, -60); g.lineTo(60, 0); g.lineTo(20, 60); g.lineTo(20, 30); g.lineTo(-36, 30); g.closePath(); g.fill(); g.restore(); }
+}

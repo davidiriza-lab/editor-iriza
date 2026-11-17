@@ -40,6 +40,38 @@ Material horizontal o con otro encuadre: cortar con ffmpeg a 1080x1920 (ver `cor
 Visual `persona`: por defecto **fondo real** (`persona.fondo: "real"`, `persona.cuadros: "cuadros_pro"`); `fondo: "estilo"` usa papel/negro según `tema`. Grupos con `"detras": true` (texto gigante tras la cabeza), `"ventanas": true`, `"cta": {en, texto}`.
 Otras escenas: `logos` con `"logos": [{marca, en}]` y `"link": t`, `telefonos` con `"resaltar": t`, `prompt`, `ojo`.
 
+## Armar el cine.json desde un plan (12-nov-2026)
+```
+python3 estilo-cine/armar.py proyectos/<n>           # plan.json → cine.json (+ voz/palabras.json con inicios ajustados)
+python3 estilo-cine/armar.py proyectos/<n> --seco    # solo muestra el resumen
+```
+`plan.json` dice **qué** va en cada escena; `armado.py` (biblioteca) hace lo que antes copiaba cada armador: anclas (`@palabra#2$+0.3`,
+`@.palabra` desde la escena, `@[pieza]`, `@[pieza].fin`, `@fin`), subtítulos por estilo (`frase`, `frase-entera`, `etiqueta`,
+`cinetico`, `escalon`, `ocultos`; palabras de enlace nunca solas), inicios alineados a los cortes de `corte/mapa.json` o
+`tiempos.json`, escena pegada a un corte arranca EN el corte, un solo encuadre (`caras` por tramo, `caraH` = 1.22 × mediana),
+`persona.n` contado, fps de `metodo.json` o del corte (`comun.py`), nombre y @usuario de `config/kit.json`, efectos (avisa si
+pisan el final de una frase) y música (`golpe` → `desde`). Cada escena pasa sus capas **tal cual** (imp, pant, cap, gigantes,
+pizarra, fechaHero…) con las anclas convertidas a segundos: una capa nueva de `cine.js` no necesita tocar el armador.
+Recetas listas (`"receta"`): `anuncio-por-frases` (la plantilla, aprobada el 4-nov), `cine-e` (Cine Pro estilo E, 10-nov),
+`escalon` (11/12-nov). Formato completo y ejemplo mínimo: cabecera de `armar.py`. Los armadores viejos de cada proyecto siguen
+sirviendo para regenerar lo ya entregado; las piezas nuevas se arman con `plan.json`.
+
+## Revisar antes de entregar
+```bash
+node estilo-cine/render.mjs proyectos/<n> --validar              # solo revisa el cine.json (2 s)
+.venv/bin/python estilo-cine/revisar.py proyectos/<n>            # revisión completa antes del render (1 min)
+.venv/bin/python estilo-cine/revisar.py proyectos/<n> --solo-final   # con el video ya renderizado (10 s)
+```
+- **`render.mjs` valida siempre** y se detiene si el `cine.json` trae una clave o una opción que el motor no conoce (te sugiere la
+  parecida), una clave que `render.mjs` no pasa a la página, palabras del guion que no coinciden con la voz, fps o número de cuadros
+  distintos a los del corte, o un corte marcado como HDR. No hay esquema que mantener: las listas salen del propio `cine.js` y
+  `render.mjs`. `--forzar` renderiza de todos modos; `"hdr_ok": true` si el corte ya está en Rec.709 y solo quedó la etiqueta.
+- **`revisar.py`** saca cada instante con y sin texto (`render.mjs --capas`): la diferencia es el texto que de verdad se ve. Con eso
+  mide texto encima de la cara, fuera de la zona segura, cortado por el borde o invisible, sin leer letras. Además audita los cortes
+  (`auditar_voz.py`), da el ritmo y deja en `revision/` la hoja de problemas, el guion visual (un cuadro por segundo) y `veredicto.json`.
+- **Color:** los cuadros se extraen fieles a la cámara y el MP4 sale en Rec.709 de rango de video con etiquetas (`comun.py`).
+- **Reposo:** el render mantiene despierta la Mac (`caffeinate`) y, si Chrome deja de responder, lo relanza y repite ese cuadro.
+
 ## Perfiles de salida: Redes (1080) y 4K
 Se activan solo cuando el usuario dice qué calidad quiere. Sin indicación = **Redes**. Configuración en `perfiles.json`.
 

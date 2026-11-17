@@ -5,7 +5,7 @@ es personal (cada cuenta descarga los suyos). Hay dos caminos:
 
 1. **Sin Epidemic (funciona de inmediato):** `python3 audio/efectos_basicos.py` genera efectos sintetizados libres de
    derechos con los mismos nombres. El render sale sin música si no hay archivo de música (avisa y sigue).
-2. **Con tu cuenta de Epidemic Sound (recomendado):** conecta el MCP de Epidemic (ver INSTALAR.md) y pídele a Claude:
+2. **Con tu cuenta de Epidemic Sound (recomendado):** conecta el MCP de Epidemic Sound con tu cuenta y pídele a Claude:
    *"Descarga los efectos y la música de audio/catalogo.json con mi Epidemic"*. Claude busca cada título con
    `SearchSoundEffects` / `SearchRecordings`, los baja con `DownloadSoundEffect` / `DownloadRecording` (MP3) y los guarda
    en `estilo-cine/sfx/` con el nombre de la columna `archivo` (reemplazando los sintetizados).

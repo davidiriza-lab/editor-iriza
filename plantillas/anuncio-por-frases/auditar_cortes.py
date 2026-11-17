@@ -22,7 +22,9 @@ for k in sys.argv[1:]:
     def cara(t):
         ks = sorted(C, key=lambda q: abs(q - t))[:1]; c = C[ks[0]] if ks and abs(ks[0] - t) < .2 else None
         return None if c is None else ((c[1] + c[3]) / 2, (c[2] + c[4]) / 2, c[4] - c[2])
-    fps = 24000 / 1001; nq = len([f for f in os.listdir(f'{P}/cuadros') if f.endswith('.jpg')])
+    _r = str(json.load(open(f'{P}/metodo.json')).get('fps', '24')) if os.path.exists(f'{P}/metodo.json') else '24'
+    fps = float(_r.split('/')[0]) / float(_r.split('/')[1]) if '/' in _r else float(_r)   # los fps con los que se cortó (cortar.py): un solo lugar
+    nq = len([f for f in os.listdir(f'{P}/cuadros') if f.endswith('.jpg')])
     def cuadro(t): i = min(nq, max(1, int(round(t * fps)) + 1)); return np.asarray(Image.open(f'{P}/cuadros/{i:05d}.jpg').convert('L').resize((135, 240)), float)
     def tramo_de(a): return next((i for i, t in enumerate(tr) if t[0] - .3 <= a <= t[1] + .3), -1)
     dv, da = dur(cam, 'v:0'), dur(cam, 'a:0')

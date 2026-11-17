@@ -8,6 +8,7 @@ Lee corte/cam.mov (1080x1920, 24000/1001) y escribe:
 Después: transcribir.py → escaleta → cine.json → render.mjs. Si persona.n en cine.json no coincide, usa el número que imprime.
 """
 import sys, os, glob, shutil, subprocess
+from comun import filtro_jpg
 
 args = sys.argv[1:]
 if not args: sys.exit(__doc__)
@@ -21,7 +22,7 @@ if not os.path.exists(SEG): sys.exit('✗ falta bin/segmentar. Corre ./instalar.
 for d in ['cuadros', 'mascaras', 'cuadros_pro']: shutil.rmtree(os.path.join(proy, d), ignore_errors=True)
 os.makedirs(os.path.join(proy, 'cuadros')); os.makedirs(os.path.join(proy, 'mascaras'))
 print('1/3 cuadros…', flush=True)
-subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', cam, '-q:v', '2', os.path.join(proy, 'cuadros', '%05d.jpg')], check=True)
+subprocess.run(['ffmpeg', '-v', 'error', '-y', '-i', cam, '-vf', filtro_jpg(cam), '-q:v', '2', os.path.join(proy, 'cuadros', '%05d.jpg')], check=True)   # color fiel a la cámara (comun.filtro_jpg)
 print('2/3 máscaras de persona (Vision)…', flush=True)
 p = subprocess.Popen([SEG, cam, '540', '960'], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
 subprocess.run(['ffmpeg', '-v', 'error', '-y', '-f', 'rawvideo', '-pix_fmt', 'gray', '-s', '540x960', '-r', '24000/1001', '-i', '-',

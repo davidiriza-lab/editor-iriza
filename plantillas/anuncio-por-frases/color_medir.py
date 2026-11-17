@@ -6,14 +6,16 @@ K = sys.argv[1]; P = f'{B}/{K}'
 DE = sys.argv[sys.argv.index('--de') + 1] if '--de' in sys.argv else ('cuadros_orig' if os.path.isdir(f'{P}/cuadros_orig') else 'cuadros')
 pz = json.load(open(f'{P}/corte/mapa.json'))['piezas']; C = [c for c in json.load(open(f'{P}/corte/caras.json'))['f'] if len(c) >= 5]
 n = len([f for f in os.listdir(f'{P}/{DE}') if f.endswith('.jpg')])
+_m = f'{P}/metodo.json'; _r = str(json.load(open(_m)).get('fps', '24')) if os.path.exists(_m) else '24'
+FPS = float(_r.split('/')[0]) / float(_r.split('/')[1]) if '/' in _r else float(_r)   # los fps con los que se cortó (cortar.py)
 def cara_en(t):
     c = min(C, key=lambda c: abs(c[0] - t)); return c if abs(c[0] - t) < .25 else None
 out, t0 = [], 0.0
 for k, (a, b) in enumerate(pz):
-    t1 = t0 + (b - a); f0, f1 = int(round(t0 * 24)) + 1, min(n, int(round(t1 * 24)))
+    t1 = t0 + (b - a); f0, f1 = int(round(t0 * FPS)) + 1, min(n, int(round(t1 * FPS)))
     L, A, B, CR, CB, BG, FG = [], [], [], [], [], [], []
     for fi in np.linspace(f0, f1, min(10, max(1, f1 - f0 + 1))).astype(int):
-        c = cara_en((fi - 1) / 24)
+        c = cara_en((fi - 1) / FPS)
         if c is None: continue
         im = cv2.imread(f'{P}/{DE}/{fi:05d}.jpg'); m = cv2.imread(f'{P}/mascaras/{fi:05d}.jpg', 0)
         x0, y0, x1, y1 = c[1:5]; w, h = x1 - x0, y1 - y0

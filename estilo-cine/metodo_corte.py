@@ -13,6 +13,7 @@ cortes: se edita todo sobre cam.mov (copia ligera) y cam_4k.mov solo se usa en e
 """
 import sys, os, json, subprocess
 import numpy as np
+from comun import fps_nativo, fps_num, es_hdr, a_sdr, sonda
 
 proy = sys.argv[1]
 cfg = json.load(open(os.path.join(proy, 'metodo.json')))
@@ -26,8 +27,16 @@ if not os.path.exists(ruta_words):   # primer corte de un proyecto: transcribe l
     os.makedirs(os.path.dirname(ruta_words), exist_ok=True)
     json.dump([{'w': w['word'].strip(), 's': round(w['start'], 3), 'e': round(w['end'], 3)} for g in r['segments'] for w in g['words']], open(ruta_words, 'w'), ensure_ascii=False, indent=1)
 words = json.load(open(ruta_words))
-FPS = str(cfg.get('fps', '24000/1001'))   # "fps": "24" si la cámara grabó a 24 exactos (iPhone): sin conversión ni cuadros repetidos
-PAUSA, ANTES, DESPUES = float(cfg.get('pausa', .32)), .08, .14   # "pausa": silencio mínimo que se corta; más alto = menos jump cuts dentro de una frase
+# Video HDR (HLG/PQ de iPhone o DJI): se convierte solo a Rec.709 antes de cortar (antes era un paso manual que se olvidaba
+# y el video salía lavado). La transcripción y los tiempos no cambian: es el mismo archivo con otro color.
+for _k in ('camara', 'pantalla'):
+    if cfg.get(_k) and es_hdr(cfg[_k]): cfg[_k] = a_sdr(cfg[_k], os.path.join(proy, '_sdr'))
+
+# Valores por defecto = los aprobados (4-nov-2026): fps de la cámara, pausa 0.6 s (sin jump cuts dentro de una frase)
+# y corte por cuadro entero. Con .32 y conversión a 23.976 salían «saltos raros» y desfases de hasta 75 ms.
+FPS = str(cfg.get('fps') or fps_nativo(cfg['camara']))
+PAUSA, ANTES, DESPUES = float(cfg.get('pausa', .6)), .08, .14   # "pausa": silencio mínimo que se corta; .32 solo para clips ya limpios, sin retomas
+AJUSTAR = cfg.get('ajustar_cuadros', True)
 
 
 def lee_audio(f, ss=0, t=None, sr=8000):
@@ -91,19 +100,22 @@ piezas = [q for p in piezas for q in parte(*p)]
 for p, q in zip(piezas, piezas[1:]):
     if p[1] > q[0] and q[0] > p[0]: p[1] = q[0] = (p[1] + q[0]) / 2
 # "ajustar_cuadros": cada pieza empieza y termina en un cuadro entero → audio y video miden lo mismo y no se desfasan al unir
-if cfg.get('ajustar_cuadros'):
-    fq = eval(FPS); piezas = [[np.floor(a * fq) / fq, max(np.floor(a * fq) + 1, np.round(b * fq)) / fq] for a, b in piezas]
+if AJUSTAR:
+    fq = fps_num(FPS); piezas = [[np.floor(a * fq) / fq, max(np.floor(a * fq) + 1, np.round(b * fq)) / fq] for a, b in piezas]
 tot = sum(b - a for a, b in piezas)
 print(f'{len(piezas)} piezas · {tot:.1f} s')
 
 R = cfg.get('recorte', {}); rw = R.get('w', 2600); ALTO = R.get('alto', 768); rh = round(rw * ALTO / 1080)
-rx = round(3840 * R.get('cx', .5) - rw / 2); rx = max(0, min(3840 - rw, rx)); ry = R.get('y', 100)
+_s = sonda(cfg['camara']); ANCHO, ALTO_SRC = int(_s.get('width', 3840)), int(_s.get('height', 2160))
+if ANCHO != 3840 and not R.get('vertical'):   # "recorte" está pensado en píxeles de 4K: se lleva al tamaño real de la cámara
+    _k = ANCHO / 3840; rw, rh, R = round(rw * _k), round(rh * _k), {**R, 'y': round(R.get('y', 100) * _k)}
+rx = round(ANCHO * R.get('cx', .5) - rw / 2); rx = max(0, min(ANCHO - rw, rx)); ry = R.get('y', 100)
 
 def corta(src, salida, desfase, vf, con_audio, vf4=None):
     fc, ins = [], []
     for k, (a, b) in enumerate(piezas):
-        if cfg.get('ajustar_cuadros') and not desfase:   # por número de cuadro: video y audio miden exactamente lo mismo
-            fq = eval(FPS); n0, n1 = int(round(a * fq)), int(round(b * fq))
+        if AJUSTAR and not desfase:   # por número de cuadro: video y audio miden exactamente lo mismo
+            fq = fps_num(FPS); n0, n1 = int(round(a * fq)), int(round(b * fq))
             fc.append(f'[0:v]trim=start_frame={n0}:end_frame={n1},setpts=PTS-STARTPTS[v{k}]')
             if con_audio: fc.append(f'[0:a]atrim={n0 / fq:.6f}:{n1 / fq:.6f},asetpts=PTS-STARTPTS,aresample=48000[a{k}]')
         else:
@@ -121,8 +133,10 @@ def corta(src, salida, desfase, vf, con_audio, vf4=None):
 os.makedirs(os.path.join(proy, 'corte'), exist_ok=True)
 K4 = cfg.get('perfil') == '4k' and R.get('vertical')
 if cfg.get('perfil') == '4k' and not R.get('vertical'): print('⚠ el perfil 4K solo aplica a cámara vertical (recorte.vertical); se corta en 1080')
-corta(cfg['camara'], os.path.join(proy, 'corte', 'cam.mov'), 0, 'scale=1080:1920' if R.get('vertical') else f'crop={rw}:{rh}:{rx}:{ry},scale=1080:{ALTO}', True,
-      'scale=2160:3840:flags=lanczos' if K4 else None)
+# vertical: llenar 1080x1920 SIN deformar (si la cámara no es 9:16 se recorta el sobrante en vez de estirar a la persona)
+VERT = 'scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920'
+corta(cfg['camara'], os.path.join(proy, 'corte', 'cam.mov'), 0, VERT if R.get('vertical') else f'crop={rw}:{rh}:{rx}:{ry},scale=1080:{ALTO}', True,
+      'scale=2160:3840:force_original_aspect_ratio=increase:flags=lanczos,crop=2160:3840' if K4 else None)
 if cfg.get('pantalla'): corta(cfg['pantalla'], os.path.join(proy, 'corte', 'scr.mov'), lag, 'scale=1920:1080', False)
 json.dump({'lag': lag, 'piezas': piezas}, open(os.path.join(proy, 'corte', 'mapa.json'), 'w'))
 print('✓ corte/cam.mov + corte/scr.mov')

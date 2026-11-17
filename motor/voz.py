@@ -14,11 +14,17 @@ RAIZ = Path(__file__).resolve().parent.parent
 LLAVERO = "videos-voz-ia.elevenlabs"
 
 
+ARCHIVO_LLAVE = Path.home() / ".config" / "elevenlabs" / "api_key"   # la misma que usan los demás motores de video
+
+
 def clave():
+    """Llavero primero; si no está, el archivo ~/.config/elevenlabs/api_key."""
     r = subprocess.run(["security", "find-generic-password", "-s", LLAVERO, "-w"], capture_output=True, text=True)
-    if r.returncode != 0:
-        sys.exit("No hay API key en el Llavero. Corre: ./motor/clave.sh")
-    return r.stdout.strip()
+    if r.returncode == 0 and r.stdout.strip():
+        return r.stdout.strip()
+    if ARCHIVO_LLAVE.exists() and ARCHIVO_LLAVE.read_text().strip():
+        return ARCHIVO_LLAVE.read_text().strip()
+    sys.exit(f"No hay API key de ElevenLabs: ni en el Llavero (./motor/clave.sh) ni en {ARCHIVO_LLAVE}")
 
 
 def texto_y_rangos(guion):

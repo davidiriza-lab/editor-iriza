@@ -30,3 +30,9 @@ editor-testimoniales/editor/.venv
 editor-testimoniales/editor/sfx/
 plantillas/muestrario.html
 
+# lo que deja instalar.sh: huellas de lo instalado y copias de lo que reemplazó
+.instalado/
+respaldos/
+
+# lo que Claude aprende de tu gusto (es tuyo: no se sube ni se pisa al actualizar)
+aprendizaje/gusto.md

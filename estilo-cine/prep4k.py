@@ -12,6 +12,7 @@ Esto solo corre al final:
 Corre con prioridad baja para que la compu siga usable.
 """
 import sys, os, json, glob, shutil, subprocess
+from comun import filtro_jpg
 
 args = sys.argv[1:]; proy = args[0]
 opt = lambda k, d: type(d)(args[args.index(k) + 1]) if k in args else d
@@ -38,7 +39,7 @@ if len(glob.glob(os.path.join(dp, '*.jpg'))) < n1080:
     if len(glob.glob(os.path.join(d4, '*.jpg'))) < n1080:
         shutil.rmtree(d4, ignore_errors=True); os.makedirs(d4)
         print('1/3 cuadros 4K…', flush=True)
-        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-threads', '4', '-i', cam4, '-q:v', '3', os.path.join(d4, '%05d.jpg')], check=True)
+        subprocess.run(['ffmpeg', '-v', 'error', '-y', '-threads', '4', '-i', cam4, '-vf', filtro_jpg(cam4), '-q:v', '3', os.path.join(d4, '%05d.jpg')], check=True)
         n4 = len(glob.glob(os.path.join(d4, '*.jpg')))
         for i in range(n4 + 1, n1080 + 1): shutil.copy(os.path.join(d4, f'{n4:05d}.jpg'), os.path.join(d4, f'{i:05d}.jpg'))  # relleno al final
         if n4 > n1080 + 2: print(f'⚠ cam_4k tiene {n4} cuadros y la copia 1080 {n1080}: revisa que se hayan cortado igual')
